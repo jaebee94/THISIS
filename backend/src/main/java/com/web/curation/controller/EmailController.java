@@ -50,7 +50,6 @@ public class EmailController {
         try {
             MimeMessage msg = mailSender.createMimeMessage();
             MimeMessageHelper messageHelper = new MimeMessageHelper(msg, true, "UTF-8");
-             
             messageHelper.setSubject(USERNAME+"님 비밀번호 찾기 메일입니다.");
             messageHelper.setText("비밀번호는 "+PASSWORD+" 입니다.");
             messageHelper.setFrom("ru940203@naver.com");
