@@ -41,10 +41,15 @@ export default {
                 params: params
             })
             .then((res) => {
-                console.log(res.data.items);
-                for(var item in res.data.items) {
-                    item.title = item.title.replace(/(<([^>]+)>)/ig,"");
-                }
+                res.data.items.forEach((item) => {
+                    item.description = String(item.description).replace(/<br\/>/ig, "\n");
+                    item.description = String(item.description).replace(/&quot;/ig, "");
+                    item.description = String(item.description).replace(/<(\/)?([a-zA-Z]*)(\s[a-zA-Z]*=[^>]*)?(\s)*(\/)?>/ig, "");
+
+                    item.title = String(item.title).replace(/<br\/>/ig, "\n");
+                    item.title = String(item.title).replace(/&quot;/ig, "");
+                    item.title = String(item.title).replace(/<(\/)?([a-zA-Z]*)(\s[a-zA-Z]*=[^>]*)?(\s)*(\/)?>/ig, "");
+                });
                 this.items = res.data.items;
             })
             .catch((err) => {
