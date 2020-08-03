@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.web.curation.dao.FollowDAO">
+
+	<!-- 나를 팔로우 하는 사람 -->
+	<select id="searchFollower" resultType="Follow">	
+		select follower,followee
+		from followers_following
+		where followee = #{user_id}
+	</select>
+	
+	<!-- 내가 팔로우 하는 사람 -->
+	<select id="searchFollowee" resultType="Follow">	
+		select follower,followee
+		from followers_following
+		where follower = #{user_id}
+	</select>
+	
+	<!-- 팔로워 집계 -->
+	<select id="sumOfFollower" resultType="Integer">	
+		select COUNT(*)
+		from followers_following
+		where followee = #{user_id}
+	</select>
+	
+	<!-- 팔로잉 집계 -->
+	<select id="sumOfFollowee" resultType="Integer">	
+		select COUNT(*)
+		from followers_following
+		where follower = #{user_id}
+	</select>
+	
+	<!-- 팔로잉 팔로워 생성 -->
+	<insert id="createFollow" useGeneratedKeys="true" keyProperty="follower">
+		insert into followers_following
+		(follower,followee)
+		value(#{follower},#{followee})
+	</insert>
+	
+	<!-- 팔로잉 팔로워 삭제 -->
+	<delete id="deleteFollow">
+	delete from followers_following
+	 where follower = #{follower} and followee = #{followee}
+	</delete>
+	
+
+</mapper>

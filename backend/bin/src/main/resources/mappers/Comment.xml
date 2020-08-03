@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.web.curation.dao.CommentDAO">
+
+	<!-- 회원정보 전체 조회 -->
+	<select id="selectComment" resultType="Comment">
+		select *
+		from comment
+		where posts_id=#{posts_id}
+	</select>
+
+	<insert id="createComment">
+		insert into comment(
+			user_id, posts_id, user_nickname, comment_main, hide
+		) values (
+			#{user_id},#{posts_id},#{user_nickname},#{comment_main},0
+		)
+	</insert>
+
+	<delete id="deleteComment">
+		delete from comment
+		where comment_id = #{comment_id}
+	</delete>
+
+	<update id="modifyComment">
+		update comment
+		set comment_main = #{comment_main}, comment_date = #{comment_date}
+		where
+		comment_id = #{comment_id}
+	</update>
+
+	<update id="modifyhideComment">
+		update comment
+		set hide=
+		case
+			when hide=0 then 1
+			when hide=1 then 0
+		end
+		where comment_id = #{comment_id}
+	</update>
+</mapper>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.web.curation.dao.PostDAO">
+	
+	<select id="selectAllPost" resultType="Post">
+		select*
+		from posts
+		order by post_date desc
+	</select>
+	
+	<select id="selectPost" resultType="Post">
+		select*
+		from posts
+		where user_id=#{user_id}
+	</select>
+	
+	<select id="selectScrapInfo" parameterType="java.util.List" resultType="Post">
+		select *
+		from posts
+		where posts_id in
+		  <foreach collection="list" item="item" open="(" close=")"
+			separator=",">
+			#{item.posts_id}
+		</foreach>
+	</select>
+	
+	<!-- post수 합계 조회 -->
+	<select id="sumOfPost" resultType="Integer">	
+		select COUNT(*)
+		from posts
+		where user_id = #{user_id}
+	</select>
+
+	<insert id="createPost">
+		insert into posts(
+			user_id, posts_title, posts_main, health_count, notification_id, nickname
+		) values (
+			#{user_id},#{posts_title},#{posts_main},#{health_count},#{notification_id}, #{nickname}
+		)
+	</insert>
+
+	<delete id="deletePost">
+		delete from posts
+		where posts_id = #{posts_id}
+	</delete>
+	
+	<update id="modifyPost">
+		update posts
+			set posts_title=#{posts_title}, posts_main = #{posts_main}
+		where posts_id = #{posts_id}
+	</update>
+</mapper>

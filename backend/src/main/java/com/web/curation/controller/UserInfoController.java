@@ -1,0 +1,296 @@
+package com.web.curation.controller;
+
+import java.io.Console;
+import java.util.List;
+import java.util.Optional;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.annotation.JacksonInject.Value;
+import com.google.gson.JsonObject;
+import com.web.curation.model.Auth;
+import com.web.curation.model.BasicResponse;
+import com.web.curation.model.Post;
+import com.web.curation.model.TokenSet;
+import com.web.curation.model.UserInfo;
+import com.web.curation.model.UserResponse;
+import com.web.curation.service.AuthService;
+import com.web.curation.service.FollowService;
+import com.web.curation.service.HealthService;
+import com.web.curation.service.JwtService;
+import com.web.curation.service.PostService;
+import com.web.curation.service.UserInfoService;
+
+import io.swagger.annotations.ApiOperation;
+
+@CrossOrigin(origins = { "*" })
+@RestController
+@RequestMapping("/account")
+//http://localhost:9999/THISIS/swagger-ui.html
+public class UserInfoController {
+	
+	private static final Logger logger = LoggerFactory.getLogger(UserInfoController.class); 
+	private static final String SUCCESS = "success"; 
+	private static final String FAIL = "fail"; 
+
+	@Autowired
+	private JwtService jwtService;
+	
+	@Autowired
+	private UserInfoService userInfoService;
+	
+	@Autowired
+	private HealthService healthservice;
+	
+	@Autowired
+	private FollowService followService;
+	
+	@Autowired
+	private PostService postservice;
+	
+	@Autowired
+	private AuthService authService;
+	
+	@ApiOperation(value = "모든 회원 정보를 반환한다.", response = List.class)
+	@GetMapping
+		public ResponseEntity<List<UserInfo>> selectUser() throws Exception {
+			return new ResponseEntity<List<UserInfo>>(userInfoService.selectUserInfo(), HttpStatus.OK);
+	}
+	
+	@ApiOperation(value = "유저 ID에 해당하는 회원 정보를 반환한다.", response = UserInfo.class)     
+ 	@GetMapping("{user_id}") 
+		public ResponseEntity<UserInfo> selectUserInfoByUserid(@PathVariable int user_id) { 
+			return new ResponseEntity<UserInfo>(userInfoService.selectUserInfoByUserid(user_id), HttpStatus.OK); 
+	} 
+	
+	@ApiOperation(value = "유저 회원가입 시 회원 정보를 등록한다.", response = String.class)     
+ 	@PostMapping("signup")
+		public ResponseEntity<BasicResponse> insertUserInfo(@RequestBody UserInfo userinfo) { 
+			userinfo.setIntroduction("한줄 소개를 작성해 주세요");
+			if(userInfoService.insertUserInfo(userinfo) == 1) {
+				BasicResponse result = new BasicResponse();
+				result.status = true;
+				result.data = "success";
+				result.object = String.valueOf(userInfoService.getUserId(userinfo.getEmail()));
+				return new ResponseEntity<>(result,HttpStatus.OK);
+			}
+			BasicResponse result = new BasicResponse();
+			result.status = false;
+			result.data = "fail";
+			result.object = null;
+			return new ResponseEntity<>(result,HttpStatus.NO_CONTENT);
+	}
+	
+	@ApiOperation(value = "유저 id에 해당하는 회원 정보를 수정한다.", response = String.class)     
+ 	@PutMapping("{user_id}")
+		public ResponseEntity<String> updateUserInfo(@RequestBody UserInfo userinfo, HttpServletRequest request) { 
+		
+		String accessToken = (String) request.getAttribute("accessToken");
+		
+		UserInfo userinfo2;
+		if(accessToken != null) {
+			Auth auth = authService.findAuthByAccessToken(accessToken);
+			userinfo2 = userInfoService.selectUserInfoByUserid(auth.getUser_id());
+		}
+		else {	//accessToken없을때는 user_id 1인 유저로 들어감
+			userinfo2 = userInfoService.selectUserInfoByUserid(1);
+		}
+		
+		if(userinfo.getIntroduction() != null) {
+			userinfo2.setIntroduction(userinfo.getIntroduction());
+		}
+		if(userinfo.getNickname() != null) {
+			userinfo2.setNickname(userinfo.getNickname());
+		}
+		if(userinfo.getPassword() != null) {
+			userinfo2.setPassword(userinfo.getPassword());
+		}
+		
+			if(userInfoService.updateUserInfo(userinfo2) == 1) {
+				return new ResponseEntity<String>("success",HttpStatus.OK);
+			}
+			return new ResponseEntity<String>("fail",HttpStatus.NO_CONTENT);
+	}
+	
+	@ApiOperation(value = "회원 탈퇴시 id에 해당하는 회원 정보를 삭제한다.", response = String.class)     
+ 	@DeleteMapping("{user_id}")
+		public ResponseEntity<String> deleteUserInfo(@PathVariable String user_id) { 
+			if(userInfoService.deleteUserInfo(user_id) == 1) {
+				return new ResponseEntity<String>("success",HttpStatus.OK);
+			}
+			return new ResponseEntity<String>("fail",HttpStatus.NO_CONTENT);
+	}
+	
+	@ApiOperation(value = "회원 email과 password로 로그인 가능 여부 응답", response = String.class)     
+ 	@GetMapping("login")
+		public ResponseEntity<String> login(@RequestParam String email,@RequestParam String password) { 
+		Optional<UserInfo> userOpt2 = Optional.ofNullable(userInfoService.findUserInfoByEmail(email));
+        ResponseEntity response = null;
+
+        if (userOpt2.isPresent()) {	//이메일 존재
+        	 Optional<UserInfo> userOpt = Optional.ofNullable(userInfoService.findUserByEmailAndPassword(email, password));
+        	
+        	 if(userOpt.isPresent()) {	//비밀번호까지 다 맞음
+        		 final UserResponse result = new UserResponse();
+                 result.status = true;
+                 result.data = "success";
+                 
+                 UserInfo userinfo = userOpt.get();
+                 //로그인이 완료됬으니 토큰 만들기
+                 TokenSet tokenSet = jwtService.createTokenSet(userinfo);
+                 
+                 if(tokenSet != null) {	//토큰까지 만듬
+                	result.accessToken = tokenSet.getAccessToken();
+                	result.user_id = userinfo.getUser_id();
+                	result.username = userinfo.getUsername();
+                	result.introduction = userinfo.getIntroduction();
+                	result.email = userinfo.getEmail();
+                	result.nickname = userinfo.getNickname();
+                	//obj.addProperty("userinfo", obj.toString());
+                	 //result.object = obj.toString();
+                	 response = new ResponseEntity<>(result, HttpStatus.OK);
+                 }else {
+                	 response = new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED);
+                 }
+        	 }else {	//비밀번호가 맞지 않음
+        		 final UserResponse result = new UserResponse();
+                 result.status = false;
+                 result.data = "wrong password";
+                 response = new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
+        	 }   
+        } else {	//이메일 존재 x
+        	 final UserResponse result = new UserResponse();
+             result.status = false;
+             result.data = "wrong email";
+             response = new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
+        }
+        return response;
+	}
+	
+	@ApiOperation(value = "AccessToken 재생성 테스트", response = String.class)     
+	@PostMapping("refreshAccessToken")
+	public ResponseEntity<String> refreshAccessToken(@RequestBody String token) {
+		TokenSet tokenSet = jwtService.refreshAccessToken(token);
+		ResponseEntity response = null;
+		final BasicResponse result = new BasicResponse();
+		
+		if(tokenSet != null) {
+			 result.object = tokenSet;
+        	 response = new ResponseEntity<>(result, HttpStatus.OK);
+		}else {
+			 response = new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED);
+		}
+		
+		return response;
+	}
+	
+	@ApiOperation(value = "이메일 중복 테스트", response = String.class)     
+	@GetMapping("email")
+		public ResponseEntity<UserInfo> checkEmail (@RequestParam String email) { 
+		  ResponseEntity response = null;
+		 Optional<UserInfo> userOpt = Optional.ofNullable(userInfoService.findUserInfoByEmail(email));
+		  final BasicResponse result = new BasicResponse();
+		  if (userOpt.isPresent()) {	//이메일 존재
+              result.status = false;
+              result.data = "wrong email";
+              response = new ResponseEntity<>(result, HttpStatus.FORBIDDEN);
+		  }
+		  else {
+			  result.status = true;
+			  result.data = "success";
+			  response = new ResponseEntity<>(result, HttpStatus.OK);
+		  }
+		 return response;
+	}
+	
+	@ApiOperation(value = "닉네임 중복 테스트", response = String.class)     
+	@GetMapping("nickname")
+		public ResponseEntity<UserInfo> checkNickname (@RequestParam String nickname) { 
+		  ResponseEntity response = null;
+		 Optional<UserInfo> userOpt = Optional.ofNullable(userInfoService.findUserInfoByNickname(nickname));
+		  final BasicResponse result = new BasicResponse();
+		  if (userOpt.isPresent()) {	//닉네임 존재
+              result.status = false;
+              result.data = "wrong nickname";
+              response = new ResponseEntity<>(result, HttpStatus.FORBIDDEN);
+		  }
+		  else {
+			  result.status = true;
+			  result.data = "success";
+			  response = new ResponseEntity<>(result, HttpStatus.OK);
+		  }
+		 return response;
+	} 
+	
+	@ApiOperation(value = "검색어에 해당하는 회원 정보를 반환한다.", response = List.class)     
+ 	@GetMapping("search") 
+		public ResponseEntity<List<UserInfo>>selectUserInfoBySearch(@RequestParam String keyword) { 
+			return new ResponseEntity<List<UserInfo>>(userInfoService.selectUserInfoSearch(keyword), HttpStatus.OK); 
+	} 
+	
+
+	@ApiOperation(value = "유저 ID에 해당하는 프로필 정보를 반환한다(게시물,좋아요,팔로우,팔로워).", response = String.class)     
+ 	@GetMapping("profile/{user_id}") 
+		public ResponseEntity<String> selectProfileByUserid(@PathVariable int user_id, HttpServletRequest request) {
+			JsonObject obj = new JsonObject();
+			String accessToken = (String) request.getAttribute("accessToken");
+
+			UserInfo userinfo;
+			if(accessToken != null) {
+			Auth auth = authService.findAuthByAccessToken(accessToken);
+			userinfo = userInfoService.selectUserInfoByUserid(auth.getUser_id());
+			}
+			else {	//accessToken없을때는 user_id 1인 유저로 들어감
+				userinfo = userInfoService.selectUserInfoByUserid(1);
+			}
+			
+			if(user_id==0) {	//내 프로필
+				logger.debug(userinfo.toString());
+				user_id = userinfo.getUser_id();
+				obj.addProperty("myinfo", true);
+			}else {	//0이 아닌 내 프로필 요청 시
+				if(userinfo.getUser_id() == user_id) {
+					obj.addProperty("myinfo", true);
+				}
+				else {
+					obj.addProperty("myinfo", false);
+				}
+			}
+			
+			int follower = followService.sumOfFollower(user_id);
+			int followee = followService.sumOfFollowee(user_id);
+			int postnum = postservice.sumOfPost(user_id);
+			
+			System.out.println("follower : " +follower);
+			
+			List<Post> userpost = postservice.selectPostInfo(user_id);
+			int healthnum = 0;
+			for(int i=0; i<userpost.size(); i++) {
+				healthnum += healthservice.selectHealth(userpost.get(i).getPosts_id());
+			}
+			
+			obj.addProperty("followernum", follower);
+			obj.addProperty("followeenum", followee);
+			obj.addProperty("postnum", userpost.size());
+			obj.addProperty("healthnum", healthnum);
+			
+			return new ResponseEntity<String>(obj.toString(), HttpStatus.OK); 
+	} 
+
+}

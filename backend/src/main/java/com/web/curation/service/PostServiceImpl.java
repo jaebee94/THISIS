@@ -1,0 +1,55 @@
+package com.web.curation.service;
+
+import java.util.HashMap;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.web.curation.dao.PostDAO;
+import com.web.curation.model.Post;
+import com.web.curation.model.Scrap;
+
+@Service
+public class PostServiceImpl implements PostService {
+
+	@Autowired
+	private PostDAO PostDao;
+
+	@Override
+	public List<Post> selectPostInfo(int user_id) {
+		// TODO Auto-generated method stub
+		return PostDao.selectPost(user_id);
+	}
+
+	@Override
+	public int createPost(Post post) {
+		return PostDao.createPost(post);
+	}
+
+	@Override
+	public int modifyPost(Post post) {
+		return PostDao.modifyPost(post);
+
+	}
+
+	@Override
+	public int deletePost(int id) {
+		return PostDao.deletePost(id);
+		
+	}
+
+	@Override
+	public List<Post> selectAllPost() {
+		return PostDao.selectAllPost();
+	}
+	@Override
+	public int sumOfPost(int user_id) {
+		return PostDao.sumOfPost(user_id);
+	}
+
+	@Override
+	public List<Post> selectScrapInfo(List<Scrap> scrapList){;
+		return PostDao.selectScrapInfo(scrapList);
+	}
+}

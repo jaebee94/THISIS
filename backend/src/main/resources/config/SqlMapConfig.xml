@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>		
+		<package name="com.web.curation.model.user"/>
+	</typeAliases>
+	
+	<mappers>
+		<mapper resource="mapper/Userinfo.xml"/>
+		<mapper resource="mapper/Follow.xml"/>
+	</mappers>
+	
+</configuration>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

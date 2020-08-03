@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.web.curation.dao.AuthDAO">
+	
+	<!-- 인증정보 상세 조회 -->
+	<select id="selectAuthByUserid" resultType="Auth">	
+		select user_id, refresh_token, access_token
+		from auth
+		where user_id = #{user_id}
+	</select>
+	
+	<!-- 인증정보 등록 -->
+	<insert id="insertAuth" parameterType="Auth">
+		insert into auth(
+			user_id, refresh_token, access_token
+		) values (
+			#{user_id},#{refresh_token},#{access_token}
+		)
+	</insert>
+	
+	<!-- 인증정보 수정 -->
+	<update id="updateAuth" parameterType="Auth">
+		update auth
+		   set refresh_token = #{refresh_token},
+		   	   access_token = #{access_token}
+		 where user_id = #{user_id}
+	</update>
+
+	<!-- 인증정보 삭제 -->
+	<delete id="deleteAuth" parameterType="String">
+		delete 
+		from 	auth
+		where 	user_id = #{user_id}
+	</delete>
+	
+	<!-- 인증정보 refresh_token으로 조회  -->
+	<select id="findAuthByRefreshToken" resultType="Auth">
+		select user_id, refresh_token, access_token
+		from auth
+		where refresh_token = #{refresh_token}
+	</select>
+	
+	<!-- 인증정보 access_token으로 조회  -->
+	<select id="findAuthByAccessToken" resultType="Auth">
+		select user_id, refresh_token, access_token
+		from auth
+		where access_token = #{access_token}
+	</select>
+</mapper>

@@ -1,0 +1,299 @@
+<template>
+  <div class="notify">
+    <div class="tabs">
+      <div class="tab-container">
+        <div
+          class="tab"
+          v-for="(tab, index) in tabs"
+          v-bind:key="tab"
+          v-bind:class="{active: currentTab === index}"
+          @click="clickNoti(index)"
+        >
+          <h2>{{tab}}</h2>
+          <span class="notify-num" v-if="index == 0 && noti_count != 0">{{noti_count}}</span>
+          <span class="notify-num" v-if="index == 1 && req_count != 0">{{req_count}}</span>
+        </div>
+      </div>
+      <div class="notify-panel">
+        <div v-show="currentTab == 0">
+          <div v-for="(noti, index) in this.notification.notification" v-bind:key="noti.id">
+            <div class="notifications" :class="{new : index < noti_count}">
+              <div :class="{new : index < noti_count}">
+                <table>
+                  <td v-if="noti.approval === 0">{{noti.followee_id}}님에게 팔로우 요청하셨습니다.</td>
+                  <td v-if="noti.approval === 1">{{noti.followee_id}}님이 {{noti.follower_id}}님을 팔로우 하셨습니다.</td>
+                  <td v-if="noti.approval === 2">{{noti.followee_id}}님이 팔로우 거절하셨습니다.</td>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div v-show="currentTab == 1">
+          <div  v-for="(noti, index) in this.notification.requests" v-bind:key="noti.id">
+          <div
+            class="notifications" :class="{new : index < req_count} "
+            v-if="noti.approval === 0"
+          >
+            <div class="notification" :class="{new : index < req_count} " >
+              <table>
+                <tr >
+                <td >{{noti.follower_id}}님의 팔로우 요청</td>
+                <td>
+                  <button @click="accessFollow(noti)">승낙</button>
+                </td>
+                <td>
+                  <button @click="rejectFollow(noti)">거절</button>
+                </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import db from "../../firebaseInit";
+import { mapActions, mapState } from "vuex";
+import firebase from "firebase";
+
+
+const increment = firebase.firestore.FieldValue.increment(1);
+//const decrement = firebase.firestore.FieldValue.increment(-1);
+export default {
+  computed: {
+    ...mapState(["notification", "loginData","profileData"]),
+  },
+  data() {
+    return {
+      currentTab: 0,
+      tabs: ["알림", "요청"],
+      noti_count: 0,
+      req_count: 0,
+      tab1: 0,
+      tab2: 0
+    };
+  },
+  methods: {
+    ...mapActions(["fetchNotification", "fetchRequests", "putNotification","createFollow"]),
+    accessFollow(noti) {
+      noti.approval = 1;
+      console.log(noti) 
+      let params = {
+        follower: noti.follower_id,
+        followee: noti.followee_id
+      };
+      console.log(params)
+      this.$store.dispatch("putNotification", noti);
+      this.$store.dispatch("createFollow",params);
+      this.save(noti);
+      this.deleteFromFirebase(noti);
+    },
+    rejectFollow(noti) {
+      noti.approval = 2;
+      this.$store.dispatch("putNotification", noti);
+      this.save(noti);
+      this.deleteFromFirebase(noti);
+    },
+    save(noti) {
+      let instance = {
+        notification: increment, //1올려줌
+      };
+      db
+        .collection("notification")
+        .doc(String(noti.follower_id)) //승낙했을 때 상대방 알림count+1
+        .update(instance)
+        .then(function (docRef) {
+          console.log("Document written with ID: ", docRef.id);
+        })
+        .catch(function (error) {
+          console.error("Error setting document: ", error);
+        });
+      
+    },
+    deleteFromFirebase(noti) {
+      let instance = {};
+      instance[noti.follower_id] = firebase.firestore.FieldValue.delete();
+      db
+      .collection("notification")
+      .doc(String(noti.followee_id))
+      .update(instance)
+      .then(console.log("FIREBASE DELETION COMPLETE"))
+      .catch(console.error("FIREBASE DELETION UNEXECUTED"))
+    },
+    clickNoti(idx) {
+      this.currentTab = idx;
+      if(idx == 0) this.tab1++;
+      if(idx == 1) this.tab2++;
+      
+      if(idx == 0) {
+        if(this.tab1 > 0)
+        this.initNoti();
+      } else {
+        if(this.tab2 > 1)
+        this.initRequest();
+      }
+    },
+    initNoti() { 
+      db
+      .collection("notification")
+      .doc(String(this.loginData.user_id))
+      .update({
+        notification: 0
+      })
+      .then(function (doc) {
+        console.log(doc);
+      })
+      .catch(function (err) {
+        console.error(err);
+      })
+      this.noti_count = 0;
+    },
+    initRequest() {
+      db
+      .collection("notification")
+      .doc(String(this.loginData.user_id))
+      .update({
+        request: 0
+      })
+      .then(function (doc) {
+        console.log(doc);
+      })
+      .catch(function (err) {
+        console.error(err);
+      })
+      this.req_count = 0;
+    }
+  },
+  created() {
+    const noti = db.collection("notification").doc(String(this.loginData.user_id));
+    let vueInstance = this;
+    noti
+      .get()
+      .then(function (doc) {
+        if (doc.exists) {
+          vueInstance.noti_count = doc.data().notification;
+          vueInstance.req_count = doc.data().request;
+          console.log("Document data:", doc.data().notification);
+        } else {
+          console.log("No such document!");
+        }
+      })
+      .catch(function (error) {
+        console.log("Error getting document:", error);
+      });
+
+    this.$store.dispatch("fetchNotification", this.loginData.user_id); //내가 요청한 것
+    this.$store.dispatch("fetchRequests", this.loginData.user_id); //내가 요청 받은것 followee
+  },
+};
+</script>
+
+<style scoped>
+.notify {
+  text-align: center;
+  background-color: white;
+  padding: 20px 20px 60px 20px;
+}
+.notify-panel {
+  width: 100%;
+  height: 600px;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  background-color: rgb(247, 247, 247);
+}
+.tabs {
+  width: 100%;
+  height: 70%;
+}
+.tab-container {
+  display: flex;
+}
+.tab {
+  width: 50%;
+  height: 50px;
+  vertical-align: middle;
+  background-color: rgb(247, 247, 247);
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+.tab h2 {
+  margin-top: 10px;
+  height: 20px;
+}
+.tab.active {
+  background-color: rgb(0, 171, 132);
+}
+
+.notify-num {
+  background-color: red;
+  color: white;
+  font-size: 10px;
+  border-radius: 70%;
+  padding: 3px 3px;
+  position: absolute;
+  margin-top: -40px;
+  margin-left: 25px;
+}
+
+.notifications {
+  padding: 1% 1%;
+  width: 92%;
+  margin: 2% 3%;
+  margin-bottom: 10px;
+  background-color: rgb(174, 171, 171);
+  color: black;
+  font-weight: 500;
+  border: none;
+  border-radius: 5px;
+}
+
+
+.notification {
+  display: flex;
+  background-color: rgb(230, 229, 229);
+  text-align: left;
+  width: 100%;
+  height: 40px;
+  border: none;
+  border-radius: 5px;
+  vertical-align: middle;
+}
+
+.new {
+  color: white;
+  font-size: 18px;
+  font-weight: 500;
+  background-color: rgb(0, 171, 132);
+}
+
+.notification table {
+  text-align: center;
+  width: 100%;
+}
+
+.notification table tr td {
+  height: 40px;
+}
+
+.notification table tr td:nth-child(2) {
+  text-align: left;
+}
+
+.notification table tr td:nth-child(3) {
+  padding-right: 10px;
+  text-align: right;
+}
+.notification table button {
+  background-color: rgb(0, 171, 132);
+  border : none;
+  border-radius: 5px;
+}
+.profile-image {
+  background-color: white;
+  border-radius: 70%;
+}
+</style>

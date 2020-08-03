@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.web.curation.dao.NotificationDAO">
+
+	<!-- 알람/요청 전체 조회 -->
+	<select id="selectNotification" resultType="Notification">	
+		select id, follower_id, followee_id, newtofollower, newtofollowee, approval, time
+		from notification
+	</select>
+	
+	<!-- 알람/요청 상세 조회 -->
+	<select id="selectNotificationById" resultType="Notification">	
+		select id, follower_id, followee_id, newtofollower, newtofollowee, approval, time
+		from notification
+		where id = #{id}
+	</select>
+	
+	<!-- 알람/요청 등록 -->
+	<insert id="insertNotification" parameterType="Notification">
+		insert into notification(
+			id, follower_id, followee_id, newtofollower, newtofollowee, approval
+		) values (
+			#{id},#{follower_id},#{followee_id},#{newtofollower},#{newtofollowee},#{approval}
+		)
+	</insert>
+	
+	<!-- 알람/요청 수정 -->
+	<update id="updateNotification" parameterType="Notification">
+		update	notification
+		   set	follower_id = #{follower_id},
+		   		followee_id = #{followee_id},
+		   		newtofollower = #{newtofollower},
+		   		newtofollowee= #{newtofollowee},
+		   		approval = #{approval}
+		 where 	id = #{id}
+	</update>
+
+	<!-- 알람/요청 삭제 -->
+	<delete id="deleteNotification" parameterType="String">
+		delete 
+		from 	notification
+		 where 	follower_id = #{follower_id} and followee_id = #{followee_id}
+	</delete>
+
+	<!-- 해당 user_id가 follower인 알람탭 불러오기 -->
+	<select id="GetListByFollower" resultType="Notification">	
+		select id, follower_id, followee_id, newtofollower, newtofollowee, approval, time
+		from notification
+		where follower_id = #{user_id}
+		order by time desc
+	</select>
+	
+	<!-- 해당 user_id가 followee인 요청탭 불러오기 -->
+	<select id="GetListByFollowee" resultType="Notification">	
+		select id, follower_id, followee_id, newtofollower, newtofollowee, approval, time
+		from notification
+		where followee_id = #{user_id}
+		order by time desc
+	</select>
+	
+</mapper>
