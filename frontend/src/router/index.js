@@ -30,6 +30,9 @@ import ChangeProfile from '../components/feed/ChangeProfile.vue'
 
 import ModifyPost from '../components/feed/ModifyPost.vue'
 
+import DiseaseTest from '../views/main/DiseaseTest.vue'
+import NewsTest from '../views/main/NewsTest.vue'
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -122,6 +125,16 @@ const routes = [
     path: '/404',
     name: 'Login2',
     component: Login
+  },
+  {
+    path: '/DiseaseTest',
+    name: 'DiseaseTest',
+    component: DiseaseTest
+  },
+  {
+    path: '/NewsTest',
+    name: 'NewsTest',
+    component: NewsTest
   },
   {
     path: '/main_kang',
