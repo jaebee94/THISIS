@@ -53,6 +53,7 @@ public class EmailController {
              
             messageHelper.setSubject(USERNAME+"님 비밀번호 찾기 메일입니다.");
             messageHelper.setText("비밀번호는 "+PASSWORD+" 입니다.");
+            messageHelper.setFrom("ru940203@naver.com");
             messageHelper.setTo(EMAIL);
             msg.setRecipients(MimeMessage.RecipientType.TO , InternetAddress.parse(EMAIL));
             mailSender.send(msg);
