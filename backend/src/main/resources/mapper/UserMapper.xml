@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.web.curation.mapper.UserMapper">
+
+<!-- 리절트 맵 정의. primary key 컬럼은 id 태그로 표시해줌 -->
+  <resultMap type="User" id="UserResult">
+  		<id property="uid" column="uid"/>
+	   	<result property="password" column="password"/>
+	   	<result property="email" column="email"/>
+	   	<result property="createDate" column="createDate"/>
+  </resultMap>
+
+  <select id="findAll" resultMap="UserResult">
+  	select * from user  
+  </select>
+  
+  <!-- <select id="search" resultMap="UserResult" parameterType="String">
+  	select * from members where id = #{id}
+  </select>
+  
+  <insert id="insert" parameterType="UserInfo">
+  	insert into members values(#{id}, #{password},#{name},#{address},#{phone})
+  </insert>
+  
+  <delete id="delete" parameterType="String">
+  	delete from members where id = #{id}
+  </delete>
+  
+  <update id="update" parameterType="UserInfo">
+  	update members 
+  	set name = #{name}, phone = #{phone}, address = #{address}
+  	where id = #{id}
+  </update>   -->
+
+</mapper>
