@@ -104,7 +104,10 @@ export default new Vuex.Store({
           commit('SET_LOGIN_DATA', res.data)
           router.push({ name: 'Feed' })
         })
-        .catch(err => console.log(err))
+        .catch(err => {
+          alert("로그인에 실패하였습니다.")
+          console.log(err)
+        })
     },
     login({ dispatch }, loginData) {
       const info = {
