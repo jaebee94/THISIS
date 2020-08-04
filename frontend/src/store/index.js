@@ -31,7 +31,7 @@ export default new Vuex.Store({
       requests: {}
     },
     checkScrap: 0,
-    followee_list: {},
+    followee_list: false,
     searchList: {},
   },
   // state 를 (가공해서 혹은 그대로) 가져올 함수들. === computed
@@ -104,7 +104,10 @@ export default new Vuex.Store({
           commit('SET_LOGIN_DATA', res.data)
           router.push({ name: 'Feed' })
         })
-        .catch(err => console.log(err))
+        .catch(err => {
+          alert("로그인에 실패하였습니다.")
+          console.log(err)
+        })
     },
     login({ dispatch }, loginData) {
       const info = {
@@ -129,26 +132,26 @@ export default new Vuex.Store({
       //   })
       //   .catch(err => console.log(err))
     },
-    goProfile({ state, commit }, userId) {
+    async goProfile({ state, commit }, userId) {
       if (userId == null) {
         userId = state.loginData.user_id
       }
       console.log(SERVER.URL + SERVER.ROUTES.user + userId)
-      router.push({ name: 'Profile' })
-      axios.get(SERVER.URL + SERVER.ROUTES.user + userId)
+     
+      await axios.get(SERVER.URL + SERVER.ROUTES.user + userId)
         .then(res => {
           commit('SET_USER_INFO', res.data)
           console.log(res.data)
         })
         .catch(err => console.log(err))
-      axios.get(SERVER.URL + SERVER.ROUTES.profile + userId)
+      await axios.get(SERVER.URL + SERVER.ROUTES.profile + userId)
         .then(res => {
-          console.log(res.data)
+          console.log("set_profile_info",res.data);
           commit('SET_PROFILE_INFO', res.data)
         })
-      axios.get(SERVER.URL + SERVER.ROUTES.posts + `/${userId}`)
-        .then(res => {
-          res.data.forEach((element) => {
+      await axios.get(SERVER.URL + SERVER.ROUTES.posts + `/${userId}`)
+        .then( function(res) {
+           res.data.forEach(async (element) => {
             element.health = false;
             element.scrap = false;
             axios.get(SERVER.URL + SERVER.ROUTES.health + `/post/${element.posts_id}`)
@@ -162,9 +165,7 @@ export default new Vuex.Store({
                 })
               }
             )
-            axios
-            .get(
-              SERVER.URL + SERVER.ROUTES.scrap,
+           axios.get( SERVER.URL + SERVER.ROUTES.scrap,
               {
                 params: {
                   posts_id: element.posts_id,
@@ -175,11 +176,14 @@ export default new Vuex.Store({
             .then((res) => {
               console.log("data", res.data);
               if(res.data > 0) element.scrap = true;
+              //router.push({ name: 'Profile' })
             })
             .catch((err) => console.log(err));
           })
           commit('SET_POST_INFO', res.data)
+          
         })
+        router.push({ name: 'Profile' })
     },
     getCheckScrap({state,getters, commit},posts_id){
       axios.get(SERVER.URL + SERVER.ROUTES.scrap,
@@ -213,11 +217,12 @@ export default new Vuex.Store({
         console.log("result", res);
       }).catch(err => console.log(err))
     },
-    changeUserInfo({ getters }, changeInfo) {
+     changeUserInfo({ dispatch,getters }, changeInfo) {
       console.log(changeInfo)
       axios.put(SERVER.URL + SERVER.ROUTES.user + changeInfo.user_id, changeInfo, getters.config)
         .then(() => {
           alert('변경이 완료되었습니다.')
+          dispatch('goProfile', changeInfo.user_id)
           router.push({ name: "Profile" })
         })
         .catch(err => console.log(err))
@@ -324,13 +329,6 @@ export default new Vuex.Store({
         .then((res) => {
           console.log(res);
           console.log(params)
-          // console.log(res.data.object);
-          // data = res.data.object;
-          // res.data.object.forEach((element) => {
-          //     if(String(element["followee"]) == this.user.user_id) {
-          //         this.isFollowing = true;
-          //     }
-          // })
         })
         .catch(err => {
           console.log(err)
@@ -341,13 +339,6 @@ export default new Vuex.Store({
         .then((res) => {
           console.log(res);
           console.log(params);
-          // console.log(res.data.object);
-          // data = res.data.object;
-          // res.data.object.forEach((element) => {
-          //     if(String(element["followee"]) == this.user.user_id) {
-          //         this.isFollowing = true;
-          //     }
-          // })
         })
         .catch(err => {
           console.log(err)
@@ -361,6 +352,7 @@ export default new Vuex.Store({
             console.log("확인", element);
             if (String(element["followee"]) == params.followee_id) {
               flag = true;
+              console.log("팔로우 찾음")
               // commit('SET_FOLLOWEE', true);
             }
           });

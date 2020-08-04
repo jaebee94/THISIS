@@ -1,54 +1,5 @@
 <template>
   <div class="profile wrap">
-
-
-
-
-    <div class="modify-wrap" v-if="this.isModifyHidden">
-      <div>
-        <h2>제목 : {{ postInfo.posts_title }}</h2>
-      </div>
-      <div class="post-content">
-        <textarea v-model="postInfo.posts_main"></textarea>
-      </div>
-      <div class="post-modify-btn">
-        <button @click="updatePostAndClose(postInfo)">수정하기</button>
-      </div>
-      <div class="modify-footer">
-        <img @click="closeModify()" src="../../assets/images/icon/icon_close.png" />
-      </div>
-    </div>
-
-
-
-
-
-    <!-- <div v-if="this.isPostModify" class="post-content-modify">
-      <div class="feed-header">
-        <table>
-          <tr>
-            <td>
-              <img class="profile-image" src="../../assets/images/icon/icon_default_image.png" />
-            </td>
-            <td>
-              <a class="name">{{mPost.name}}</a>
-            </td>
-            <td>
-              <a class="time">{{mPost.time}}</a>
-            </td>
-          </tr>
-        </table>
-      </div>
-      <div class="post-content">
-        <textarea v-model="mPost.content"></textarea>
-      </div>
-      <div class="post-modify-btn">
-        <button @click="modifyPostClick()">수정하기</button>
-      </div>
-      <div class="modify-footer">
-        <img @click="closeModify(mPost.post_id)" src="../../assets/images/icon/icon_close.png" />
-      </div>
-    </div> -->
     <div class="intro-wrap">
       <div class="left-content">
         <div class="profile-image">
@@ -82,7 +33,6 @@
       <!-- 나의 아이디와 보고 있는 페이지의 유저 아이디가 같을 경우 -->
       <router-link to="/main/change">
         <button
-          @click="modifyProfile()"
           v-show="loginData.user_id == profileData.userInfo.user_id"
         >프로필 수정</button>
       </router-link>
@@ -90,17 +40,17 @@
       <!-- 1. 팔로우 요청도 안 보낸 상태(data의 followSend가 false일 경우 + isFollowing이 false일 경우) -->
       <button
         @click="follow()"
-        v-show="loginData.user_id != profileData.userInfo.user_id && !this.isFollowing && !this.followSend"
+        v-show="loginData.user_id != profileData.userInfo.user_id && !this.followee_list && !this.followSend"
       >팔로우 요청</button>
       <!-- 2. 팔로우 요청을 보냈지만 승인을 받지 못한 상태(followSend가 true일 경우 + isFollowing이 false일 경우) -->
       <button
         @click="followCancel()"
-        v-show="loginData.user_id != profileData.userInfo.user_id && this.followSend && !this.isFollowing"
+        v-show="loginData.user_id != profileData.userInfo.user_id && this.followSend && !this.followee_list"
       >팔로우 요청 취소</button>
       <!-- 3. 팔로우 요청을 보냈고 승인을 받은 상태(followSend가 true + isFollowing이 true) -->
       <button
         @click="followingCancel()"
-        v-show="loginData.user_id != profileData.userInfo.user_id && this.isFollowing"
+        v-show="loginData.user_id != profileData.userInfo.user_id && this.followee_list"
       >팔로잉</button>
     </div>
     <div class="tabs">
@@ -346,15 +296,11 @@ export default {
   },
   methods: {
     ...mapActions(["fetchComments"]),
-    ...mapActions(["fetchProfileData"]),
     ...mapActions(["goProfile", "getUserScraps","deleteScrap"]),
     ...mapActions(["getFollowee", "createFollowing", "deleteFollowing"]),
     ...mapActions(["updatePost", "createComment", "updateComment"]),
     ...mapActions(["health"]),
 
-    // modifyProfile() {
-    //   // console.log("!!!");
-    // },
     showModify(postInfo) {
       console.log(postInfo);
       this.postInfo = postInfo;
@@ -405,17 +351,12 @@ export default {
         .catch(function (error) {
           console.error("Error setting document: ", error);
         });
-      // alert(this.loginData.user_id);
-      // alert(this.profileData.userInfo.user_id);
+
       let params = {};
       params["follower_id"] = this.loginData.user_id;
       params["followee_id"] = this.profileData.userInfo.user_id;
       params["approval"] = 0;
-      // let params = {
-      //   follower_id: this.loginData.user_id,
-      //   followee_id: this.profileData.userInfo.user_id,
-      //   approval: 0,
-      // };
+
       this.$store.dispatch("createFollowing", params);
     },
     followCancel() {
@@ -451,11 +392,7 @@ export default {
       params["follower_id"] = this.loginData.user_id;
       params["followee_id"] = this.profileData.userInfo.user_id;
       params["approval"] = 1;
-      // let params = {
-      //   follower_id: this.id,
-      //   followee_id: this.user.user_id,
-      //   approval: 1,
-      // };
+
       this.$store.dispatch("deleteFollowing", params);
     },
     followingCancel() {
@@ -514,35 +451,18 @@ export default {
     },
   },
   created() {
-    // this.$store.dispatch("getUserScraps", this.profileData.userInfo.user_id);
-    // this.goProfile(this.loginData.user_id);
-    setTimeout(() => {
-      this.$store.dispatch("getUserScraps", this.profileData.userInfo.user_id);
-    }, 300)
+    this.getUserScraps(this.profileData.userInfo.user_id);
+  
     console.log("---", this.loginData);
     console.log("----", this.profileData);
-    let vueInstance = this;
+    var vueInstance = this;
     let params = {
-      followee_id: vueInstance.profileData.userInfo.user_id,
-      follower_id: vueInstance.loginData.user_id
+      followee_id: this.profileData.userInfo.user_id,
+      follower_id: this.loginData.user_id
     };
-
-    this.$store.dispatch("getFollowee", params);
-
-    
+    this.getFollowee(params);
 
     console.log("get Follower", this.followee_list);
-    // this.followee_list.forEach((element) => {
-    //   console.log(element);
-    //   if (String(element["follower"]) == vueInstance.user.user_id) {
-    //     vueInstance.isFollowing = true;
-    //   }
-    // });
-
-    setTimeout( () => {this.isFollowing = this.followee_list; console.log(this.followee_list)}, 500);
-    
-
-
     const noti = db.collection("notification")
     .doc(String(vueInstance.profileData.userInfo.user_id));
     let instance = {};
