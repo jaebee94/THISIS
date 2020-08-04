@@ -10,6 +10,8 @@ import JoinComplete from '../components/user/JoinComplete.vue'
 import Login from '../views/user/Login.vue'
 import Logout from '../views/user/Logout.vue'
 
+import Tutorial from '../views/user/Tutorial.vue'
+
 import FindPassword from '../views/user/FindPassword.vue'
 
 import Main from '../views/main/Main.vue'
@@ -125,6 +127,11 @@ const routes = [
     path: '/404',
     name: 'Login2',
     component: Login
+  },
+  {
+    path: '/account/tutorial',
+    name: 'Tutorial',
+    component: Tutorial
   },
   {
     path: '/DiseaseTest',

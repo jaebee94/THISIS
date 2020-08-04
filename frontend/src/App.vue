@@ -34,6 +34,9 @@ body {
 .whitebody {
   background-color: white;
 }
+.lockbody {
+  overflow-y: hidden;
+}
 .layer {
   z-index: 98;
   position: fixed;
