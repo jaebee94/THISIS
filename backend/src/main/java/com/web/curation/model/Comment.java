@@ -3,7 +3,6 @@ package com.web.curation.model;
 public class Comment {
 	private int user_id;
 	private int posts_id;
-	private String user_nickname;
 	private String comment_main;
 	private int hide;
 	private int comment_id;
@@ -23,14 +22,6 @@ public class Comment {
 
 	public void setPosts_id(int posts_id) {
 		this.posts_id = posts_id;
-	}
-
-	public String getUser_nickname() {
-		return user_nickname;
-	}
-
-	public void setUser_nickname(String user_nickname) {
-		this.user_nickname = user_nickname;
 	}
 
 	public String getComment_main() {
@@ -65,12 +56,10 @@ public class Comment {
 		this.comment_date = comment_date;
 	}
 
-	public Comment(int user_id, int posts_id, String user_nickname, String comment_main, int hide, int comment_id,
+	public Comment(int user_id, int posts_id, String comment_main, int hide, int comment_id,
 			String comment_date) {
-
 		this.user_id = user_id;
 		this.posts_id = posts_id;
-		this.user_nickname = user_nickname;
 		this.comment_main = comment_main;
 		this.hide = hide;
 		this.comment_id = comment_id;

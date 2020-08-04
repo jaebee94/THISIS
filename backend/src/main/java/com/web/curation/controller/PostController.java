@@ -101,7 +101,7 @@ public class PostController {
 
 		// post 자신 아이디로 생성하게 수정
 		String accessToken = (String) request.getAttribute("accessToken");
-
+		//System.out.println(name);
 		int user_id = 1;
 		if (accessToken != null) {
 			Auth auth = authService.findAuthByAccessToken(accessToken);
@@ -110,7 +110,7 @@ public class PostController {
 
 		post.setUser_id(user_id);
 		UserInfo userInfo = userinfoService.selectUserInfoByUserid(user_id);
-		post.setNickname(userInfo.getNickname());
+		//post.setNickname(userInfo.getNickname());
 
 		if (postservice.createPost(post) == 1) {
 			return new ResponseEntity<String>("success", HttpStatus.OK);
