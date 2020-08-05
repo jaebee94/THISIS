@@ -1,6 +1,6 @@
 package com.web.curation.model;
 
-public class tag {
+public class Tag {
 	private int tagid;
 	private String tagname;
 
@@ -20,11 +20,11 @@ public class tag {
 		this.tagname = tagname;
 	}
 
-	public tag() {
+	public Tag() {
 
 	}
 
-	public tag(int tagid, String tagname) {
+	public Tag(int tagid, String tagname) {
 		this.tagid = tagid;
 		this.tagname = tagname;
 	}

@@ -1,6 +1,6 @@
 package com.web.curation.model;
 
-public class subscribe {
+public class Subscribe {
 	private int user_id;
 	private String diseasecode;
 
@@ -20,10 +20,10 @@ public class subscribe {
 		this.diseasecode = diseasecode;
 	}
 
-	public subscribe() {
+	public Subscribe() {
 	}
 
-	public subscribe(int user_id, String diseasecode) {
+	public Subscribe(int user_id, String diseasecode) {
 		this.user_id = user_id;
 		this.diseasecode = diseasecode;
 	}
