@@ -211,6 +211,7 @@ export default {
   background-color: rgb(200, 200, 200);
   margin-top: 20px;
   margin-left: 5%;
+  border-radius: 5px;
 }
 
 .title-panel input {
@@ -320,6 +321,7 @@ export default {
   padding-right: 3%;
   border: none;
   outline: none;
+  margin-bottom: 5%;
 }
 
 .post-content-panel textarea:focus {
