@@ -287,6 +287,7 @@ export default new Vuex.Store({
         .catch(err => console.log(err))
     },
     createComment({ commit, getters }, commentData) {
+      console.log("commentData",commentData)
       axios.post(SERVER.URL + SERVER.ROUTES.comment, commentData, getters.config)
         .then(
           setTimeout(() => {

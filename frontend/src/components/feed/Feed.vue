@@ -36,7 +36,6 @@
           </div>
           <div
             class="comment-content"
-            v-if="comment.posts_id == postInfo.post_id"
           >{{ comment.comment_main }}</div>
         </div>
       </div>
@@ -64,63 +63,10 @@
       </div>
     </div>
 
-    <div class="feed" v-for="postInfo in posts" v-bind:key="postInfo.posts_id">
-      <div class="feed-header">
-        <table>
-          <tr>
-            <td>
-              <img
-                class="profile-image"
-                @click="goProfile(postInfo.post.user_id)"
-                src="../../assets/images/icon/icon_default_image.png"
-              />
-            </td>
-            <td>
-              <a class="name" @click="goProfile(postInfo.post.user_id)">{{ postInfo.post.nickname }}</a>
-            </td>
-            <td>
-              <a class="time">{{ postInfo.post.post_date }}</a>
-            </td>
-          </tr>
-        </table>
-      </div>
-      <div class="feed-main">{{ postInfo.post.posts_main }}</div>
-      <div class="feed-footer">
-        <table>
-          <tr>
-            <td>
-              <span v-if="postInfo.healths.user_id"></span>
-              <img v-show="postInfo.health" :src="isHealth" @click="clickHealth(postInfo)" />
-              <img v-show="!postInfo.health" :src="isNotHealth" @click="clickHealth(postInfo)" />
-              <!-- <img :src="postInfo.health?isHealth:isNotHealth" @click="clickHealth(postInfo)"> -->
-              <!-- <span>{{ postInfo.healths.length }}</span> -->
-              <span class="health-count">{{ postInfo.post.health_count }}</span>
-            </td>
-            <td>
-              <img @click="showPost(postInfo)" src="../../assets/images/icon/icon_talk.png" />
-            </td>
-            <td>
-              <img
-                v-show="postInfo.scrap"
-                @click="clickScrap(postInfo)"
-                src="../../assets/images/icon/icon_scrap_select.png"
-              />
-              <img
-                v-show="!postInfo.scrap"
-                @click="clickScrap(postInfo)"
-                src="../../assets/images/icon/icon_scrap_unselect.png"
-              />
-            </td>
-            <td>
-              <img
-                v-if="loginData.user_id == postInfo.post.user_id"
-                @click="showModify(postInfo)"
-                src="../../assets/images/icon/icon_edit_unselect.png"
-              />
-            </td>
-          </tr>
-        </table>
-      </div>
+    <div  >
+      <post v-for="postInfo in posts" v-bind:key="postInfo"  
+      v-bind:postInfo = "postInfo"  
+      @send-modify="showModify"></post>
     </div>
     <infinite-loading @infinite="infiniteHandler"></infinite-loading>
   </div>
@@ -129,48 +75,34 @@
 <script>
 import { mapActions, mapState } from "vuex";
 import axios from "axios";
-import InfiniteLoading from "vue-infinite-loading";
 import SERVER from "@/api/RestApi.js";
 
 export default {
   name: "Feed",
-  components: {
-    InfiniteLoading,
-  },
   data() {
     return {
-      isHealth: require("../../assets/images/icon/icon_like_select.png"),
-      isNotHealth: require("../../assets/images/icon/icon_like_unselect.png"),
-      isScraped: false,
       isPostHidden: false,
       isModifyHidden: false,
       postInfo: {},
       commentData: {
         posts_id: null,
         comment_main: "",
-        user_nickname: null,
+        user_nickname:"",
       },
-      healthData: {
-        posts_id: null,
-        user_id: null,
-      },
+      
       page: 0,
       posts: [],
     };
   },
   computed: {
-    ...mapState(["loginData"]),
-    // ...mapState(["posts"]),
-    ...mapState(["comments", "checkScrap"]),
+    ...mapState(["comments", "checkScrap","loginData"]),
   },
   methods: {
-    ...mapActions(["fetchPosts"]),
-    ...mapActions(["fetchHealths"]),
-    ...mapActions(["fetchComments"]),
-    ...mapActions(["goProfile"]),
-    ...mapActions(["health"]),
+    //...mapActions(["fetchPosts"]),
+    //...mapActions(["fetchHealths"]),
+    
     ...mapActions(["updatePost", "createComment", "updateComment"]),
-    ...mapActions(["scrap", "getCheckScrap", "deleteScrap"]),
+    ...mapActions(["getCheckScrap"]),
 
     // Infinite Scrolling
     infiniteHandler($state) {
@@ -192,7 +124,6 @@ export default {
               if (element.healths.length > 0) console.log(element);
               element.scrap = false;
 
-              //this.$store.dispatch("getCheckScrap", element.post_id);
               axios
                 .get(
                   SERVER.URL + SERVER.ROUTES.scrap,
@@ -208,13 +139,9 @@ export default {
                   if(res.data > 0) element.scrap = true;
                 })
                 .catch((err) => console.log(err));
-              //console.log(this.checkScrap);
-             // if (this.checkScrap > 0) element.scrap = true;
+
               element.post.health_count = element.healths.length;
               element.healths.forEach((ele) => {
-                console.log("ele", ele);
-                console.log(this.loginData.user_id);
-                console.log(this.loginData.nickname);
                 if (ele.nickname == this.loginData.nickname) {
                   element.health = true;
                 }
@@ -229,16 +156,6 @@ export default {
         });
     },
 
-    showPost(postInfo) {
-      this.postInfo = postInfo;
-      this.$parent.$parent.isHidden = true;
-      this.isPostHidden = true;
-      // this.commentData.posts_id = post.posts_id;
-      // this.fetchHealths(post.posts_id);
-      this.fetchComments(postInfo.post_id);
-      this.commentData.posts_id = postInfo.post_id;
-      this.commentData.user_nickname = this.loginData.nickname;
-    },
     clearCommentData() {
       setTimeout(() => {
         this.commentData = {};
@@ -247,39 +164,6 @@ export default {
     closePost() {
       this.$parent.$parent.isHidden = false;
       this.isPostHidden = false;
-    },
-    clickHealth(post) {
-      if (post.health == true) {
-        post.health = false;
-        post.post.health_count -= 1;
-      } else {
-        post.health = true;
-        post.post.health_count += 1;
-      }
-
-      this.healthData.posts_id = post.post.posts_id;
-      this.healthData.user_id = this.loginData.user_id;
-      console.log(post);
-      console.log("id", this.healthData.user_id);
-      console.log(post.post.posts_id);
-      //this.healthData.user_id = this.loginData.user_id; // user_id
-      this.health(this.healthData);
-    },
-    clickScrap(post) {
-      if (post.scrap == true) {
-        post.scrap = false;
-        this.deleteScrap(post.post_id);
-      } else {
-        post.scrap = true;
-        this.scrap(post.post_id);
-      }
-      console.log("click_post", post);
-    },
-    showModify(postInfo) {
-      this.postInfo = postInfo;
-      this.$parent.$parent.isHidden = true;
-      this.isModifyHidden = true;
-      console.log(postInfo);
     },
     closeModify() {
       this.$parent.$parent.isHidden = false;
@@ -290,11 +174,18 @@ export default {
       this.$parent.$parent.isHidden = false;
       this.isModifyHidden = false;
     },
+    showModify(info) { //댓글이나 글 수정시 부르는 함수
+      this.postInfo = info.postInfo;
+      this.$parent.$parent.isHidden = info.isHidden;
+      this.isModifyHidden = info.isModifyHidden;
+      //댓글창 필요 변수
+      this.isPostHidden = info.isPostHidden;
+      this.commentData.posts_id=info.postInfo.post_id;
+      this.commentData.user_nickname = this.loginData.nickname;
+    }
   },
   created() {
     this.$store.dispatch("getCheckScrap");
-
-    // this.fetchPosts();
   },
 };
 </script>
