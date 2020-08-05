@@ -2,6 +2,8 @@ package com.web.curation.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.web.curation.model.Auth;
 import com.web.curation.model.Disease;
+import com.web.curation.service.AuthService;
 import com.web.curation.service.DiseaseService;
 
 import io.swagger.annotations.ApiOperation;
@@ -33,6 +37,9 @@ public class DiseaseController {
 	
 	@Autowired
 	private DiseaseService diseaseService;
+	
+	@Autowired
+	private AuthService authService;
 	
 	@ApiOperation(value = "모든 질병 정보를 반환한다.", response = List.class)
 	@GetMapping
@@ -62,6 +69,21 @@ public class DiseaseController {
 				return new ResponseEntity<String>("success",HttpStatus.OK);
 			}
 			return new ResponseEntity<String>("fail",HttpStatus.NO_CONTENT);
+	}
+	
+	
+	@ApiOperation(value = "유저가 구독하는 질병 정보를 반환한다.", response = Disease.class)     
+ 	@GetMapping("user") 
+		public ResponseEntity<List<Disease>> selectDiseaseByUserid(HttpServletRequest request) { 
+			// subscribe 자신 아이디로 생성하게 수정
+			String accessToken = (String) request.getAttribute("accessToken");
+			//System.out.println(name);
+			int user_id = 1;
+			if (accessToken != null) {
+				Auth auth = authService.findAuthByAccessToken(accessToken);
+				user_id = auth.getUser_id();
+			}
+			return new ResponseEntity<List<Disease>>(diseaseService.selectDiseaseByUserid(user_id), HttpStatus.OK); 
 	}
 
 	

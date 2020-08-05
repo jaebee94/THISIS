@@ -12,4 +12,5 @@ public interface DiseaseDAO {
 	public Disease selectDiseaseByDiseasecode(String diseasecode);
 	public int createDisease(Disease disease);
 	public int deleteDisease(String diseasecode);
+	public List<Disease> selectDiseaseByUserid(int user_id);
 }

@@ -17,6 +17,13 @@
 		where diseasecode=#{diseasecode}
 	</select>
 	
+	<!-- 유저가 구독한 질병 조회 -->
+	<select id="selectDiseaseByUserid" resultType="Disease">
+		select *
+		from disease
+		where EXISTS (select * from subscribe where subscribe.user_id = #{user_id})
+	</select>
+	
 	<!-- 질병 레코드 추가  -->
 	<insert id="createDisease" parameterType="Disease">
 		insert into disease(
