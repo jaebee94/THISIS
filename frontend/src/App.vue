@@ -1,5 +1,8 @@
 <template>
   <div id="app">
+    <head>
+      <title>THISIS</title>
+    </head>
     <div v-if="this.isHidden" ref="layer" class="layer"></div>
     <router-view/>
   </div>
