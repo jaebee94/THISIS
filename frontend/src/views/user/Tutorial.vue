@@ -1,20 +1,27 @@
 <template>
   <div class="tutorial wrap">
-    <div>
-        <h1>TUTORIAL</h1>
+    <div class="tutorial-logo-wrap">
+        <img src="../../assets/images/logo/logo_white.png">
     </div>
-    <div> 
-        <div>
+    <div class="tutorial-main-wrap"> 
+        <div class="tutorial-input-wrap">
             <input list="disease-list" id="keyword" v-model="keyword">
         </div>
-        <div>
-            <select v-model="nowItem" v-if="this.keyword != ''" id="disease-list" class="custom-select sources">
+        <div class="tutorial-select-wrap">
+            <a v-show="this.isSearched">추가 버튼을 누르시면 구독됩니다</a>
+            <select v-model="nowItem" v-show="this.isSearched" id="disease-list" class="custom-select sources" required>
+                <option value="" hidden>구독할 병명을 선택하세요</option>
                 <option v-for="item in this.items" v-bind:key="item.sickCd" :value="item.sickCd + ':' + item.sickNm">{{item.sickNm}}</option>
             </select>
-
+            <button v-show="this.isSearched" @click="checkItem(nowItem)">추가</button>
         </div>
-        
-        <button @click="checkItem(nowItem)">추가</button>  
+        <div class="tutorial-show-wrap">
+            <div v-for="cItem in this.checkedItems" v-bind:key="cItem">
+                <span >{{cItem[1]}}<img @click="deleteItem(cItem)" src="../../assets/images/icon/icon_mini_close.png"></span>
+                
+            </div>
+            
+        </div>
     </div>
     <div class="button wrap">
         <button @click="onStart()" :disabled="!isSelected" :class="{disabled : !isSelected}">시작하기</button>
@@ -23,6 +30,7 @@
 </template>
 <script>
 import axios from 'axios';
+
 const proxyurl = "https://cors-anywhere.herokuapp.com/";
 export default {
     data() {
@@ -31,6 +39,7 @@ export default {
             nowItem: "",
             items: [],
             isSelected: false,
+            isSearched: false,
             checkedItems : [],
         }
     },
@@ -39,6 +48,7 @@ export default {
     },
     watch : {
         keyword: function () {
+            this.isSearched = false;
             this.getDisease(this.keyword);
         },
         checkedItems : function () {
@@ -47,11 +57,15 @@ export default {
     },
     methods: {
         checkForm() {
+            // 현재 선택한 구독 질병의 갯수로 다음으로 넘어갈 수 있는지 체크
             if(this.checkedItems.length >= 3) {
                 this.isSelected = true;
+            } else {
+                this.isSelected = false;
             }
         },
         getDisease (keyword) {
+            // API에서 질병을 검색하고 셀렉트 박스로 보여줌
             var params = {
                 pageNo : 1,
                 numOfRows : 10,
@@ -62,33 +76,53 @@ export default {
                 ServiceKey : 'hhU4fvLXqUtlijp+SQxnotQgI7A4yLrBASX3GMofY45xyks9LOe05UKyCfH5gkyN1U+7YKFfujffwflXy4TzfA=='
             };
             axios.request({
+                // 서버에 마운트하면서 바꿔야 할 부분 :
+                // proxyurl 지우고 올려야 함
+                // proxyurl은 일정 request 하면 자체 차단해버림
                 url: proxyurl + `http://apis.data.go.kr/B551182/diseaseInfoService/getDissNameCodeList`,
                 headers: {
                     'Access-Control-Allow-Origin' : '*',
-                    'Content-Type' : 'application/xml'
+                    'Content-Type' : 'application/xml',
+                    'Access-Control-Max-Age': 600
                 },
-                params: params
+                params: params,
             })
             .then((res) => {
                 this.items = [];
-                // console.log("result : ", res);
                 var len = res.data.response.body.totalCount;
                 var items = res.data.response.body.items.item;
-                if(len == 1) this.items.push(items);
+                if(len == 0) {this.isSearched = false;return;}
+                else if(len == 1) this.items.push(items);
                 else this.items = items;
-                // console.log(items);
-                
-                // console.log("로컬", this.items);
+                this.isSearched = true;
             })
-            .catch((err) => console.log(err))
+            .catch((err) => {
+                this.isSearched = false;
+                console.log(err)
+            })
         },
         checkItem(now) {
-            console.log(now);
+            // 선택한 질병을 구독 설정함 (여기서 서버 DB로 보내는 것은 아님)
             var str = now.split(":");
+            var flag = true;
+            for(var i = 0; i < this.checkedItems.length; i++) {
+                var item = this.checkedItems[i];
+                if(item[0] == str[0]) flag = false;
+            }
+            if(flag)
             this.checkedItems.push(str);
+        },
+        deleteItem(item) {
+            // x표를 눌러 선택한 질병을 삭제하는 내용
+            const idx = this.checkedItems.indexOf(item);
+            if(idx > -1) this.checkedItems.splice(idx, 1);
         },
         onStart() {
             console.log(this.checkedItems)
+            // 여기서 들어갈 작업 : 
+            // 1. this.checkedItems(선택한 구독 질병들)를 POST로 서버 DB에 보내주기
+            // 2. 메인 페이지의 피드로 가게 하기
+            // this.$router.push("/main/feed")
         }
     }
 }
@@ -98,6 +132,87 @@ export default {
     .tutorial.wrap {
         width: 100%;
         height: 100%;
+    }
+
+    .tutorial-logo-wrap {
+        width: 100%;
+        height: 60px;
+    }
+
+    .tutorial-logo-wrap img { 
+        height: 48px;
+        margin-top: 6px;
+    }
+
+    .tutorial-main-wrap{
+        margin-top: 40px;
+        width: 100%;
+        height: 60%;
+    }
+
+    .tutorial-input-wrap { 
+        margin-bottom: 10px;
+    }
+
+    .tutorial-select-wrap {
+        width: 100%;
+        height: 100%;
+        margin-bottom: 10px;
+        text-align:left;
+    }
+
+     .tutorial-select-wrap a {
+        font-size: 10px;
+        margin-left: 5%;
+        color: slategray;
+    }
+
+    .tutorial-select-wrap select {
+        width: 70%;
+        height: 30px;
+        margin-left: 5%;
+    }
+
+    .tutorial-select-wrap select:focus {
+        outline: none;
+    }
+
+    .tutorial-select-wrap button {
+        background-color: white;
+        color: rgb(0, 171, 132);
+        font-weight: 600;
+        width: 20%;
+        height: 30px;
+        border: none;
+        border-radius: 5px;
+        outline:none;
+    }
+
+    .tutorial-show-wrap {
+        width: 100%;
+    }
+
+    .tutorial-show-wrap div {
+        margin: 5px auto;
+        height: 30px;
+    }
+
+    .tutorial-show-wrap div span {
+        background-color: white;
+        padding: 5px 10px;
+        border: none;
+        font-size: 11px;
+        font-weight: 600;
+        height: 15px;
+        border-radius: 5px;
+        color: rgb(0, 171, 132);
+        display: inline-block;
+    }
+
+    .tutorial-show-wrap div img {
+        display: inline-block;
+        height: 10px;
+        margin-left: 10px;
     }
 
     .button.wrap {
@@ -123,14 +238,16 @@ export default {
 
     .button.wrap button:focus {
         outline: none;
-        background-color: rgb(0, 201, 142);
+        background-color: rgb(0, 171, 132);
         color: white;
     }
 
     #keyword {
-        width: 90%;
+        width: 87%;
         border: none;
         border-radius: 5px;
         height: 30px;
+        padding-left: 3%;
+        outline:none;
     }
 </style>
