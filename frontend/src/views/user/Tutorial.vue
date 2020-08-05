@@ -18,7 +18,6 @@
         <div class="tutorial-show-wrap">
             <div v-for="cItem in this.checkedItems" v-bind:key="cItem">
                 <span >{{cItem[1]}}<img @click="deleteItem(cItem)" src="../../assets/images/icon/icon_mini_close.png"></span>
-                
             </div>
             
         </div>
@@ -171,6 +170,9 @@ export default {
         width: 70%;
         height: 30px;
         margin-left: 5%;
+        border:none;
+        background-color: white;
+        border-radius: 5px;
     }
 
     .tutorial-select-wrap select:focus {
@@ -181,7 +183,8 @@ export default {
         background-color: white;
         color: rgb(0, 171, 132);
         font-weight: 600;
-        width: 20%;
+        margin-left: 2%;
+        width: 18%;
         height: 30px;
         border: none;
         border-radius: 5px;
