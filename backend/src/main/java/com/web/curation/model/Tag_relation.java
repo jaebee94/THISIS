@@ -1,6 +1,6 @@
 package com.web.curation.model;
 
-public class tag_relation {
+public class Tag_relation {
 	int tagid;
 	int posts_id;
 
@@ -20,10 +20,10 @@ public class tag_relation {
 		this.posts_id = posts_id;
 	}
 
-	public tag_relation() {
+	public Tag_relation() {
 	}
 
-	public tag_relation(int tagid, int posts_id) {
+	public Tag_relation(int tagid, int posts_id) {
 		this.tagid = tagid;
 		this.posts_id = posts_id;
 	}

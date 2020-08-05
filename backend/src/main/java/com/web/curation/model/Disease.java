@@ -1,6 +1,6 @@
 package com.web.curation.model;
 
-public class disease {
+public class Disease {
 	private String diseasecode;
 	private String diseasename;
 
@@ -20,10 +20,10 @@ public class disease {
 		this.diseasename = diseasename;
 	}
 
-	public disease() {
+	public Disease() {
 	}
 
-	public disease(String diseasecode, String diseasename) {
+	public Disease(String diseasecode, String diseasename) {
 		this.diseasecode = diseasecode;
 		this.diseasename = diseasename;
 	}
