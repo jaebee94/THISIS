@@ -67,119 +67,8 @@
       </div>
 
       <div v-show="currentTab == 0">
-        <div class="feed wrap">
-          <div v-if="this.isPostHidden" class="post" ref="post">
-          <div class="post-header">
-            <table>
-              <tr>
-                <td>
-                  <img class="profile-image" src="../../assets/images/icon/icon_default_image.png" />
-                </td>
-                <td>
-                  <a class="name">{{ postInfo.nickname }}</a>
-                </td>
-                <td>
-                  <a class="time">{{ postInfo.post_date }}</a>
-                </td>
-              </tr>
-            </table>
-          </div>
-          <div class="post-main">{{ postInfo.posts_main }}</div>
-          <div class="comment-wrap">
-            <div class="comment" v-for="comment in comments" v-bind:key="comment.post_id">
-              <div class="comment-header">
-                <table>
-                  <tr>
-                    <td>
-                      <img
-                        class="profile-image"
-                        src="../../assets/images/icon/icon_default_image.png"
-                      />
-                    </td>
-                    <td>
-                      <a>{{ comment.user_nickname }}</a>
-                    </td>
-                    <td>
-                      <a>{{ comment.comment_date }}</a>
-                    </td>
-                  </tr>
-                </table>
-              </div>
-              <div
-                class="comment-content"
-              >{{ comment.comment_main }}</div>
-            </div>
-          </div>
-          <div class="comment-submit">
-            <input v-model="commentData.comment_main" placeholder="내용을 입력하세요" />
-            <button @click="createComment(commentData), clearCommentData()">댓글달기</button>
-          </div>
-          <div class="post-footer">
-            <img @click="closePost()" src="../../assets/images/icon/icon_close.png" />
-          </div>
-        </div>
-        <div class="feed" v-for="post in profileData.postInfo" v-bind:key="post.posts_id">
-          <div class="feed-header">
-            <table>
-              <tr>
-                <td>
-                  <img class="profile-image" src="../../assets/images/icon/icon_default_image.png" />
-                </td>
-                <td>
-                  <a class="name">{{ post.nickname }}</a>
-                </td>
-                <td>
-                  <a class="time">{{ post.post_date }}</a>
-                </td>
-              </tr>
-            </table>
-          </div>
-          <div class="feed-main">{{ post.posts_main }}</div>
-          <div class="feed-footer">
-            <table>
-              <tr>
-                <td>
-                  <img
-                    v-if="post.health"
-                    src="../../assets/images/icon/icon_like_select.png"
-                    @click="clickHealth(post)"
-                  />
-                  <img
-                    v-if="!post.health"
-                    src="../../assets/images/icon/icon_like_unselect.png"
-                    @click="clickHealth(post)"
-                  />
-                  <span class="health-count">{{ post.health_count }}</span>
-                </td>
-                <td>
-                  <img @click="showPost(post)" src="../../assets/images/icon/icon_talk.png" />
-                </td>
-                <td>
-                <img
-                v-show="post.scrap"
-                @click="clickScrap(post)"
-                src="../../assets/images/icon/icon_scrap_select.png"
-              />
-              <img
-                v-show="!post.scrap"
-                @click="clickScrap(post)"
-                src="../../assets/images/icon/icon_scrap_unselect.png"
-              />
-                </td>
-                <td>
-                  <img
-                    v-if="loginData.user_id == post.user_id"
-                     @click="showModify(post)"
-                    src="../../assets/images/icon/icon_edit_unselect.png"
-                  />
-                </td>
-              </tr>
-            </table>
-          </div>
-        </div>
-        </div>
-        
-      <!-- <Feed/> -->
+      <!--COMPONENT 분할 작업중 지현-->
+      <feed v-bind:parentPost = "postInfo"></feed>
       </div>
       <div v-show="currentTab == 1">
         <div class="feed" v-for="scrap in profileData.scrapInfo" v-bind:key="scrap.post_id">
@@ -234,16 +123,12 @@
 import { mapActions, mapState } from "vuex";
 import db from "../../firebaseInit";
 import firebase from "firebase";
-// import Feed from "./Feed.vue"
 
 const increment = firebase.firestore.FieldValue.increment(1);
 const decrement = firebase.firestore.FieldValue.increment(-1);
 
 export default {
   name: "Profile",
-  // components: {
-  //   Feed,
-  // },
   data() {
     return {
       followSend: false, // followSend - true : 팔로우 신청을 한 상태 / false : 팔로우 신청을 하지 않은 상태
@@ -285,7 +170,6 @@ export default {
   },
   mounted() {
     this.user.user_id = this.$route.params.id;
-
   },
   computed: {
     ...mapState('followStore', ['followee_list']),

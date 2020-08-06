@@ -36,7 +36,6 @@
           </div>
           <div
             class="comment-content"
-            v-if="comment.posts_id == postInfo.post_id"
           >{{ comment.comment_main }}</div>
         </div>
       </div>
@@ -64,63 +63,10 @@
       </div>
     </div>
 
-    <div class="feed" v-for="postInfo in posts" v-bind:key="postInfo.posts_id">
-      <div class="feed-header">
-        <table>
-          <tr>
-            <td>
-              <img
-                class="profile-image"
-                @click="goProfile(postInfo.post.user_id)"
-                src="../../assets/images/icon/icon_default_image.png"
-              />
-            </td>
-            <td>
-              <a class="name" @click="goProfile(postInfo.post.user_id)">{{ postInfo.post.nickname }}</a>
-            </td>
-            <td>
-              <a class="time">{{ postInfo.post.post_date }}</a>
-            </td>
-          </tr>
-        </table>
-      </div>
-      <div class="feed-main">{{ postInfo.post.posts_main }}</div>
-      <div class="feed-footer">
-        <table>
-          <tr>
-            <td>
-              <span v-if="postInfo.healths.user_id"></span>
-              <img v-show="postInfo.health" :src="isHealth" @click="clickHealth(postInfo)" />
-              <img v-show="!postInfo.health" :src="isNotHealth" @click="clickHealth(postInfo)" />
-              <!-- <img :src="postInfo.health?isHealth:isNotHealth" @click="clickHealth(postInfo)"> -->
-              <!-- <span>{{ postInfo.healths.length }}</span> -->
-              <span class="health-count">{{ postInfo.post.health_count }}</span>
-            </td>
-            <td>
-              <img @click="showPost(postInfo)" src="../../assets/images/icon/icon_talk.png" />
-            </td>
-            <td>
-              <img
-                v-show="postInfo.scrap"
-                @click="clickScrap(postInfo)"
-                src="../../assets/images/icon/icon_scrap_select.png"
-              />
-              <img
-                v-show="!postInfo.scrap"
-                @click="clickScrap(postInfo)"
-                src="../../assets/images/icon/icon_scrap_unselect.png"
-              />
-            </td>
-            <td>
-              <img
-                v-if="loginData.user_id == postInfo.post.user_id"
-                @click="showModify(postInfo)"
-                src="../../assets/images/icon/icon_edit_unselect.png"
-              />
-            </td>
-          </tr>
-        </table>
-      </div>
+    <div>
+      <post v-for="postInfo in posts" v-bind:key="postInfo"  
+      v-bind:postInfo = "postInfo"  
+      @send-modify="showModify"></post>
     </div>
     <infinite-loading @infinite="infiniteHandler"></infinite-loading>
   </div>
@@ -129,34 +75,29 @@
 <script>
 import { mapActions, mapState } from "vuex";
 import axios from "axios";
-import InfiniteLoading from "vue-infinite-loading";
 import SERVER from "@/api/RestApi.js";
 
 export default {
   name: "Feed",
-  components: {
-    InfiniteLoading,
-  },
   data() {
     return {
-      isHealth: require("../../assets/images/icon/icon_like_select.png"),
-      isNotHealth: require("../../assets/images/icon/icon_like_unselect.png"),
-      isScraped: false,
       isPostHidden: false,
       isModifyHidden: false,
       postInfo: {},
       commentData: {
         posts_id: null,
         comment_main: "",
-        user_nickname: null,
+        user_nickname:"",
       },
-      healthData: {
-        posts_id: null,
-        user_id: null,
-      },
+      
       page: 0,
       posts: [],
     };
+  },
+  props: {
+    parent_post: {
+      default: void 0,
+    },
   },
   computed: {
     ...mapState('userStore', ['loginData']),
@@ -164,34 +105,34 @@ export default {
   },
   methods: {
     ...mapActions('postStore', [
-      'fetchPosts',
       'updatePost',
       'createComment',
-      'fetchComment',
       'updateComment',
-      'health',
-      'fetchHealths',
-      'scrap',
+      //'fetchHealths',
       'goCheckScrap',
-      'deleteScrap,',
-    ]),
-    ...mapActions('profileStore', [
-      'goProfile'
     ]),
 
     // Infinite Scrolling
     infiniteHandler($state) {
-      axios
-        .get(SERVER.URL + SERVER.ROUTES.posts, {
-          params: {
+      //TODO 해당 유저아이디의 포스트만 반환부분 분기!
+        let params = {
+          params :{
             num: this.page,
-          },
-        })
+            //user_id : -1 //-1일 경우 전체 게시물
+          }
+        }
+        console.log(this.parent_post)
+        if(this.parent_post != undefined){
+          console.log(1);
+          params.user_id =0; //0일 경우 내 게시물 
+        }
+        else{
+        axios
+        .get(SERVER.URL + SERVER.ROUTES.posts, params)
         .then(({ data }) => {
           if (data.length) {
             this.page += 1;
             data.forEach((element) => {
-              console.log("eleement", element);
               element.health = false;
               if (element.healths.length > 0) console.log(element);
               element.scrap = false;
@@ -218,21 +159,10 @@ export default {
             $state.complete();
           }
         });
+
+        }
     },
 
-    showPost(postInfo) {
-      this.postInfo = postInfo;
-      this.$parent.$parent.isHidden = true;
-      this.isPostHidden = true;
-      // this.commentData.posts_id = post.posts_id;
-      // this.fetchHealths(post.posts_id);
-      /*------ 피드 스크롤 lock ------*/
-      document.body.className = "lockbody";
-      /*------ 피드 스크롤 lock ------*/
-      this.fetchComments(postInfo.post_id);
-      this.commentData.posts_id = postInfo.post_id;
-      this.commentData.user_nickname = this.loginData.nickname;
-    },
     clearCommentData() {
       setTimeout(() => {
         this.commentData = {};
@@ -244,37 +174,6 @@ export default {
       /*------ 피드 스크롤 unlock ------*/
       document.body.className = "";
       /*------ 피드 스크롤 unlock ------*/
-    },
-    clickHealth(post) {
-      if (post.health == true) {
-        post.health = false;
-        post.post.health_count -= 1;
-      } else {
-        post.health = true;
-        post.post.health_count += 1;
-      }
-
-      this.healthData.posts_id = post.post.posts_id;
-      this.healthData.user_id = this.loginData.user_id;
-      this.health(this.healthData);
-    },
-    clickScrap(post) {
-      if (post.scrap == true) {
-        post.scrap = false;
-        this.deleteScrap(post.post_id);
-      } else {
-        post.scrap = true;
-        this.scrap(post.post_id);
-      }
-    },
-    showModify(postInfo) {
-      this.postInfo = postInfo;
-      this.$parent.$parent.isHidden = true;
-      this.isModifyHidden = true;
-      /*------ 피드 스크롤 lock ------*/
-      document.body.className = "lockbody";
-      /*------ 피드 스크롤 lock ------*/
-      console.log(postInfo);
     },
     closeModify() {
       this.$parent.$parent.isHidden = false;
@@ -288,6 +187,16 @@ export default {
       this.$parent.$parent.isHidden = false;
       this.isModifyHidden = false;
     },
+    showModify(info) { //댓글이나 글 수정시 부르는 함수
+      this.postInfo = info.postInfo;
+      this.$parent.$parent.isHidden = info.isHidden;
+      this.isModifyHidden = info.isModifyHidden;
+      document.body.className = "lockbody";
+      //댓글창 필요 변수
+      this.isPostHidden = info.isPostHidden;
+      this.commentData.posts_id=info.postInfo.post_id;
+      this.commentData.user_nickname = this.loginData.nickname;
+    }
   },
   created() {
     this.$store.dispatch("getCheckScrap");

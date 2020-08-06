@@ -75,7 +75,6 @@ const routes = [
       }
     ]
   },
-  
   {
     path: '/account/signup',
     name: 'Signup',

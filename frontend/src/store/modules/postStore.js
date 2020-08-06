@@ -6,7 +6,6 @@ const postStore = {
   namespaced: true,
 
   state: {
-    posts: {},
     comments: {},
     healths: {},
     checkScrap: 0,
@@ -16,9 +15,6 @@ const postStore = {
   },
   
   mutations: {
-    SET_POSTS(state, posts) {
-      state.posts = posts
-    },
     SET_COMMENTS(state, comments) {
       state.comments = comments
     },
@@ -36,17 +32,6 @@ const postStore = {
       axios.post(SERVER.URL + SERVER.ROUTES.posts, postData, getters.config)
         .then(() => {
           router.push({ name: 'Feed' })
-        })
-        .catch(err => console.log(err))
-    },
-    fetchPosts({ commit }) {
-      axios.get(SERVER.URL + SERVER.ROUTES.posts, {
-        params: {
-          num: 0
-        }
-      })
-        .then(res => {
-          commit('SET_POSTS', res.data)
         })
         .catch(err => console.log(err))
     },
