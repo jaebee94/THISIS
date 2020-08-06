@@ -34,4 +34,9 @@ public class DiseaseServiceImpl implements DiseaseService{
 		return diseaseDao.deleteDisease(diseasecode);
 	}
 
+	@Override
+	public List<Disease> selectDiseaseByUserid(int user_id) {
+		return diseaseDao.selectDiseaseByUserid(user_id);
+	}
+
 }

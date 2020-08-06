@@ -22,6 +22,7 @@ import com.web.curation.model.Auth;
 import com.web.curation.model.Disease;
 import com.web.curation.model.Subscribe;
 import com.web.curation.service.AuthService;
+import com.web.curation.service.DiseaseService;
 import com.web.curation.service.SubscribeService;
 
 import io.swagger.annotations.ApiOperation;
@@ -41,6 +42,9 @@ public class SubscribeController {
 	@Autowired
 	private AuthService authService;
 	
+	@Autowired
+	private DiseaseService diseaseService;
+	
 	@ApiOperation(value = "모든 구독 정보를 반환한다.", response = List.class)
 	@GetMapping
 		public ResponseEntity<List<Subscribe>> selectSubscribe() throws Exception {
@@ -55,7 +59,7 @@ public class SubscribeController {
 	
 	@ApiOperation(value = "유저의 질병 구독 여부를 저장한다", response = String.class)     
  	@PostMapping
-		public ResponseEntity<String> createDisease(@RequestParam String diseasecode, HttpServletRequest request){ 
+		public ResponseEntity<String> createDisease(@RequestParam String diseasecode, @RequestParam String diseasename, HttpServletRequest request){ 
 		
 		// subscribe 자신 아이디로 생성하게 수정
 		String accessToken = (String) request.getAttribute("accessToken");
