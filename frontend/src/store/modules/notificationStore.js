@@ -1,5 +1,5 @@
 import axios from 'axios'
-import router from '@/router'
+// import router from '@/router'
 import SERVER from '@/api/RestApi.js'
 
 const notificationStore = {

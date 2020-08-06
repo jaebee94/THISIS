@@ -7,10 +7,15 @@ const profileStore = {
 
   state: {
     profileData: {},
+    // profileData: {
+    //   userInfo: {},
+    //   profileInfo: {},
+    //   postInfo: {},
+    //   scrapInfo: {},
+    // },
   },
 
   getters: {
-
   },
 
   mutations: {
@@ -33,22 +38,19 @@ const profileStore = {
       if (userId == null) {
         userId = state.loginData.user_id
       }
-      console.log(SERVER.URL + SERVER.ROUTES.user + userId)
-     
+
       await axios.get(SERVER.URL + SERVER.ROUTES.user + userId)
         .then(res => {
           commit('SET_USER_INFO', res.data)
-          console.log(res.data)
         })
         .catch(err => console.log(err))
       await axios.get(SERVER.URL + SERVER.ROUTES.profile + userId)
         .then(res => {
-          console.log("set_profile_info",res.data);
           commit('SET_PROFILE_INFO', res.data)
         })
       await axios.get(SERVER.URL + SERVER.ROUTES.posts + `/${userId}`)
-        .then( function(res) {
-           res.data.forEach(async (element) => {
+        .then(function (res) {
+          res.data.forEach(async (element) => {
             element.health = false;
             element.scrap = false;
             axios.get(SERVER.URL + SERVER.ROUTES.health + `/post/${element.posts_id}`)
@@ -61,8 +63,8 @@ const profileStore = {
                   }
                 })
               }
-            )
-           axios.get( SERVER.URL + SERVER.ROUTES.scrap,
+              )
+            axios.get(SERVER.URL + SERVER.ROUTES.scrap,
               {
                 params: {
                   posts_id: element.posts_id,
@@ -70,18 +72,18 @@ const profileStore = {
                 },
               },
             )
-            .then((res) => {
-              console.log("data", res.data);
-              if(res.data > 0) element.scrap = true;
-              //router.push({ name: 'Profile' })
-            })
-            .catch((err) => console.log(err));
+              .then((res) => {
+                if (res.data > 0) element.scrap = true;
+                //router.push({ name: 'Profile' })
+              })
+              .catch((err) => console.log(err));
           })
           commit('SET_POST_INFO', res.data)
-          
+
         })
-        router.push({ name: 'Profile' })
+      router.push({ name: 'Profile' })
     },
+
   }
 }
 

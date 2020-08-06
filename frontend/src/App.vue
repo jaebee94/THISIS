@@ -15,7 +15,6 @@ export default {
     return {
       isHidden: false
     }
-    
   }
 }
 </script>

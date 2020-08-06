@@ -20,9 +20,9 @@ export default {
     healthCount: '/health/post/',
     comment: '/comment',
 
-    notification: '/notification/follower/',
-    requests: '/notification/followee/',
-    following : '/notification',
+    notification: '/notification/follower/',  // 해당 user_id 가 follower 인 레코드 목록 조회
+    requests: '/notification/followee/',  // 해당 user_id 가 followee 인 레코드 목록 조회
+    following : '/notification',  // 
     
 
     follow : '/follow',

@@ -159,22 +159,28 @@ export default {
     };
   },
   computed: {
-    ...mapState(["loginData"]),
-    // ...mapState(["posts"]),
-    ...mapState(["comments", "checkScrap"]),
+    ...mapState('userStore', ['loginData']),
+    ...mapState('postStore', ['comments', 'checkScrap']),
   },
   methods: {
-    ...mapActions(["fetchPosts"]),
-    ...mapActions(["fetchHealths"]),
-    ...mapActions(["fetchComments"]),
-    ...mapActions(["goProfile"]),
-    ...mapActions(["health"]),
-    ...mapActions(["updatePost", "createComment", "updateComment"]),
-    ...mapActions(["scrap", "getCheckScrap", "deleteScrap"]),
+    ...mapActions('postStore', [
+      'fetchPosts',
+      'updatePost',
+      'createComment',
+      'fetchComment',
+      'updateComment',
+      'health',
+      'fetchHealths',
+      'scrap',
+      'goCheckScrap',
+      'deleteScrap,',
+    ]),
+    ...mapActions('profileStore', [
+      'goProfile'
+    ]),
 
     // Infinite Scrolling
     infiniteHandler($state) {
-      console.log("asd");
       axios
         .get(SERVER.URL + SERVER.ROUTES.posts, {
           params: {
@@ -182,46 +188,31 @@ export default {
           },
         })
         .then(({ data }) => {
-          console.log(data);
           if (data.length) {
             this.page += 1;
-
             data.forEach((element) => {
               console.log("eleement", element);
               element.health = false;
               if (element.healths.length > 0) console.log(element);
               element.scrap = false;
-
-              //this.$store.dispatch("getCheckScrap", element.post_id);
-              axios
-                .get(
-                  SERVER.URL + SERVER.ROUTES.scrap,
-                  {
-                    params: {
-                      posts_id: element.post_id,
-                      user_id: this.loginData.user_id,
-                    },
-                  },
-                )
+              axios.get(SERVER.URL + SERVER.ROUTES.scrap, {
+                params: {
+                  posts_id: element.post_id,
+                  user_id: this.loginData.user_id,
+                },
+              })
                 .then((res) => {
-                  console.log("data", res.data);
-                  if(res.data > 0) element.scrap = true;
+                  if (res.data > 0) element.scrap = true;
                 })
                 .catch((err) => console.log(err));
-              //console.log(this.checkScrap);
-             // if (this.checkScrap > 0) element.scrap = true;
               element.post.health_count = element.healths.length;
               element.healths.forEach((ele) => {
-                console.log("ele", ele);
-                console.log(this.loginData.user_id);
-                console.log(this.loginData.nickname);
                 if (ele.nickname == this.loginData.nickname) {
                   element.health = true;
                 }
               });
             });
             this.posts.push(...data);
-
             $state.loaded();
           } else {
             $state.complete();
@@ -233,8 +224,6 @@ export default {
       this.postInfo = postInfo;
       this.$parent.$parent.isHidden = true;
       this.isPostHidden = true;
-      // this.commentData.posts_id = post.posts_id;
-      // this.fetchHealths(post.posts_id);
       this.fetchComments(postInfo.post_id);
       this.commentData.posts_id = postInfo.post_id;
       this.commentData.user_nickname = this.loginData.nickname;
@@ -259,10 +248,6 @@ export default {
 
       this.healthData.posts_id = post.post.posts_id;
       this.healthData.user_id = this.loginData.user_id;
-      console.log(post);
-      console.log("id", this.healthData.user_id);
-      console.log(post.post.posts_id);
-      //this.healthData.user_id = this.loginData.user_id; // user_id
       this.health(this.healthData);
     },
     clickScrap(post) {
@@ -273,13 +258,11 @@ export default {
         post.scrap = true;
         this.scrap(post.post_id);
       }
-      console.log("click_post", post);
     },
     showModify(postInfo) {
       this.postInfo = postInfo;
       this.$parent.$parent.isHidden = true;
       this.isModifyHidden = true;
-      console.log(postInfo);
     },
     closeModify() {
       this.$parent.$parent.isHidden = false;
@@ -293,8 +276,6 @@ export default {
   },
   created() {
     this.$store.dispatch("getCheckScrap");
-
-    // this.fetchPosts();
   },
 };
 </script>
@@ -397,7 +378,7 @@ export default {
   border: none;
   font-size: 10px;
   border-radius: 70%;
-  padding:1px 3px;
+  padding: 1px 3px;
 }
 
 .post {

@@ -35,14 +35,12 @@ const userStore = {
         }
       })
         .then(res => {
-          console.log('asdasd', res)
           commit('SET_TOKEN', res.data.accessToken)
           commit('SET_LOGIN_DATA', res.data)
           router.push({ name: 'Feed' })
         })
-        .catch(err => {
+        .catch(() => {
           alert("로그인에 실패하였습니다.")
-          console.log(err)
         })
     },
     login({ dispatch }, loginData) {
@@ -53,7 +51,6 @@ const userStore = {
       dispatch('getAccessData', info)
     },
     logout({ commit }) {  // 주석코드 사용할 때 getters 추가하고 사용하기
-      console.log('로그아웃')
       commit('SET_TOKEN', null)
       commit('SET_LOGIN_DATA', null)
       cookies.remove('access-token')
@@ -69,7 +66,6 @@ const userStore = {
       //   .catch(err => console.log(err))
     },
     changeUserInfo({ dispatch,getters }, changeInfo) {
-      console.log(changeInfo)
       axios.put(SERVER.URL + SERVER.ROUTES.user + changeInfo.user_id, changeInfo, getters.config)
       .then(() => {
         alert('변경이 완료되었습니다.')

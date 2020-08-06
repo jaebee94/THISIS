@@ -9,6 +9,7 @@ const postStore = {
     posts: {},
     comments: {},
     healths: {},
+    checkScrap: 0,
   },
 
   getters: {
@@ -23,15 +24,15 @@ const postStore = {
     },
     SET_HEALTHS(state, healths) {
       state.healths = healths
-      console.log(healths)
+    },
+    SET_CHECK_SCRAPS(state, checkScrap) {
+      state.checkScrap = checkScrap
     },
   },
 
   actions: {
     // Post
     createPost({ getters }, postData) {
-      console.log(postData)
-      console.log(getters.config)
       axios.post(SERVER.URL + SERVER.ROUTES.posts, postData, getters.config)
         .then(() => {
           router.push({ name: 'Feed' })
@@ -46,7 +47,6 @@ const postStore = {
       })
         .then(res => {
           commit('SET_POSTS', res.data)
-          console.log(res.data.hits)
         })
         .catch(err => console.log(err))
     },
@@ -76,21 +76,17 @@ const postStore = {
     fetchComments({ commit }, posts_id) {
       axios.get(SERVER.URL + SERVER.ROUTES.comment + '/' + posts_id)
         .then(res => {
-          console.log(res.data)
           commit('SET_COMMENTS', res.data)
         })
     },
     updateComment({ getters }, commentData) {
       axios.post(SERVER.URL + SERVER.ROUTES.comment + `/`, commentData, getters.config)
     },
-    deleteComment() {
-
+    deleteComment() {     // 삭제 로직 개발 필요
     },
 
     // Health
     health({ getters }, healthData) {
-      console.log(SERVER.URL + SERVER.ROUTES.health + `/${healthData.posts_id}`)
-      console.log('healthData', healthData)
       axios.post(SERVER.URL + SERVER.ROUTES.health + `/${healthData.posts_id}`, healthData, getters.config)
         .then(res => {
           console.log(res.data)
@@ -99,32 +95,41 @@ const postStore = {
     fetchHealths({ commit }, posts_id) {
       axios.get(SERVER.URL + SERVER.ROUTES.healthCount + posts_id)
         .then(res => {
-          console.log('health', res)
           commit('SET_HEALTHS', res.data)
         })
     },
 
     // Scrap
-    createScrap({state,getters},post_id){
-      axios.delete(SERVER.URL + SERVER.ROUTES.scrap+`/${post_id}/${state.loginData.user_id}`,getters.config)
-      .then(res => {
-        console.log("result", res);
-      }).catch(err => console.log(err))
-    },
     scrap({ state, getters }, post_id) {
-      console.log(state.loginData);
       var data = {
         posts_id: post_id,
         user_id: state.loginData.user_id
       }
-      console.log(data);
       axios.post(SERVER.URL + SERVER.ROUTES.scrap, data, getters.config)
     },
-    deleteScrap({state,getters},post_id){
+    deleteScrap({ state, getters }, post_id){
       axios.delete(SERVER.URL + SERVER.ROUTES.scrap+`/${post_id}/${state.loginData.user_id}`,getters.config)
       .then(res => {
         console.log("result", res);
       }).catch(err => console.log(err))
+    },
+    getCheckScrap({ state, getters, commit }, posts_id) {
+      axios.get(SERVER.URL + SERVER.ROUTES.scrap,
+        {
+          params: {
+            posts_id: posts_id,
+            user_id: state.loginData.user_id
+          }
+        }, getters.config)
+        .then(res => {
+          commit('SET_CHECK_SCRAPS', res.data);
+        }).catch(err => console.log(err))
+    },
+    getUserScraps({ getters, commit }, userId) {
+      axios.get(SERVER.URL + SERVER.ROUTES.scrap + "/" + userId, getters.config)
+        .then(res => {
+          commit('SET_SCRAPS', res.data);
+        }).catch(err => console.log(err))
     },
   }
 }
