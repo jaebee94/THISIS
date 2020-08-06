@@ -72,7 +72,6 @@ import { mapState, mapActions } from "vuex";
 
 export default {
   created() {
-    console.log(this.loginData);
     this.passwordSchema
       .is()
       .min(8)
@@ -82,13 +81,7 @@ export default {
       .digits()
       .has()
       .letters();
-      //TODO 로그인 데이터 변경해줘서 회원정보변경창 업데이트되야함
-    /*const info = {
-      params: this.loginData,
-      location: SERVER.ROUTES.login,
-    };
-    console.log("params",info);
-    this.getAccessData(info);*/
+
     this.changeInfo.email = this.loginData.email;
     this.changeInfo.introduction = this.loginData.introduction;
     this.changeInfo.nickname = this.loginData.nickname;
@@ -101,7 +94,7 @@ export default {
   },
 
   computed: {
-    ...mapState(["loginData"]),
+    ...mapState('userStore', ["loginData"]),
   },
   data() {
     return {
@@ -157,7 +150,10 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["changeUserInfo", "getAccessData"]),
+    ...mapActions('userStore', [
+      "changeUserInfo",
+      "getAccessData"
+    ]),
     checkFormFirst() {
       if (this.nickname.length == 0) {
         this.error.nickname = false;
@@ -184,8 +180,6 @@ export default {
         this.changeInfo.email = this.email;
         this.changeInfo.nickname = this.nickname;
         this.changeInfo.introduction = this.introduction;
-        // this.nickname = this.nickname;
-        // this.introduction = this.introduction;
       } else {
         this.isSubmit = false;
       }
@@ -207,7 +201,6 @@ export default {
       }
       if (!this.error.password && !this.error.passwordConfirm) {
         this.isSubmitPassword = true;
-        // this.password = this.password;
       } else {
         this.isSubmitPassword = false;
       }
@@ -221,7 +214,6 @@ export default {
         })
         .then(() => {
           this.error.nicknameConfirm = true;
-          console.log(this.isSubmit);
           alert("사용가능한 닉네임 입니다.");
         })
         .catch((err) => {

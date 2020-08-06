@@ -35,9 +35,9 @@
 
 	<insert id="createPost">
 		insert into posts(
-			user_id, posts_title, posts_main, health_count, notification_id, nickname
+			user_id, posts_title, posts_main, category, diseasecode, imgsrc
 		) values (
-			#{user_id},#{posts_title},#{posts_main},#{health_count},#{notification_id}, #{nickname}
+			#{user_id},#{posts_title},#{posts_main},#{category},#{diseasecode}, #{imgsrc}
 		)
 	</insert>
 

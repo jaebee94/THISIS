@@ -100,13 +100,17 @@ export default {
     },
   },
   computed: {
-    ...mapState(["comments", "checkScrap","loginData"]),
+    ...mapState('userStore', ['loginData']),
+    ...mapState('postStore', ['comments', 'checkScrap']),
   },
   methods: {
-    //...mapActions(["fetchHealths"]),
-    
-    ...mapActions(["updatePost", "createComment", "updateComment"]),
-    ...mapActions(["getCheckScrap"]),
+    ...mapActions('postStore', [
+      'updatePost',
+      'createComment',
+      'updateComment',
+      //'fetchHealths',
+      'goCheckScrap',
+    ]),
 
     // Infinite Scrolling
     infiniteHandler($state) {
@@ -114,10 +118,11 @@ export default {
         let params = {
           params :{
             num: this.page,
-            user_id : -1 //-1일 경우 전체 게시물
+            //user_id : -1 //-1일 경우 전체 게시물
           }
         }
-        if(this.parent_post !=0){
+        console.log(this.parent_post)
+        if(this.parent_post != undefined){
           console.log(1);
           params.user_id =0; //0일 경우 내 게시물 
         }
@@ -127,27 +132,20 @@ export default {
         .then(({ data }) => {
           if (data.length) {
             this.page += 1;
-
             data.forEach((element) => {
               element.health = false;
               if (element.healths.length > 0) console.log(element);
               element.scrap = false;
-
-              axios
-                .get(
-                  SERVER.URL + SERVER.ROUTES.scrap,
-                  {
-                    params: {
-                      posts_id: element.post_id,
-                      user_id: this.loginData.user_id,
-                    },
-                  },
-                )
+              axios.get(SERVER.URL + SERVER.ROUTES.scrap, {
+                params: {
+                  posts_id: element.post_id,
+                  user_id: this.loginData.user_id,
+                },
+              })
                 .then((res) => {
-                  if(res.data > 0) element.scrap = true;
+                  if (res.data > 0) element.scrap = true;
                 })
                 .catch((err) => console.log(err));
-
               element.post.health_count = element.healths.length;
               element.healths.forEach((ele) => {
                 if (ele.nickname == this.loginData.nickname) {
@@ -156,7 +154,6 @@ export default {
               });
             });
             this.posts.push(...data);
-
             $state.loaded();
           } else {
             $state.complete();
@@ -164,9 +161,6 @@ export default {
         });
 
         }
-        
-
-      
     },
 
     clearCommentData() {
@@ -177,10 +171,16 @@ export default {
     closePost() {
       this.$parent.$parent.isHidden = false;
       this.isPostHidden = false;
+      /*------ 피드 스크롤 unlock ------*/
+      document.body.className = "";
+      /*------ 피드 스크롤 unlock ------*/
     },
     closeModify() {
       this.$parent.$parent.isHidden = false;
       this.isModifyHidden = false;
+      /*------ 피드 스크롤 unlock ------*/
+      document.body.className = "";
+      /*------ 피드 스크롤 unlock ------*/
     },
     updatePostAndClose(postInfo) {
       this.updatePost(postInfo);
@@ -191,6 +191,7 @@ export default {
       this.postInfo = info.postInfo;
       this.$parent.$parent.isHidden = info.isHidden;
       this.isModifyHidden = info.isModifyHidden;
+      document.body.className = "lockbody";
       //댓글창 필요 변수
       this.isPostHidden = info.isPostHidden;
       this.commentData.posts_id=info.postInfo.post_id;
@@ -301,7 +302,7 @@ export default {
   border: none;
   font-size: 10px;
   border-radius: 70%;
-  padding:1px 3px;
+  padding: 1px 3px;
 }
 
 .post {

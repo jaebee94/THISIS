@@ -65,7 +65,9 @@ const increment = firebase.firestore.FieldValue.increment(1);
 //const decrement = firebase.firestore.FieldValue.increment(-1);
 export default {
   computed: {
-    ...mapState(["notification", "loginData","profileData"]),
+    ...mapState('notificationStore', ['notification']),
+    ...mapState('userStore', ['loginData']),
+    ...mapState('profileStore', ['profileData'])
   },
   data() {
     return {
@@ -78,15 +80,21 @@ export default {
     };
   },
   methods: {
-    ...mapActions(["fetchNotification", "fetchRequests", "putNotification","createFollow"]),
+    ...mapActions('followStore', [
+      'createFollow',
+    ]),
+    ...mapActions('notificationStore', [
+      'fetchNotification',
+      'putNotification',
+      'fetchRequests',
+    ]),
+
     accessFollow(noti) {
       noti.approval = 1;
-      console.log(noti) 
       let params = {
         follower: noti.follower_id,
         followee: noti.followee_id
       };
-      console.log(params)
       this.$store.dispatch("putNotification", noti);
       this.$store.dispatch("createFollow",params);
       this.save(noti);
@@ -185,9 +193,10 @@ export default {
       .catch(function (error) {
         console.log("Error getting document:", error);
       });
-
-    this.$store.dispatch("fetchNotification", this.loginData.user_id); //내가 요청한 것
-    this.$store.dispatch("fetchRequests", this.loginData.user_id); //내가 요청 받은것 followee
+    this.fetchNotification(this.loginData.user_id)
+    this.fetchRequests(this.loginData.user_id)
+    // this.$store.dispatch("fetchNotification", this.loginData.user_id); //내가 요청한 것
+    // this.$store.dispatch("fetchRequests", this.loginData.user_id); //내가 요청 받은것 followee
   },
 };
 </script>

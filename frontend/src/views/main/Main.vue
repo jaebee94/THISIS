@@ -67,10 +67,12 @@ export default {
     }
   },
   computed: {
-    ...mapState(["loginData", "profileData"]),
+    ...mapState('userStore', ['loginData']),
+    ...mapState('profileStore', ['profileData']),
   },
   methods: {
-    ...mapActions(["goProfile", "getUserScraps"]),
+    ...mapActions('profileStore', ['goProfile']),
+    ...mapActions('postStore', ['getUserScraps']),
 
     getNoti(id) {
       const noti = db.collection("notification").doc(String(id));
@@ -78,7 +80,6 @@ export default {
       noti.get()
       .then(function(doc){
         if(doc.exists) {
-          console.log(doc.data());
           vueInstance.noti = doc.data().notification + doc.data().request;
         } else {
           console.log("No Such Document!");

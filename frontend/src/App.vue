@@ -1,5 +1,8 @@
 <template>
   <div id="app">
+    <head>
+      <title>THISIS</title>
+    </head>
     <div v-if="this.isHidden" ref="layer" class="layer"></div>
     <router-view/>
   </div>
@@ -12,7 +15,6 @@ export default {
     return {
       isHidden: false
     }
-    
   }
 }
 </script>
@@ -33,6 +35,9 @@ body {
 }
 .whitebody {
   background-color: white;
+}
+.lockbody {
+  overflow-y: hidden;
 }
 .layer {
   z-index: 98;

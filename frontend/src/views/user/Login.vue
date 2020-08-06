@@ -55,14 +55,14 @@ export default {
     document.body.className = "whitebody";
   },
   methods: {
-    ...mapActions(['login'])
+    ...mapActions('userStore', [
+      'login'
+    ]),
     // ,login(loginData){
     //   this.$store.dispatch("login",loginData);
     // }
   },
   created() {
-    console.log(this)
-    console.log(this.$cookies)
   }
 };
 </script>
