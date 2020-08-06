@@ -86,7 +86,7 @@ export default {
     ...mapActions('notificationStore', [
       'fetchNotification',
       'putNotification',
-      'fetchNotification',
+      'fetchRequests',
     ]),
 
     accessFollow(noti) {
@@ -193,9 +193,10 @@ export default {
       .catch(function (error) {
         console.log("Error getting document:", error);
       });
-
-    this.$store.dispatch("fetchNotification", this.loginData.user_id); //내가 요청한 것
-    this.$store.dispatch("fetchRequests", this.loginData.user_id); //내가 요청 받은것 followee
+    this.fetchNotification(this.loginData.user_id)
+    this.fetchRequests(this.loginData.user_id)
+    // this.$store.dispatch("fetchNotification", this.loginData.user_id); //내가 요청한 것
+    // this.$store.dispatch("fetchRequests", this.loginData.user_id); //내가 요청 받은것 followee
   },
 };
 </script>

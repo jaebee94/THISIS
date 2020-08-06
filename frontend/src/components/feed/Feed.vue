@@ -224,6 +224,11 @@ export default {
       this.postInfo = postInfo;
       this.$parent.$parent.isHidden = true;
       this.isPostHidden = true;
+      // this.commentData.posts_id = post.posts_id;
+      // this.fetchHealths(post.posts_id);
+      /*------ 피드 스크롤 lock ------*/
+      document.body.className = "lockbody";
+      /*------ 피드 스크롤 lock ------*/
       this.fetchComments(postInfo.post_id);
       this.commentData.posts_id = postInfo.post_id;
       this.commentData.user_nickname = this.loginData.nickname;
@@ -236,6 +241,9 @@ export default {
     closePost() {
       this.$parent.$parent.isHidden = false;
       this.isPostHidden = false;
+      /*------ 피드 스크롤 unlock ------*/
+      document.body.className = "";
+      /*------ 피드 스크롤 unlock ------*/
     },
     clickHealth(post) {
       if (post.health == true) {
@@ -263,10 +271,17 @@ export default {
       this.postInfo = postInfo;
       this.$parent.$parent.isHidden = true;
       this.isModifyHidden = true;
+      /*------ 피드 스크롤 lock ------*/
+      document.body.className = "lockbody";
+      /*------ 피드 스크롤 lock ------*/
+      console.log(postInfo);
     },
     closeModify() {
       this.$parent.$parent.isHidden = false;
       this.isModifyHidden = false;
+      /*------ 피드 스크롤 unlock ------*/
+      document.body.className = "";
+      /*------ 피드 스크롤 unlock ------*/
     },
     updatePostAndClose(postInfo) {
       this.updatePost(postInfo);

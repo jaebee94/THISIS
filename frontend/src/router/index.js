@@ -10,6 +10,8 @@ import JoinComplete from '../views/user/JoinComplete.vue'
 import Login from '../views/user/Login.vue'
 import Logout from '../views/user/Logout.vue'
 
+import Tutorial from '../views/user/Tutorial.vue'
+
 import FindPassword from '../views/user/FindPassword.vue'
 
 import Main from '../views/main/Main.vue'
@@ -23,6 +25,9 @@ import Profile from '../components/feed/Profile.vue'
 import ChangeProfile from '../components/feed/ChangeProfile.vue'
 //import { component } from 'vue/types/umd'
 
+
+import DiseaseTest from '../views/main/DiseaseTest.vue'
+import NewsTest from '../views/main/NewsTest.vue'
 
 Vue.use(VueRouter)
 
@@ -104,6 +109,21 @@ const routes = [
     path: '/404',
     name: 'Login2',
     component: Login
+  },
+  {
+    path: '/account/tutorial',
+    name: 'Tutorial',
+    component: Tutorial
+  },
+  {
+    path: '/DiseaseTest',
+    name: 'DiseaseTest',
+    component: DiseaseTest
+  },
+  {
+    path: '/NewsTest',
+    name: 'NewsTest',
+    component: NewsTest
   },
 ]
 
