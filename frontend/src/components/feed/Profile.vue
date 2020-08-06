@@ -66,54 +66,11 @@
         </div>
       </div>
 
-      <div v-show="currentTab == 0">
-      <!--COMPONENT 분할 작업중 지현-->
-      <feed v-bind:parentPost = "postInfo"></feed>
-      </div>
-      <div v-show="currentTab == 1">
-        <div class="feed" v-for="scrap in profileData.scrapInfo" v-bind:key="scrap.post_id">
-          <div class="feed-header">
-            <table>
-              <tr>
-                <td>
-                  <img class="profile-image" src="../../assets/images/icon/icon_default_image.png" />
-                </td>
-                <td>
-                  <a class="name">{{ scrap.nickname }}</a>
-                </td>
-                <td>
-                  <a class="time">{{ scrap.post_date }}</a>
-                </td>
-              </tr>
-            </table>
-          </div>
-          <div class="feed-main">{{ scrap.posts_main }}</div>
-          <div class="feed-footer">
-            <table>
-              <tr>
-                <td>
-                  <img
-                    v-if="scrap.health"
-                    src="../../assets/images/icon/icon_like_select.png"
-                    @click="clickHealth(scrap)"
-                  />
-                  <img
-                    v-if="!scrap.health"
-                    src="../../assets/images/icon/icon_like_unselect.png"
-                    @click="clickHealth(scrap)"
-                  />
-                  <span class="health-count">{{ scrap.health_count }}</span>
-                </td>
-                <td>
-                  <img @click="showPost(scrap)" src="../../assets/images/icon/icon_talk.png" />
-                </td>
-                <td>
-                  <button v-if="id == scrap.user_id" @click="showModify(scrap)">수정</button>
-                </td>
-              </tr>
-            </table>
-          </div>
-        </div>
+      <div>
+      <feed  
+      v-bind:profile_data = 
+      "{user_id : this.profileData.userInfo.user_id,
+       tab : this.currentTab}"></feed>
       </div>
     </div>
   </div>

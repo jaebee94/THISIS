@@ -2,6 +2,8 @@ import axios from 'axios'
 import router from '@/router'
 import SERVER from '@/api/RestApi.js'
 
+import cookies from 'vue-cookies'
+
 const profileStore = {
   namespaced: true,
 
@@ -13,9 +15,11 @@ const profileStore = {
     //   postInfo: {},
     //   scrapInfo: {},
     // },
+    accessToken: cookies.get('access-token'),
   },
 
   getters: {
+    config: state => ({ headers: { ACCESS_TOKEN: `${state.accessToken}` } }),
   },
 
   mutations: {
@@ -28,9 +32,7 @@ const profileStore = {
     SET_POST_INFO(state, postInfo) {
       state.profileData.postInfo = postInfo
     },
-    SET_SCRAPS(state, scraps) {
-      state.profileData.scrapInfo = scraps
-    },
+
   },
 
   actions: {
@@ -48,39 +50,39 @@ const profileStore = {
         .then(res => {
           commit('SET_PROFILE_INFO', res.data)
         })
-      await axios.get(SERVER.URL + SERVER.ROUTES.posts + `/${userId}`)
-        .then(function (res) {
-          res.data.forEach(async (element) => {
-            element.health = false;
-            element.scrap = false;
-            axios.get(SERVER.URL + SERVER.ROUTES.health + `/post/${element.posts_id}`)
-              .then(count => element.health_count = count.data)
-            axios.get(SERVER.URL + SERVER.ROUTES.health + `/${userId}`)
-              .then(items => {
-                items.data.forEach(item => {
-                  if (item.posts_id == element.posts_id) {
-                    element.health = true;
-                  }
-                })
-              }
-              )
-            axios.get(SERVER.URL + SERVER.ROUTES.scrap,
-              {
-                params: {
-                  posts_id: element.posts_id,
-                  user_id: state.loginData.user_id,
-                },
-              },
-            )
-              .then((res) => {
-                if (res.data > 0) element.scrap = true;
-                //router.push({ name: 'Profile' })
-              })
-              .catch((err) => console.log(err));
-          })
-          commit('SET_POST_INFO', res.data)
+      // await axios.get(SERVER.URL + SERVER.ROUTES.posts + `/${userId}`)
+      //   .then(function (res) {
+      //     res.data.forEach(async (element) => {
+      //       element.health = false;
+      //       element.scrap = false;
+      //       axios.get(SERVER.URL + SERVER.ROUTES.health + `/post/${element.posts_id}`)
+      //         .then(count => element.health_count = count.data)
+      //       axios.get(SERVER.URL + SERVER.ROUTES.health + `/${userId}`)
+      //         .then(items => {
+      //           items.data.forEach(item => {
+      //             if (item.posts_id == element.posts_id) {
+      //               element.health = true;
+      //             }
+      //           })
+      //         }
+      //         )
+      //       axios.get(SERVER.URL + SERVER.ROUTES.scrap,
+      //         {
+      //           params: {
+      //             posts_id: element.posts_id,
+      //             user_id: state.loginData.user_id,
+      //           },
+      //         },
+      //       )
+      //         .then((res) => {
+      //           if (res.data > 0) element.scrap = true;
+      //           //router.push({ name: 'Profile' })
+      //         })
+      //         .catch((err) => console.log(err));
+      //     })
+      //     commit('SET_POST_INFO', res.data)
 
-        })
+      //   })
       router.push({ name: 'Profile' })
     },
 

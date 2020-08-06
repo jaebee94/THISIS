@@ -25,16 +25,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.web.curation.dao.TagDAO;
 import com.web.curation.model.Auth;
 import com.web.curation.model.Post;
 import com.web.curation.model.PostRequest;
 import com.web.curation.model.PostResponse;
 import com.web.curation.model.Tag;
+import com.web.curation.model.Tag_relation;
 import com.web.curation.model.UserInfo;
 import com.web.curation.service.AuthService;
 import com.web.curation.service.CommentService;
+import com.web.curation.service.DiseaseService;
 import com.web.curation.service.HealthService;
 import com.web.curation.service.PostService;
+import com.web.curation.service.TagRelationService;
 import com.web.curation.service.TagService;
 import com.web.curation.service.UserInfoService;
 import com.web.curation.service.UserInfoServiceImpl;
@@ -61,6 +65,15 @@ public class PostController {
 	@Autowired
 	HealthService healthService;
 	
+	@Autowired
+	DiseaseService diseaseService;
+	
+	@Autowired
+	TagService tagService;
+	
+	@Autowired
+	TagRelationService tagRelationService;
+	
 	@ApiOperation(value = "모든 게시판을 반환한다.", response = List.class)
 	@GetMapping
 	public ResponseEntity<List<PostResponse>> selectAllPost(@RequestParam int num) throws Exception {
@@ -75,6 +88,11 @@ public class PostController {
 				PostResponse temp = new PostResponse();
 				temp.posts_id = page.get(i).getPosts_id();
 				temp.post = page.get(i);
+				try {
+					temp.diseasename = diseaseService.selectDiseaseByDiseasecode(temp.post.getDiseasecode()).getDiseasename();
+				}catch(NullPointerException e) {
+					temp.diseasename = "";
+				}
 				int user_id = temp.post.getUser_id();
 				temp.userinfo = userinfoService.selectUserInfoByUserid(user_id);
 				temp.userinfo.setPassword(null);
@@ -92,6 +110,11 @@ public class PostController {
 				PostResponse temp = new PostResponse();
 				temp.posts_id = page.get(i).getPosts_id();
 				temp.post = page.get(i);
+				try {
+					temp.diseasename = diseaseService.selectDiseaseByDiseasecode(temp.post.getDiseasecode()).getDiseasename();
+				}catch(NullPointerException e) {
+					temp.diseasename = "";
+				}
 				int user_id = temp.post.getUser_id();
 				temp.userinfo = userinfoService.selectUserInfoByUserid(user_id);
 				temp.userinfo.setPassword(null);
@@ -101,13 +124,92 @@ public class PostController {
 			}
 			return new ResponseEntity<List<PostResponse>>(response, HttpStatus.OK);
 		}
-
 	}
 
 	@ApiOperation(value = "유저에 해당하는 모든 게시판를 반환한다.", response = List.class)
 	@GetMapping("{user_id}")
 	public ResponseEntity<List<Post>> selectPost(@PathVariable int user_id) throws Exception {
 		return new ResponseEntity<List<Post>>(postservice.selectPostInfo(user_id), HttpStatus.OK);
+	}
+	
+	@ApiOperation(value = "user_id 인자에 해당하는 게시판 목록를 반환한다.", response = List.class)
+	@GetMapping("new")
+	public ResponseEntity<List<PostResponse>> selectPostList(@RequestParam int num, @RequestParam int user_id, HttpServletRequest request) throws Exception {
+		List<Post> Allpage = null;
+		if(user_id >= 1) {	//다른 사람이 작성한 피드
+			Allpage = postservice.selectPostInfo(user_id);
+		}else if(user_id == 0){	//내가 작성한 피드
+			// 자기 아이디 가져옴
+			String accessToken = (String) request.getAttribute("accessToken");
+			//System.out.println(name);
+			if (accessToken != null) {
+				Auth auth = authService.findAuthByAccessToken(accessToken);
+				user_id = auth.getUser_id();
+			}else {
+				user_id = 1;
+			}
+			
+			Allpage = postservice.selectPostInfo(user_id);
+		}
+		else {	//나의 메인 피드
+			// 자기 아이디 가져옴
+			String accessToken = (String) request.getAttribute("accessToken");
+			//System.out.println(name);
+			if (accessToken != null) {
+				Auth auth = authService.findAuthByAccessToken(accessToken);
+				user_id = auth.getUser_id();
+			}else {
+				user_id = 1;
+			}
+			Allpage = postservice.selectMainFeed(user_id);
+		}
+		
+		List<Post> page = null;
+		List<PostResponse> response = new ArrayList<>();
+		if (Allpage.size() / 10 > num && num * 10 + 10 <= Allpage.size()) {
+			page = Allpage.subList(num * 10, num * 10 + 10);
+			
+			//페이지 돌면서 response에 다시 저장
+			for(int i=0; i<page.size(); i++) {
+				PostResponse temp = new PostResponse();
+				temp.posts_id = page.get(i).getPosts_id();
+				temp.post = page.get(i);
+				try {
+					temp.diseasename = diseaseService.selectDiseaseByDiseasecode(temp.post.getDiseasecode()).getDiseasename();
+				}catch(NullPointerException e) {
+					temp.diseasename = "";
+				}
+				int post_user_id = temp.post.getUser_id();
+				temp.userinfo = userinfoService.selectUserInfoByUserid(post_user_id);
+				temp.userinfo.setPassword(null);
+				temp.comments = commentsService.selectComment(temp.posts_id);
+				temp.healths = healthService.selectHealthList(temp.posts_id);
+				response.add(temp);
+			}
+			return new ResponseEntity<List<PostResponse>>(response, HttpStatus.OK);
+		} else if (Allpage.size() / 10 < num) {
+			return new ResponseEntity<List<PostResponse>>(response, HttpStatus.NO_CONTENT);
+		}
+		else {
+			page = Allpage.subList(num*10, Allpage.size());
+			for(int i=0; i<page.size(); i++) {
+				PostResponse temp = new PostResponse();
+				temp.posts_id = page.get(i).getPosts_id();
+				temp.post = page.get(i);
+				try {
+					temp.diseasename = diseaseService.selectDiseaseByDiseasecode(temp.post.getDiseasecode()).getDiseasename();
+				}catch(NullPointerException e) {
+					temp.diseasename = "";
+				}
+				int post_user_id = temp.post.getUser_id();
+				temp.userinfo = userinfoService.selectUserInfoByUserid(post_user_id);
+				temp.userinfo.setPassword(null);
+				temp.comments = commentsService.selectComment(temp.posts_id);
+				temp.healths = healthService.selectHealthList(temp.posts_id);
+				response.add(temp);
+			}
+			return new ResponseEntity<List<PostResponse>>(response, HttpStatus.OK);
+		}
 	}
 
 	@ApiOperation(value = "게시글 생성", response = String.class)
@@ -151,11 +253,16 @@ public class PostController {
 		if (postservice.createPost(postRequest.post) == 1) {
 			//태그 저장
 			List<String> tags = postRequest.tags;
-			
+			int posts_id = postservice.selectAutoIncrement();
+			System.out.println("posts_id :"+posts_id);
 			for(int i=0; i<tags.size(); i++) {
 				//태그 저장
 				System.out.println(tags.get(i));
-				
+				if(tagService.selectCountByTagname(tags.get(i)) == 0) {	//없음
+					tagService.createTag(tags.get(i));
+				}
+				Tag now = tagService.selectTagByTagname(tags.get(i));
+				tagRelationService.createTagRelation(new Tag_relation(now.getTagid(), posts_id));
 			}
 			return new ResponseEntity<String>("success", HttpStatus.OK);
 		}

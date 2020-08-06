@@ -14,7 +14,7 @@
             <a
               class="name"
               @click="goProfile(postInfo.post.user_id)"
-            >{{ postInfo.post.nickname }}</a>
+            >{{ postInfo.userinfo.nickname }}</a>
           </td>
           <td>
             <a class="time">{{postInfo.post.post_date }}</a>
@@ -65,9 +65,9 @@
 <script>
 import { mapActions,mapState } from "vuex";
 export default {
-  name: "post",
+  name: "Post",
   computed: {
-    ...mapState(["loginData"]),
+    ...mapState('userStore', ["loginData"]),
   },
   props: {
     postInfo: {
@@ -88,9 +88,15 @@ export default {
   },
 
   methods: {
-    ...mapActions(["goProfile","health"]),
-    ...mapActions(["scrap",  "deleteScrap"]),
-    ...mapActions(["fetchComments"]),
+    ...mapActions('profileStore', [
+      'goProfile',
+      ]),
+    ...mapActions('postStore', [
+      "fetchComments",
+      'health',
+      "scrap",
+       "deleteScrap"
+      ]),
     changeSelectPost(post, sort){
      this.selectedPost = post;
      let info = {
@@ -126,12 +132,17 @@ export default {
       this.health(this.healthData);
     },
     clickScrap(post) {
+      let params = {
+        posts_id : post.posts_id,
+        user_id : this.loginData.user_id,
+      };
+
       if (post.scrap == true) {
         post.scrap = false;
-        this.deleteScrap(post.post_id);
+        this.deleteScrap(params);
       } else {
         post.scrap = true;
-        this.scrap(post.post_id);
+        this.scrap(params);
       }
       console.log("click_post", post);
     },
