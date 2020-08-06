@@ -65,7 +65,9 @@ const increment = firebase.firestore.FieldValue.increment(1);
 //const decrement = firebase.firestore.FieldValue.increment(-1);
 export default {
   computed: {
-    ...mapState(["notification", "loginData","profileData"]),
+    ...mapState('notificationStore', ['notification']),
+    ...mapState('userStore', ['loginData']),
+    ...mapState('profileStore', ['profileData'])
   },
   data() {
     return {
@@ -78,15 +80,21 @@ export default {
     };
   },
   methods: {
-    ...mapActions(["fetchNotification", "fetchRequests", "putNotification","createFollow"]),
+    ...mapActions('followStore', [
+      'createFollow',
+    ]),
+    ...mapActions('notificationStore', [
+      'fetchNotification',
+      'putNotification',
+      'fetchNotification',
+    ]),
+
     accessFollow(noti) {
       noti.approval = 1;
-      console.log(noti) 
       let params = {
         follower: noti.follower_id,
         followee: noti.followee_id
       };
-      console.log(params)
       this.$store.dispatch("putNotification", noti);
       this.$store.dispatch("createFollow",params);
       this.save(noti);

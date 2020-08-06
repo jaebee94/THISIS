@@ -161,9 +161,7 @@ export default {
         this.signupData.email = this.email;
         this.signupData.nickname = this.nickname;
         this.signupData.password = this.password;
-        console.log(this.signupData)
       }
-      console.log(this.isSubmit)
     },
     checkEmail() {
       axios.get(SERVER.URL + SERVER.ROUTES.email, {
@@ -171,13 +169,11 @@ export default {
           email: this.email
         }
       })
-        .then((res) => {
-          console.log(res)
+        .then(() => {
           this.error.emailConfirm = true;
           alert("사용가능한 E-mail 입니다.")
         })
         .catch(err => {
-          // console.log(err)
           if (err.response.data.data == "wrong email") {
             this.confirm.email = false;
             alert("이미 사용중인 E-mail 입니다.")
@@ -192,7 +188,6 @@ export default {
       })
         .then(() => {
           this.error.nicknameConfirm = true;
-          console.log(this.isSubmit)
           alert("사용가능한 닉네임 입니다.")
         })
         .catch(err => {
@@ -210,9 +205,7 @@ export default {
       }
       axios.post(SERVER.URL + info.location, info.data)
         .then((res) => {
-          console.log(res);
           var id = res.data.object;
-          console.log("id", id);
           let instance = {
             notification: 0,
             request: 0
@@ -221,7 +214,6 @@ export default {
           .collection("notification")
           .doc(String(id))
           .set(instance);
-
 
           alert('회원가입이 완료되었습니다.')
           router.push({ name: 'Login'})
