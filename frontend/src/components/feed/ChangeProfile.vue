@@ -8,7 +8,9 @@
           v-bind:key="tab"
           v-bind:class="{active: profileTab === index}"
           @click="profileTab = index"
-        ><img :src="tab"></div>
+        >
+          <img :src="tab" />
+        </div>
       </div>
       <div v-show="profileTab == 0">
         <div class="input-with-label">
@@ -33,7 +35,12 @@
       </div>
       <div v-show="profileTab == 1">
         <div class="input-with-label">
-          <input v-model="changeInfo.password" id="password" type="password" placeholder="비밀번호를 입력해주세요" />
+          <input
+            v-model="changeInfo.password"
+            id="password"
+            type="password"
+            placeholder="비밀번호를 입력해주세요"
+          />
           <div class="error-text" v-if="error.password">{{error.password}}</div>
         </div>
         <div class="input-with-label">
@@ -63,10 +70,8 @@ import axios from "axios";
 import SERVER from "@/api/RestApi.js";
 import { mapState, mapActions } from "vuex";
 
-
 export default {
   created() {
-    console.log(this.loginData);
     this.passwordSchema
       .is()
       .min(8)
@@ -76,34 +81,27 @@ export default {
       .digits()
       .has()
       .letters();
-    // let instance = {};
-    // instance["email"] = this.loginData.email;
-    // instance["introduction"] = this.loginData.introduction;
-    // instance["nickname"] = this.loginData.nickname;
-    // instance["password"] = this.loginData.password;
-    // instance["user_id"] = this.loginData.user_id;
-    // instance["username"] = this.loginData.username
-    this.changeInfo.email = this.loginData.email
-    this.changeInfo.introduction = this.loginData.introduction
-    this.changeInfo.nickname = this.loginData.nickname
-    this.changeInfo.password = this.loginData.password
-    this.changeInfo.user_id = this.loginData.user_id
-    this.changeInfo.username = this.loginData.username
-    this.email = this.loginData.email
-    this.nickname = this.loginData.nickname
-    this.introduction = this.loginData.introduction
 
+    this.changeInfo.email = this.loginData.email;
+    this.changeInfo.introduction = this.loginData.introduction;
+    this.changeInfo.nickname = this.loginData.nickname;
+    this.changeInfo.password = this.loginData.password;
+    this.changeInfo.user_id = this.loginData.user_id;
+    this.changeInfo.username = this.loginData.username;
+    this.email = this.loginData.email;
+    this.nickname = this.loginData.nickname;
+    this.introduction = this.loginData.introduction;
   },
 
   computed: {
-    ...mapState(["loginData"]),
+    ...mapState('userStore', ["loginData"]),
   },
   data() {
     return {
       // store에서 나중에 UserInfo 받아서 넣어야 함
-      email: "123",
-      nickname: "달린다응쎄",
-      introduction: "안녕하세요",
+      email: "",
+      nickname: "",
+      introduction: "",
       username: null,
       password: null,
       passwordConfirm: null,
@@ -130,8 +128,11 @@ export default {
       isSubmit: false,
       isSubmitPassword: false,
       profileTab: 0,
-      profileTabs: [require('../../assets/images/icon/icon_info.png'), require('../../assets/images/icon/icon_key.png')],
-    };  
+      profileTabs: [
+        require("../../assets/images/icon/icon_info.png"),
+        require("../../assets/images/icon/icon_key.png"),
+      ],
+    };
   },
 
   watch: {
@@ -149,7 +150,10 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["changeUserInfo"]),
+    ...mapActions('userStore', [
+      "changeUserInfo",
+      "getAccessData"
+    ]),
     checkFormFirst() {
       if (this.nickname.length == 0) {
         this.error.nickname = false;
@@ -173,11 +177,9 @@ export default {
 
       if (this.error.nickname && this.error.intro) {
         this.isSubmit = true;
-        this.changeInfo.email = this.email
-        this.changeInfo.nickname = this.nickname
-        this.changeInfo.introduction = this.introduction
-        // this.nickname = this.nickname;
-        // this.introduction = this.introduction;
+        this.changeInfo.email = this.email;
+        this.changeInfo.nickname = this.nickname;
+        this.changeInfo.introduction = this.introduction;
       } else {
         this.isSubmit = false;
       }
@@ -199,28 +201,27 @@ export default {
       }
       if (!this.error.password && !this.error.passwordConfirm) {
         this.isSubmitPassword = true;
-        // this.password = this.password;
       } else {
         this.isSubmitPassword = false;
       }
     },
     checkNickname() {
-      axios.get(SERVER.URL + SERVER.ROUTES.nickname, {
-        params: {
-          nickname: this.nickname,
-        },
-      })
-      .then(() => {
-        this.error.nicknameConfirm = true;
-        console.log(this.isSubmit);
-        alert("사용가능한 닉네임 입니다.");
-      })
-      .catch((err) => {
-        if (err.response.data.data == "wrong nickname") {
-          this.confirm.nickname = false;
-          alert("이미 사용중인 닉네임 입니다.");
-        }
-      });
+      axios
+        .get(SERVER.URL + SERVER.ROUTES.nickname, {
+          params: {
+            nickname: this.nickname,
+          },
+        })
+        .then(() => {
+          this.error.nicknameConfirm = true;
+          alert("사용가능한 닉네임 입니다.");
+        })
+        .catch((err) => {
+          if (err.response.data.data == "wrong nickname") {
+            this.confirm.nickname = false;
+            alert("이미 사용중인 닉네임 입니다.");
+          }
+        });
     },
   },
 };
@@ -249,12 +250,10 @@ export default {
   font-weight: 600;
 }
 
-
-
 .input-with-label button {
   margin-left: 5%;
   width: 25%;
-  
+
   height: 40px;
   border: none;
   border-radius: 5px;
@@ -308,7 +307,7 @@ export default {
   margin-top: 10%;
 }
 
-.button-wrap button{
+.button-wrap button {
   width: 90%;
   height: 40px;
   border: none;

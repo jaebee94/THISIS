@@ -1,54 +1,5 @@
 <template>
   <div class="profile wrap">
-
-
-
-
-    <div class="modify-wrap" v-if="this.isModifyHidden">
-      <div>
-        <h2>제목 : {{ postInfo.posts_title }}</h2>
-      </div>
-      <div class="post-content">
-        <textarea v-model="postInfo.posts_main"></textarea>
-      </div>
-      <div class="post-modify-btn">
-        <button @click="updatePostAndClose(postInfo)">수정하기</button>
-      </div>
-      <div class="modify-footer">
-        <img @click="closeModify()" src="../../assets/images/icon/icon_close.png" />
-      </div>
-    </div>
-
-
-
-
-
-    <!-- <div v-if="this.isPostModify" class="post-content-modify">
-      <div class="feed-header">
-        <table>
-          <tr>
-            <td>
-              <img class="profile-image" src="../../assets/images/icon/icon_default_image.png" />
-            </td>
-            <td>
-              <a class="name">{{mPost.name}}</a>
-            </td>
-            <td>
-              <a class="time">{{mPost.time}}</a>
-            </td>
-          </tr>
-        </table>
-      </div>
-      <div class="post-content">
-        <textarea v-model="mPost.content"></textarea>
-      </div>
-      <div class="post-modify-btn">
-        <button @click="modifyPostClick()">수정하기</button>
-      </div>
-      <div class="modify-footer">
-        <img @click="closeModify(mPost.post_id)" src="../../assets/images/icon/icon_close.png" />
-      </div>
-    </div> -->
     <div class="intro-wrap">
       <div class="left-content">
         <div class="profile-image">
@@ -82,7 +33,6 @@
       <!-- 나의 아이디와 보고 있는 페이지의 유저 아이디가 같을 경우 -->
       <router-link to="/main/change">
         <button
-          @click="modifyProfile()"
           v-show="loginData.user_id == profileData.userInfo.user_id"
         >프로필 수정</button>
       </router-link>
@@ -90,17 +40,17 @@
       <!-- 1. 팔로우 요청도 안 보낸 상태(data의 followSend가 false일 경우 + isFollowing이 false일 경우) -->
       <button
         @click="follow()"
-        v-show="loginData.user_id != profileData.userInfo.user_id && !this.isFollowing && !this.followSend"
+        v-show="loginData.user_id != profileData.userInfo.user_id && !this.followee_list && !this.followSend"
       >팔로우 요청</button>
       <!-- 2. 팔로우 요청을 보냈지만 승인을 받지 못한 상태(followSend가 true일 경우 + isFollowing이 false일 경우) -->
       <button
         @click="followCancel()"
-        v-show="loginData.user_id != profileData.userInfo.user_id && this.followSend && !this.isFollowing"
+        v-show="loginData.user_id != profileData.userInfo.user_id && this.followSend && !this.followee_list"
       >팔로우 요청 취소</button>
       <!-- 3. 팔로우 요청을 보냈고 승인을 받은 상태(followSend가 true + isFollowing이 true) -->
       <button
         @click="followingCancel()"
-        v-show="loginData.user_id != profileData.userInfo.user_id && this.isFollowing"
+        v-show="loginData.user_id != profileData.userInfo.user_id && this.followee_list"
       >팔로잉</button>
     </div>
     <div class="tabs">
@@ -229,7 +179,7 @@
         </div>
         </div>
         
-        <!-- <Feed/> -->
+      <!-- <Feed/> -->
       </div>
       <div v-show="currentTab == 1">
         <div class="feed" v-for="scrap in profileData.scrapInfo" v-bind:key="scrap.post_id">
@@ -248,7 +198,7 @@
               </tr>
             </table>
           </div>
-          <div class="feed-main">{{scrap.posts_main}}</div>
+          <div class="feed-main">{{ scrap.posts_main }}</div>
           <div class="feed-footer">
             <table>
               <tr>
@@ -296,7 +246,6 @@ export default {
   // },
   data() {
     return {
-      id: 2, // 현재 나의 아이디 -> store에 저장되거나 서버에서 가져오거나
       followSend: false, // followSend - true : 팔로우 신청을 한 상태 / false : 팔로우 신청을 하지 않은 상태
       isFollowing: false, // isFollowing - true : 팔로우 하는 중 / false : 팔로우를 하고 있지 않음
       isPostHidden: false,
@@ -339,31 +288,34 @@ export default {
 
   },
   computed: {
-    ...mapState(["followee_list"]),
-    ...mapState(["profileData"]),
-    ...mapState(["loginData"]),
-    ...mapState(["comments"]),
+    ...mapState('followStore', ['followee_list']),
+    ...mapState('profileStore', ['profileData']),
+    ...mapState('usetStore', ['loginData']),
+    ...mapState('postStore', ['comments']),
   },
   methods: {
-    ...mapActions(["fetchComments"]),
-    ...mapActions(["fetchProfileData"]),
-    ...mapActions(["goProfile", "getUserScraps","deleteScrap"]),
-    ...mapActions(["getFollowee", "createFollowing", "deleteFollowing"]),
-    ...mapActions(["updatePost", "createComment", "updateComment"]),
-    ...mapActions(["health"]),
+    ...mapActions('profileStore', ['goProfile']),
+    ...mapActions('postStore', [
+      'updatePost',
+      'createComment',
+      'fetchComments',
+      'updateComment',
+      'health',
+      'deleteScrap',
+      'getUserScraps'
+    ]),
+    ...mapActions('followStore', [
+      'createFollowing',
+      'deleteFollowing',
+      'getFollowee',
+    ]),
 
-    // modifyProfile() {
-    //   // console.log("!!!");
-    // },
     showModify(postInfo) {
-      console.log(postInfo);
       this.postInfo = postInfo;
       this.$parent.$parent.isHidden = true;
       this.isModifyHidden = true;
-      console.log(postInfo);
     },
     modifyPostClick(post_id) {
-      console.log(this.mPost);
       this.posts.forEach(function (element) {
         if (element.post_id == post_id) {
           element = this.mPost;
@@ -405,17 +357,12 @@ export default {
         .catch(function (error) {
           console.error("Error setting document: ", error);
         });
-      // alert(this.loginData.user_id);
-      // alert(this.profileData.userInfo.user_id);
+
       let params = {};
       params["follower_id"] = this.loginData.user_id;
       params["followee_id"] = this.profileData.userInfo.user_id;
       params["approval"] = 0;
-      // let params = {
-      //   follower_id: this.loginData.user_id,
-      //   followee_id: this.profileData.userInfo.user_id,
-      //   approval: 0,
-      // };
+
       this.$store.dispatch("createFollowing", params);
     },
     followCancel() {
@@ -451,11 +398,7 @@ export default {
       params["follower_id"] = this.loginData.user_id;
       params["followee_id"] = this.profileData.userInfo.user_id;
       params["approval"] = 1;
-      // let params = {
-      //   follower_id: this.id,
-      //   followee_id: this.user.user_id,
-      //   approval: 1,
-      // };
+
       this.$store.dispatch("deleteFollowing", params);
     },
     followingCancel() {
@@ -469,11 +412,8 @@ export default {
         post.health = true;
         post.health_count += 1;
       }
-      console.log('post', post)
       this.healthData.posts_id = post.posts_id;
       this.healthData.user_id = this.loginData.user_id;
-      console.log(post)
-      console.log("id", this.healthData.user_id)
       //this.healthData.user_id = this.loginData.user_id; // user_id
       this.health(this.healthData);
     },
@@ -485,11 +425,9 @@ export default {
         post.scrap = true;
         this.$store.dispatch("scrap", post.posts_id);
       }
-      console.log("click_post", post);
     },
     showPost(postInfo) {
       this.postInfo = postInfo;
-      console.log('postInfo', postInfo)
       this.$parent.$parent.isHidden = true;
       this.isPostHidden = true;
       // this.commentData.posts_id = post.posts_id;
@@ -514,34 +452,13 @@ export default {
     },
   },
   created() {
-    // this.$store.dispatch("getUserScraps", this.profileData.userInfo.user_id);
-    // this.goProfile(this.loginData.user_id);
-    setTimeout(() => {
-      this.$store.dispatch("getUserScraps", this.profileData.userInfo.user_id);
-    }, 300)
-    console.log("---", this.loginData);
-    console.log("----", this.profileData);
-    let vueInstance = this;
+    this.getUserScraps(this.profileData.userInfo.user_id);
+    var vueInstance = this;
     let params = {
-      followee_id: vueInstance.profileData.userInfo.user_id,
-      follower_id: vueInstance.loginData.user_id
+      followee_id: this.profileData.userInfo.user_id,
+      follower_id: this.loginData.user_id
     };
-
-    this.$store.dispatch("getFollowee", params);
-
-    
-
-    console.log("get Follower", this.followee_list);
-    // this.followee_list.forEach((element) => {
-    //   console.log(element);
-    //   if (String(element["follower"]) == vueInstance.user.user_id) {
-    //     vueInstance.isFollowing = true;
-    //   }
-    // });
-
-    setTimeout( () => {this.isFollowing = this.followee_list; console.log(this.followee_list)}, 500);
-    
-
+    this.getFollowee(params);
 
     const noti = db.collection("notification")
     .doc(String(vueInstance.profileData.userInfo.user_id));
@@ -551,9 +468,7 @@ export default {
       .get()
       .then(function (doc) {
         instance = doc.data();
-        console.log(instance);
         if (instance[vueInstance.loginData.user_id] == false) {
-          console.log("!!");
           vueInstance.followSend = true;
         }
       })

@@ -98,6 +98,8 @@ export default {
     },
   },
   methods: {
+    ...mapActions('postStore', ['createPost']),
+
     checkForm() {
       if (
         this.posts_title.length > 0 &&
