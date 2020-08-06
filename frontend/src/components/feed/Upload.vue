@@ -46,7 +46,8 @@
     </div>
 
     <div class="button-panel">
-      <button @click="createPost(postData)" :disabled="!isFill" :class="{disabled : !isFill}">올리기</button>
+      <button @click="sendPhoto()" :disabled="!isFill" :class="{disabled : !isFill}">올리기</button>
+      <!-- <button @click="createPost(postData)" :disabled="!isFill" :class="{disabled : !isFill}">올리기</button> -->
     </div>
   </div>
 </template>
@@ -77,6 +78,8 @@ export default {
       checkedItem: null,
       isSelected: false,
       isSearched: false,
+
+      image: null,
 
       customTag: null,
       tags: [],
@@ -111,8 +114,23 @@ export default {
       this.$refs.imageInput.click();
     },
     onChangeImages(e){
+      console.log("시작", e);
       console.log(e.target.files);
       const file = e.target.files[0];
+      console.log(file);
+/////////////////////////////////////////////////////////////////
+      var formData = new FormData();
+      formData.append('upload_file', file);
+      axios({
+        method: 'post',
+        url: 'http://4bc06cd8b4fc.ngrok.io/THISIS/articles/upload',
+        data: formData,
+        header: {
+          'Accept': 'application/json',
+          'Content-Type': 'multipart/form-data',
+        },
+      })      
+//////////////////////////////////////////////////////////////////
       this.imgsrc = URL.createObjectURL(file);
     },
     getDisease (keyword) {
@@ -189,6 +207,10 @@ export default {
           return;
         }
       }
+    },
+    sendPhoto() {
+      console.log(this.$refs.imageInput);
+      console.log(this.imgsrc);
     },
     ...mapActions(["createPost"]),
   },
