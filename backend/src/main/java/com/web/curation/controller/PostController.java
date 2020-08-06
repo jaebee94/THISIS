@@ -191,13 +191,15 @@ public class PostController {
 				
 		  		//웹서비스 경로 지정
 				//String root_path = request.getSession().getServletContext().getRealPath("\\");
+				
 				String root_path = "C:\\Users\\multicampus\\git\\s03p13a301\\backend\\src\\main\\resources\\upload\\";
+				String real_path = "/home/ubuntu/s03p13a301/backend/src/main/resources/upload/";
 				//String attach_path = "resources\\upload\\";
 				String filename = dateString+"_"+uploadfile.getOriginalFilename();
 				
-				System.out.println(root_path+filename);
+				System.out.println(real_path+filename);
 				
-	            FileOutputStream fos = new FileOutputStream(root_path+filename);
+	            FileOutputStream fos = new FileOutputStream(real_path+filename);
 	            // 파일 저장할 경로 + 파일명을 파라미터로 넣고 fileOutputStream 객체 생성하고
 	            InputStream is = uploadfile.getInputStream();
 	            // file로 부터 inputStream을 가져온다.
@@ -213,7 +215,8 @@ public class PostController {
 		          // 위에서 생성한 fileOutputStream 객체에 출력하기를 반복한다
 		        }
 
-				return root_path+filename;
+		        String access_path = "http://i3a301.p.ssafy.io/images/upload/";
+				return access_path+filename;
 				
 		    }catch (Exception ex) {
 		         throw new RuntimeException("file Save Error");
