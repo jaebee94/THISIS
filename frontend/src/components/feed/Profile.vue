@@ -68,10 +68,17 @@
 
       <div v-show="currentTab == 0">
       <!--COMPONENT 분할 작업중 지현-->
-      <feed v-bind:parentPost = "postInfo"></feed>
+      <feed v-bind:profile_data = 
+      "{user_id : this.profileData.userInfo.user_id,
+       tab : this.index}"></feed>
       </div>
       <div v-show="currentTab == 1">
-        <div class="feed" v-for="scrap in profileData.scrapInfo" v-bind:key="scrap.post_id">
+         <feed v-bind:profile_data = 
+      "{user_id : this.profileData.userInfo.user_id,
+       tab :  this.index}"></feed>
+
+
+        <!-- <div class="feed" v-for="scrap in profileData.scrapInfo" v-bind:key="scrap.post_id">
           <div class="feed-header">
             <table>
               <tr>
@@ -113,7 +120,7 @@
               </tr>
             </table>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>

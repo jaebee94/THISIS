@@ -34,9 +34,7 @@
               </tr>
             </table>
           </div>
-          <div
-            class="comment-content"
-          >{{ comment.comment_main }}</div>
+          <div class="comment-content">{{ comment.comment_main }}</div>
         </div>
       </div>
       <div class="comment-submit">
@@ -64,9 +62,12 @@
     </div>
 
     <div>
-      <post v-for="postInfo in posts" v-bind:key="postInfo"  
-      v-bind:postInfo = "postInfo"  
-      @send-modify="showModify"></post>
+      <post
+        v-for="postInfo in posts"
+        v-bind:key="postInfo"
+        v-bind:postInfo="postInfo"
+        @send-modify="showModify"
+      ></post>
     </div>
     <infinite-loading @infinite="infiniteHandler"></infinite-loading>
   </div>
@@ -87,68 +88,72 @@ export default {
       commentData: {
         posts_id: null,
         comment_main: "",
-        user_nickname:"",
+        user_nickname: "",
       },
-      
+
       page: 0,
       posts: [],
     };
   },
   props: {
-    parent_post: {
+    profile_data: {
       default: void 0,
     },
   },
   computed: {
-    ...mapState('userStore', ['loginData']),
-    ...mapState('postStore', ['comments', 'checkScrap']),
+    ...mapState("userStore", ["loginData"]),
+    ...mapState("postStore", ["comments", "checkScrap"]),
   },
   methods: {
-    ...mapActions('postStore', [
-      'updatePost',
-      'createComment',
-      'updateComment',
+    ...mapActions("postStore", [
+      "updatePost",
+      "createComment",
+      "updateComment",
       //'fetchHealths',
-      'goCheckScrap',
+      "goCheckScrap",
     ]),
 
     // Infinite Scrolling
     infiniteHandler($state) {
       //TODO 해당 유저아이디의 포스트만 반환부분 분기!
-        let params = {
-          params :{
-            num: this.page,
-            //user_id : -1 //-1일 경우 전체 게시물
-          }
-        }
-        console.log(this.parent_post)
-        if(this.parent_post != undefined){
-          console.log(1);
-          params.user_id =0; //0일 경우 내 게시물 
-        }
-        else{
-        axios
-        .get(SERVER.URL + SERVER.ROUTES.posts, params)
-        .then(({ data }) => {
+      let params = {
+        params: {
+          num: this.page,
+          user_id: -1, //-1일 경우 전체 게시물
+        },
+      };
+      console.log(this.profile_data);
+      if (this.profile_data != undefined) {
+        var profile_id = this.profile_data.user_id;
+        params.params.user_id = profile_id;
+        //if (profile_id == this.loginData.user_id) params.params.user_id = 0; //0일 경우 내 게시물
+      }
+
+      
+      if(this.profile_data== undefined || this.profile_data.tab == "myFeed") {
+        axios.get(SERVER.URL + SERVER.ROUTES.posts+"/new", params).then(({ data }) => {
           if (data.length) {
             this.page += 1;
+           
             data.forEach((element) => {
               element.health = false;
-              if (element.healths.length > 0) console.log(element);
               element.scrap = false;
-              axios.get(SERVER.URL + SERVER.ROUTES.scrap, {
-                params: {
-                  posts_id: element.post_id,
-                  user_id: this.loginData.user_id,
-                },
-              })
+               console.log(element)
+              axios
+                .get(SERVER.URL + SERVER.ROUTES.scrap, {
+                  params: {
+                    user_id: this.loginData.user_id,
+                    posts_id: element.posts_id,
+                  },
+                })
                 .then((res) => {
                   if (res.data > 0) element.scrap = true;
                 })
                 .catch((err) => console.log(err));
               element.post.health_count = element.healths.length;
               element.healths.forEach((ele) => {
-                if (ele.nickname == this.loginData.nickname) {
+                console.log(ele)
+                if (ele.userinfo.nickname == this.loginData.nickname) {
                   element.health = true;
                 }
               });
@@ -159,8 +164,23 @@ export default {
             $state.complete();
           }
         });
+      }
+      else if(this.profile_data.tab == "scrap"){
 
-        }
+      axios.get(SERVER.URL + SERVER.ROUTES.scrap + "/" + this.profile_data.user_id)
+        .then(({ data }) => {
+          if (data.length) {
+            this.page += 1;
+            this.posts.push(...data);
+            $state.loaded();
+          }else{
+            $state.complete();
+          }
+        }).catch(err => console.log(err))
+      }
+      
+      console.log(params);
+
     },
 
     clearCommentData() {
@@ -187,16 +207,17 @@ export default {
       this.$parent.$parent.isHidden = false;
       this.isModifyHidden = false;
     },
-    showModify(info) { //댓글이나 글 수정시 부르는 함수
+    showModify(info) {
+      //댓글이나 글 수정시 부르는 함수
       this.postInfo = info.postInfo;
       this.$parent.$parent.isHidden = info.isHidden;
       this.isModifyHidden = info.isModifyHidden;
       document.body.className = "lockbody";
       //댓글창 필요 변수
       this.isPostHidden = info.isPostHidden;
-      this.commentData.posts_id=info.postInfo.post_id;
+      this.commentData.posts_id = info.postInfo.post_id;
       this.commentData.user_nickname = this.loginData.nickname;
-    }
+    },
   },
   created() {
     this.$store.dispatch("getCheckScrap");
