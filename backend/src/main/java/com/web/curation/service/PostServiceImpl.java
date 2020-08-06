@@ -52,4 +52,9 @@ public class PostServiceImpl implements PostService {
 	public List<Post> selectScrapInfo(List<Scrap> scrapList){;
 		return PostDao.selectScrapInfo(scrapList);
 	}
+
+	@Override
+	public List<Post> selectMainFeed(int user_id) {
+		return PostDao.selectMainFeed(user_id);
+	}
 }
