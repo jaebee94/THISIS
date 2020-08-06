@@ -290,7 +290,7 @@ export default {
   computed: {
     ...mapState('followStore', ['followee_list']),
     ...mapState('profileStore', ['profileData']),
-    ...mapState('usetStore', ['loginData']),
+    ...mapState('userStore', ['loginData']),
     ...mapState('postStore', ['comments']),
   },
   methods: {
