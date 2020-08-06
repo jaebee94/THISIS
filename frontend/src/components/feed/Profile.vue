@@ -67,6 +67,7 @@
       </div>
 
       <div v-show="currentTab == 0">
+      <!--COMPONENT 분할 작업중 지현-->
       <feed v-bind:parentPost = "postInfo"></feed>
       </div>
       <div v-show="currentTab == 1">
