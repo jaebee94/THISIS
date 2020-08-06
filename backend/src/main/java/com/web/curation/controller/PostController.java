@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.web.curation.dao.TagDAO;
 import com.web.curation.model.Auth;
 import com.web.curation.model.Post;
 import com.web.curation.model.PostRequest;
@@ -64,6 +65,9 @@ public class PostController {
 	
 	@Autowired
 	DiseaseService diseaseService;
+	
+	@Autowired
+	TagService tagService;
 	
 	@ApiOperation(value = "모든 게시판을 반환한다.", response = List.class)
 	@GetMapping
@@ -248,7 +252,10 @@ public class PostController {
 			for(int i=0; i<tags.size(); i++) {
 				//태그 저장
 				System.out.println(tags.get(i));
-				
+				if(tagService.selectCountByTagname(tags.get(i)) == 0) {	//없음
+					tagService.createTag(tags.get(i));
+					//Tag now = tagService.selectTagByTagname(tags.get(i));
+				}
 			}
 			return new ResponseEntity<String>("success", HttpStatus.OK);
 		}
