@@ -3,6 +3,8 @@ package com.web.curation.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +18,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.web.curation.model.Auth;
 import com.web.curation.model.Health;
 import com.web.curation.model.Post;
 import com.web.curation.model.PostResponse;
 import com.web.curation.model.Scrap;
+import com.web.curation.model.UserInfo;
+import com.web.curation.service.AuthService;
 import com.web.curation.service.CommentService;
 import com.web.curation.service.DiseaseService;
 import com.web.curation.service.HealthService;
@@ -48,6 +53,9 @@ public class ScrapController {
 	
 	@Autowired
 	HealthService healthService;
+	
+	@Autowired
+	AuthService authService;
 	
 	@Autowired
 	DiseaseService diseaseService;
@@ -88,8 +96,19 @@ public class ScrapController {
 	
 	@ApiOperation(value = "스크랩 추가", response = String.class)
 	@PostMapping
-	public ResponseEntity<String> Createhealth(@RequestBody Scrap scrap) {
-		System.out.println(scrap.toString());
+	public ResponseEntity<String> Createhealth(@RequestBody Scrap scrap, HttpServletRequest request) {
+		//System.out.println(scrap.toString());
+		
+		String accessToken = (String) request.getAttribute("accessToken");
+		int user_id = 1;
+		if (accessToken != null) {
+			Auth auth = authService.findAuthByAccessToken(accessToken);
+			user_id = auth.getUser_id();
+		}
+		
+		scrap.setuser_id(user_id);
+		UserInfo userInfo = userinfoService.selectUserInfoByUserid(user_id);
+		
 		if (scrapService.createScrap(scrap) == 1) {
 			return new ResponseEntity<String>("success", HttpStatus.OK);
 		}
