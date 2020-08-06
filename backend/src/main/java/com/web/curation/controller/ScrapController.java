@@ -62,29 +62,57 @@ public class ScrapController {
 	
 	@ApiOperation(value = "유저에 해당하는 스크랩 불러오기.", response = List.class)
 	@GetMapping("{user_id}")
-	public ResponseEntity<List<PostResponse>> selectuserScrap(@PathVariable int user_id) throws Exception {
+	public ResponseEntity<List<PostResponse>> selectuserScrap(@PathVariable int user_id,@RequestParam int num) throws Exception {
 		List<Scrap> scrapList = scrapService.selectScrap(user_id);
 		//System.out.println(scrapList.toString());
-		List<Post> postList = postService.selectScrapInfo(scrapList);
+		List<Post> Allpage = postService.selectScrapInfo(scrapList);
+		List<Post> page = null;
 		List<PostResponse> response = new ArrayList<>();
-
-		for (int i = 0; i < postList.size(); i++) {
-			PostResponse temp = new PostResponse();
-			temp.posts_id=postList.get(i).getPosts_id();
-			temp.post=postList.get(i);
-			try {
-				temp.diseasename = diseaseService.selectDiseaseByDiseasecode(temp.post.getDiseasecode()).getDiseasename();
-			}catch(NullPointerException e) {
-				temp.diseasename = "";
+		
+		if (Allpage.size() / 10 > num && num * 10 + 10 <= Allpage.size()) {
+			page = Allpage.subList(num * 10, num * 10 + 10);
+			
+			//페이지 돌면서 response에 다시 저장
+			for(int i=0; i<page.size(); i++) {
+				PostResponse temp = new PostResponse();
+				temp.posts_id = page.get(i).getPosts_id();
+				temp.post = page.get(i);
+				try {
+					temp.diseasename = diseaseService.selectDiseaseByDiseasecode(temp.post.getDiseasecode()).getDiseasename();
+				}catch(NullPointerException e) {
+					temp.diseasename = "";
+				}
+				int userid = temp.post.getUser_id();
+				temp.userinfo = userinfoService.selectUserInfoByUserid(userid);
+				temp.userinfo.setPassword(null);
+				temp.comments = commentsService.selectComment(temp.posts_id);
+				temp.healths = healthService.selectHealthList(temp.posts_id);
+				response.add(temp);
 			}
-			int post_user_id = temp.post.getUser_id();
-			temp.userinfo = userinfoService.selectUserInfoByUserid(post_user_id);
-			temp.userinfo.setPassword(null);
-			temp.comments=commentsService.selectComment(temp.posts_id);
-			temp.healths = healthService.selectHealthList(temp.posts_id);
-			response.add(temp);
+			return new ResponseEntity<List<PostResponse>>(response, HttpStatus.OK);
+		} else if (Allpage.size() / 10 < num) {
+			return new ResponseEntity<List<PostResponse>>(response, HttpStatus.NO_CONTENT);
 		}
-		return new ResponseEntity<List<PostResponse>>(response, HttpStatus.OK);
+		else {
+			page = Allpage.subList(num*10, Allpage.size());
+			for(int i=0; i<page.size(); i++) {
+				PostResponse temp = new PostResponse();
+				temp.posts_id = page.get(i).getPosts_id();
+				temp.post = page.get(i);
+				try {
+					temp.diseasename = diseaseService.selectDiseaseByDiseasecode(temp.post.getDiseasecode()).getDiseasename();
+				}catch(NullPointerException e) {
+					temp.diseasename = "";
+				}
+				int userid = temp.post.getUser_id();
+				temp.userinfo = userinfoService.selectUserInfoByUserid(userid);
+				temp.userinfo.setPassword(null);
+				temp.comments = commentsService.selectComment(temp.posts_id);
+				temp.healths = healthService.selectHealthList(temp.posts_id);
+				response.add(temp);
+			}
+			return new ResponseEntity<List<PostResponse>>(response, HttpStatus.OK);
+		}
 	}
 	
 	@ApiOperation(value = "해당하는 스크랩 존재유무", response = List.class)

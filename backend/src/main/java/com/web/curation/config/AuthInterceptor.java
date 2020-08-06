@@ -65,12 +65,12 @@ public class AuthInterceptor extends HandlerInterceptorAdapter{
 				//System.out.println("액세스 토큰 x");
 				accessToken =null;
 			}
-			else if(!jwtService.isValidToken(accessToken, JwtService.AT_SECRET_KEY)){
+			/*else if(!jwtService.isValidToken(accessToken, JwtService.AT_SECRET_KEY)){
 				Auth auth = authService.findAuthByAccessToken(accessToken);
 				response.addHeader("refreshToken", auth.getRefresh_token());
 				//throw new AuthenticationException("액세스 토큰이 유효하지 않습니다");
-				accessToken = null;
-			}
+				//accessToken = null;
+			}*/
 			else {
 				//accessToken이 확인됨
 				//토큰으로 유저정보 가져오기
