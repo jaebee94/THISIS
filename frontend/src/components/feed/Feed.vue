@@ -107,6 +107,7 @@ export default {
   watch: {
     profile_data : function () {
       this.posts = []
+      this.page = 0
       this.infiniteHandler();
     }
   },
@@ -174,8 +175,12 @@ export default {
         });
       }
       else if(this.profile_data.tab == 1){ //스크랩 보여주기
-
-      axios.get(SERVER.URL + SERVER.ROUTES.scrap + "/" + this.profile_data.user_id)
+      let params = {
+        params: {
+          num: this.page
+        }
+      }
+      axios.get(SERVER.URL + SERVER.ROUTES.scrap + "/" + this.profile_data.user_id, params)
         .then(({ data }) => {
           if (data.length) {
             this.page += 1;
