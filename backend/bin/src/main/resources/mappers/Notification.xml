@@ -49,6 +49,7 @@
 		select id, follower_id, followee_id, newtofollower, newtofollowee, approval, time
 		from notification
 		where follower_id = #{user_id}
+		order by time desc
 	</select>
 	
 	<!-- 해당 user_id가 followee인 요청탭 불러오기 -->
@@ -56,6 +57,7 @@
 		select id, follower_id, followee_id, newtofollower, newtofollowee, approval, time
 		from notification
 		where followee_id = #{user_id}
+		order by time desc
 	</select>
 	
 </mapper>

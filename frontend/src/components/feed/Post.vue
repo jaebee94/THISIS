@@ -148,6 +148,9 @@ export default {
     },
 
   },
+  created(){
+    console.log(this.postInfo)
+  }
 };
 </script>
 

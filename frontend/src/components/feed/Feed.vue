@@ -106,6 +106,7 @@ export default {
   },
   watch: {
     profile_data : function () {
+      this.page = 0
       this.posts = []
       this.infiniteHandler();
     }
@@ -160,7 +161,7 @@ export default {
               element.post.health_count = element.healths.length;
               element.healths.forEach((ele) => {
                 console.log(ele)
-                if (ele.nickname == this.loginData.nickname) {
+                if (ele.user_id == this.loginData.user_id) {
                   element.health = true;
                 }
               });
@@ -174,13 +175,13 @@ export default {
         });
       }
       else if(this.profile_data.tab == 1){ //스크랩 보여주기
-
       axios.get(SERVER.URL + SERVER.ROUTES.scrap + "/" + this.profile_data.user_id)
         .then(({ data }) => {
           if (data.length) {
             this.page += 1;
             this.posts.push(...data);
              console.log("data",data)
+             console.log(this.page)
             $state.loaded();
           }else{
             $state.complete();

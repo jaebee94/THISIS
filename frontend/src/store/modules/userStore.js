@@ -13,7 +13,7 @@ const userStore = {
   },
 
   getters: {
-    config: state => ({ headers: { ACCESS_TOKEN: `${state.accessToken}` } }),
+    config: state => ({ headers: { accessToken: `${state.accessToken}` } }),
   },
 
   mutations: {
@@ -35,6 +35,7 @@ const userStore = {
         }
       })
         .then(res => {
+          
           commit('SET_TOKEN', res.data.accessToken)
           commit('SET_LOGIN_DATA', res.data)
           router.push({ name: 'Feed' })

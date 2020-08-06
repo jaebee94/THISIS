@@ -14,7 +14,7 @@ const postStore = {
   },
 
   getters: {
-    config: state => ({ headers: { ACCESS_TOKEN: `${state.accessToken}` } }),
+    config: state => ({ headers: { accessToken: `${state.accessToken}` } }),
   },
   
   mutations: {
@@ -78,8 +78,10 @@ const postStore = {
 
     // Health
     health({ getters }, healthData) {
-      axios.post(SERVER.URL + SERVER.ROUTES.health + `/${healthData.posts_id}`, healthData, getters.config)
+      
+      axios.post(SERVER.URL + SERVER.ROUTES.health + `/${healthData.posts_id}`,getters.config)
         .then(res => {
+          console.log(getters.config)
           console.log(res.data)
         })
     },
