@@ -2,6 +2,7 @@ import axios from 'axios'
 import router from '@/router'
 import SERVER from '@/api/RestApi.js'
 
+import cookies from 'vue-cookies'
 const postStore = {
   namespaced: true,
 
@@ -9,9 +10,11 @@ const postStore = {
     comments: {},
     healths: {},
     checkScrap: 0,
+    accessToken: cookies.get('access-token'),
   },
 
   getters: {
+    config: state => ({ headers: { ACCESS_TOKEN: `${state.accessToken}` } }),
   },
   
   mutations: {
@@ -23,6 +26,9 @@ const postStore = {
     },
     SET_CHECK_SCRAPS(state, checkScrap) {
       state.checkScrap = checkScrap
+    },
+    SET_SCRAPS(state, scraps) {
+      state.profileData.scrapInfo = scraps
     },
   },
 
@@ -85,15 +91,14 @@ const postStore = {
     },
 
     // Scrap
-    scrap({ state, getters }, post_id) {
-      var data = {
-        posts_id: post_id,
-        user_id: state.loginData.user_id
-      }
-      axios.post(SERVER.URL + SERVER.ROUTES.scrap, data, getters.config)
+    scrap({getters},params) {
+      axios.post(SERVER.URL + SERVER.ROUTES.scrap, {
+        posts_id: params.posts_id,
+        user_id: params.user_id
+      }, getters.config)
     },
-    deleteScrap({ state, getters }, post_id){
-      axios.delete(SERVER.URL + SERVER.ROUTES.scrap+`/${post_id}/${state.loginData.user_id}`,getters.config)
+    deleteScrap({ getters }, params){
+      axios.delete(SERVER.URL + SERVER.ROUTES.scrap+`/${params.posts_id}/${params.user_id}`,getters.config)
       .then(res => {
         console.log("result", res);
       }).catch(err => console.log(err))

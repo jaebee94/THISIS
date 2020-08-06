@@ -64,7 +64,7 @@
     <div>
       <post
         v-for="postInfo in posts"
-        v-bind:key="postInfo"
+        v-bind:key="postInfo.posts_id"
         v-bind:postInfo="postInfo"
         @send-modify="showModify"
       ></post>
@@ -104,6 +104,12 @@ export default {
     ...mapState("userStore", ["loginData"]),
     ...mapState("postStore", ["comments", "checkScrap"]),
   },
+  watch: {
+    profile_data : function () {
+      this.posts = []
+      this.infiniteHandler();
+    }
+  },
   methods: {
     ...mapActions("postStore", [
       "updatePost",
@@ -130,7 +136,8 @@ export default {
       }
 
       
-      if(this.profile_data== undefined || this.profile_data.tab == "myFeed") {
+      if(this.profile_data== undefined || this.profile_data.tab == 0) {
+
         axios.get(SERVER.URL + SERVER.ROUTES.posts+"/new", params).then(({ data }) => {
           if (data.length) {
             this.page += 1;
@@ -153,11 +160,12 @@ export default {
               element.post.health_count = element.healths.length;
               element.healths.forEach((ele) => {
                 console.log(ele)
-                if (ele.userinfo.nickname == this.loginData.nickname) {
+                if (ele.nickname == this.loginData.nickname) {
                   element.health = true;
                 }
               });
             });
+            console.log("data",data)
             this.posts.push(...data);
             $state.loaded();
           } else {
@@ -165,13 +173,14 @@ export default {
           }
         });
       }
-      else if(this.profile_data.tab == "scrap"){
+      else if(this.profile_data.tab == 1){ //스크랩 보여주기
 
       axios.get(SERVER.URL + SERVER.ROUTES.scrap + "/" + this.profile_data.user_id)
         .then(({ data }) => {
           if (data.length) {
             this.page += 1;
             this.posts.push(...data);
+             console.log("data",data)
             $state.loaded();
           }else{
             $state.complete();
@@ -221,6 +230,7 @@ export default {
   },
   created() {
     this.$store.dispatch("getCheckScrap");
+    console.log('logindata',this.loginData)
   },
 };
 </script>

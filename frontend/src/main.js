@@ -8,7 +8,7 @@ import InfiniteLoading from "vue-infinite-loading";
 require('@/assets/style.css')
 Vue.config.productionTip = false
 
-Vue.component('post', Post)
+Vue.component('Post', Post)
 Vue.component('InfiniteLoading', InfiniteLoading)
 Vue.component('Feed', Feed)
 
