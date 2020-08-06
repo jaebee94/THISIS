@@ -230,6 +230,9 @@ AWS 활용한 서버 연동
 |-----|---|
 |ssh -i I3A301T.pem ubuntu@i3a301.p.ssafy.io|키 I3A301T.pem을 가지고 AWS 서버에 접속|
 |sudo java -jar test/THISIS-0.0.3.jar|AWS 서버 내부에서 스프링 서버 실행|
+|(backend 폴더에서) mvn package | 백엔드 스프링 서버 빌드 |
+| pm2 restart War2 | 서버에 백엔드 빌드 파일 반영 |
+|(frontend 폴더에서) npm run buile | 프론트엔드 뷰 배포 |
 
 ## DB sql문 설정
 
