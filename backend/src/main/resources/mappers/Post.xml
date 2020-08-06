@@ -14,6 +14,7 @@
 		select*
 		from posts
 		where user_id=#{user_id}
+		order by post_date desc
 	</select>
 	
 	<select id="selectScrapInfo" parameterType="java.util.List" resultType="Post">
