@@ -69,7 +69,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter{
 				Auth auth = authService.findAuthByAccessToken(accessToken);
 				response.addHeader("refreshToken", auth.getRefresh_token());
 				//throw new AuthenticationException("액세스 토큰이 유효하지 않습니다");
-				accessToken = null;
+				//accessToken = null;
 			}
 			else {
 				//accessToken이 확인됨
