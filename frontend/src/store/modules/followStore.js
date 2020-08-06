@@ -1,5 +1,5 @@
 import axios from 'axios'
-// import router from '@/router'
+import cookies from 'vue-cookies'
 import SERVER from '@/api/RestApi.js'
 
 const followStore = {
@@ -7,9 +7,11 @@ const followStore = {
 
   state: {
     followee_list: false,
+    accessToken: cookies.get('access-token'),
   },
 
   getters: {
+    config: state => ({ headers: { ACCESS_TOKEN: `${state.accessToken}` } }),
   },
 
   mutations: {
