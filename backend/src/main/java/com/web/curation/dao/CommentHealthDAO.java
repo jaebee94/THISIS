@@ -2,9 +2,11 @@ package com.web.curation.dao;
 
 import java.util.List;
 
-import com.web.curation.model.Comment_health;
-import com.web.curation.model.Health;
+import org.apache.ibatis.annotations.Mapper;
 
+import com.web.curation.model.Comment_health;
+
+@Mapper
 public interface CommentHealthDAO {
 	public int selectCommentHealth(int comment_id);
 	public int selectUserHealth(int user_id);

@@ -2,6 +2,7 @@ package com.web.curation.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.web.curation.dao.CommentHealthDAO;
@@ -9,7 +10,7 @@ import com.web.curation.model.Comment_health;
 
 @Service
 public class CommentHealthServiceImpl implements CommentHealthService{
-	
+	@Autowired
 	CommentHealthDAO commenthealthdao;
 
 	@Override
