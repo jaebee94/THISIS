@@ -12,8 +12,8 @@ public class TagServiceImpl implements TagService {
 	TagDAO tagdao;
 
 	@Override
-	public int createTag(Tag tag) {
-		return tagdao.createTag(tag);
+	public int createTag(String tagname) {
+		return tagdao.createTag(tagname);
 	}
 
 	@Override
@@ -24,6 +24,16 @@ public class TagServiceImpl implements TagService {
 	@Override
 	public int deleteTag(int tagid) {
 		return tagdao.deleteTag(tagid);
+	}
+
+	@Override
+	public Tag selectTagByTagname(String tagname) {
+		return tagdao.selectTagByTagname(tagname);
+	}
+
+	@Override
+	public int selectCountByTagname(String tagname) {
+		return tagdao.selectCountByTagname(tagname);
 	}
 
 }

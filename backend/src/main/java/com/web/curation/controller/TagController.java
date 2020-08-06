@@ -32,7 +32,7 @@ public class TagController {
 	@ApiOperation(value = "태그 추가", response = String.class)
 	@PostMapping
 	public ResponseEntity<String> CreateTag(@RequestBody Tag tag) {
-		if (tagservice.createTag(tag) == 1) {
+		if (tagservice.createTag(tag.getTagname()) == 1) {
 			return new ResponseEntity<String>("success", HttpStatus.OK);
 		}
 		return new ResponseEntity<String>("fail", HttpStatus.NO_CONTENT);
