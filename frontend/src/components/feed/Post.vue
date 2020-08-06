@@ -14,7 +14,7 @@
             <a
               class="name"
               @click="goProfile(postInfo.post.user_id)"
-            >{{ postInfo.post.nickname }}</a>
+            >{{ postInfo.userinfo.nickname }}</a>
           </td>
           <td>
             <a class="time">{{postInfo.post.post_date }}</a>
