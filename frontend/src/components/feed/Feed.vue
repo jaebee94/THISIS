@@ -63,7 +63,7 @@
       </div>
     </div>
 
-    <div  >
+    <div>
       <post v-for="postInfo in posts" v-bind:key="postInfo"  
       v-bind:postInfo = "postInfo"  
       @send-modify="showModify"></post>
@@ -94,11 +94,15 @@ export default {
       posts: [],
     };
   },
+  props: {
+    parent_post: {
+      default: void 0,
+    },
+  },
   computed: {
     ...mapState(["comments", "checkScrap","loginData"]),
   },
   methods: {
-    //...mapActions(["fetchPosts"]),
     //...mapActions(["fetchHealths"]),
     
     ...mapActions(["updatePost", "createComment", "updateComment"]),
@@ -106,20 +110,25 @@ export default {
 
     // Infinite Scrolling
     infiniteHandler($state) {
-      console.log("asd");
-      axios
-        .get(SERVER.URL + SERVER.ROUTES.posts, {
-          params: {
+      //TODO 해당 유저아이디의 포스트만 반환부분 분기!
+        let params = {
+          params :{
             num: this.page,
-          },
-        })
+            user_id : -1 //-1일 경우 전체 게시물
+          }
+        }
+        if(this.parent_post !=0){
+          console.log(1);
+          params.user_id =0; //0일 경우 내 게시물 
+        }
+        else{
+        axios
+        .get(SERVER.URL + SERVER.ROUTES.posts, params)
         .then(({ data }) => {
-          console.log(data);
           if (data.length) {
             this.page += 1;
 
             data.forEach((element) => {
-              console.log("eleement", element);
               element.health = false;
               if (element.healths.length > 0) console.log(element);
               element.scrap = false;
@@ -135,7 +144,6 @@ export default {
                   },
                 )
                 .then((res) => {
-                  console.log("data", res.data);
                   if(res.data > 0) element.scrap = true;
                 })
                 .catch((err) => console.log(err));
@@ -154,6 +162,11 @@ export default {
             $state.complete();
           }
         });
+
+        }
+        
+
+      
     },
 
     clearCommentData() {

@@ -23,7 +23,6 @@ export default new Vuex.Store({
       postInfo: {},
       scrapInfo: {},
     },
-    posts: {},
     healths: {},
     comments: {},
     notification: {
@@ -63,9 +62,6 @@ export default new Vuex.Store({
     },
     SET_CHECK_SCRAPS(state, checkScrap) {
       state.checkScrap = checkScrap
-    },
-    SET_POSTS(state, posts) {
-      state.posts = posts
     },
     SET_HEALTHS(state, healths) {
       state.healths = healths
@@ -149,7 +145,7 @@ export default new Vuex.Store({
           console.log("set_profile_info",res.data);
           commit('SET_PROFILE_INFO', res.data)
         })
-      await axios.get(SERVER.URL + SERVER.ROUTES.posts + `/${userId}`)
+      /*await axios.get(SERVER.URL + SERVER.ROUTES.posts + `/${userId}`)
         .then( function(res) {
            res.data.forEach(async (element) => {
             element.health = false;
@@ -182,7 +178,7 @@ export default new Vuex.Store({
           })
           commit('SET_POST_INFO', res.data)
           
-        })
+        })*/
         router.push({ name: 'Profile' })
     },
     getCheckScrap({state,getters, commit},posts_id){
@@ -224,18 +220,6 @@ export default new Vuex.Store({
           alert('변경이 완료되었습니다.')
           dispatch('goProfile', changeInfo.user_id)
           router.push({ name: "Profile" })
-        })
-        .catch(err => console.log(err))
-    },
-    fetchPosts({ commit }) {
-      axios.get(SERVER.URL + SERVER.ROUTES.posts, {
-        params: {
-          num: 0
-        }
-      })
-        .then(res => {
-          commit('SET_POSTS', res.data)
-          console.log(res.data.hits)
         })
         .catch(err => console.log(err))
     },
