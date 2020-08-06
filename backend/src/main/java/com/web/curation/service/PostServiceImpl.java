@@ -57,4 +57,9 @@ public class PostServiceImpl implements PostService {
 	public List<Post> selectMainFeed(int user_id) {
 		return PostDao.selectMainFeed(user_id);
 	}
+
+	@Override
+	public int selectAutoIncrement() {
+		return PostDao.selectAutoIncrement();
+	}
 }

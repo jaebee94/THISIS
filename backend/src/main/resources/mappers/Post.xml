@@ -59,4 +59,8 @@
 		OR posts.user_id = #{user_id}
 		OR posts.diseasecode in (select diseasecode from disease where exists (select * from subscribe where subscribe.user_id = #{user_id}))
 	</select>
+	
+	<select id="selectAutoIncrement" resultType="Integer">
+		select LAST_INSERT_ID()
+	</select>
 </mapper>

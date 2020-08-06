@@ -31,12 +31,14 @@ import com.web.curation.model.Post;
 import com.web.curation.model.PostRequest;
 import com.web.curation.model.PostResponse;
 import com.web.curation.model.Tag;
+import com.web.curation.model.Tag_relation;
 import com.web.curation.model.UserInfo;
 import com.web.curation.service.AuthService;
 import com.web.curation.service.CommentService;
 import com.web.curation.service.DiseaseService;
 import com.web.curation.service.HealthService;
 import com.web.curation.service.PostService;
+import com.web.curation.service.TagRelationService;
 import com.web.curation.service.TagService;
 import com.web.curation.service.UserInfoService;
 import com.web.curation.service.UserInfoServiceImpl;
@@ -68,6 +70,9 @@ public class PostController {
 	
 	@Autowired
 	TagService tagService;
+	
+	@Autowired
+	TagRelationService tagRelationService;
 	
 	@ApiOperation(value = "모든 게시판을 반환한다.", response = List.class)
 	@GetMapping
@@ -248,14 +253,16 @@ public class PostController {
 		if (postservice.createPost(postRequest.post) == 1) {
 			//태그 저장
 			List<String> tags = postRequest.tags;
-			
+			int posts_id = postservice.selectAutoIncrement();
+			System.out.println("posts_id :"+posts_id);
 			for(int i=0; i<tags.size(); i++) {
 				//태그 저장
 				System.out.println(tags.get(i));
 				if(tagService.selectCountByTagname(tags.get(i)) == 0) {	//없음
 					tagService.createTag(tags.get(i));
-					//Tag now = tagService.selectTagByTagname(tags.get(i));
 				}
+				Tag now = tagService.selectTagByTagname(tags.get(i));
+				tagRelationService.createTagRelation(new Tag_relation(now.getTagid(), posts_id));
 			}
 			return new ResponseEntity<String>("success", HttpStatus.OK);
 		}
