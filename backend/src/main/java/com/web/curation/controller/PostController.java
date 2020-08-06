@@ -154,6 +154,7 @@ public class PostController {
 			
 			for(int i=0; i<tags.size(); i++) {
 				//태그 저장
+				System.out.println(tags.get(i));
 				
 			}
 			return new ResponseEntity<String>("success", HttpStatus.OK);
