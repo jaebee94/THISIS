@@ -1,5 +1,4 @@
 import axios from 'axios'
-import cookies from 'vue-cookies'
 import SERVER from '@/api/RestApi.js'
 
 const notificationStore = {
@@ -13,7 +12,6 @@ const notificationStore = {
   },
 
   getters: {
-    config: () => ({ headers: { accessToken:  cookies.get('access-token') } }),
   },
 
   mutations: {
@@ -26,23 +24,23 @@ const notificationStore = {
   },
 
   actions: {
-    fetchNotification({ getters, commit }, id) {
-      axios.get(SERVER.URL + SERVER.ROUTES.notification + id, getters.config.headers)
+    fetchNotification({ rootGetters, commit }, id) {
+      axios.get(SERVER.URL + SERVER.ROUTES.notification + id, rootGetters.config.headers)
         .then(res => {
           commit('SET_NOTIFICATION', res.data)
         })
         .catch(err => console.log(err))
     },
-    putNotification({ getters }, params) {
-      axios.put(SERVER.URL + SERVER.ROUTES.following, params, getters.config.headers)
+    putNotification({ rootGetters }, params) {
+      axios.put(SERVER.URL + SERVER.ROUTES.following, params,rootGetters.config.headers)
         .then(res => {
           console.log(res)
         })
         .catch(err => console.log(err))
     },
 
-    fetchRequests({ getters, commit }, id) {
-      axios.get(SERVER.URL + SERVER.ROUTES.requests + id, getters.config.headers)
+    fetchRequests({ rootGetters, commit }, id) {
+      axios.get(SERVER.URL + SERVER.ROUTES.requests + id, rootGetters.config.headers)
         .then(res => {
           commit('SET_REQUESTS', res.data)
           console.log(res)

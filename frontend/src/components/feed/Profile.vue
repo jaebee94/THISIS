@@ -316,6 +316,7 @@ export default {
       .catch(function (err) {
         console.log("ERROR OCCURED : ", err);
       });
+    console.log(this.profileData)
   },
 };
 </script>

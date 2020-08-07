@@ -1,7 +1,6 @@
 import axios from 'axios'
 import router from '@/router'
 import SERVER from '@/api/RestApi.js'
-
 import cookies from 'vue-cookies'
 
 const userStore = {
@@ -12,7 +11,6 @@ const userStore = {
   },
 
   getters: {
-    config: () => ({ headers: { accessToken:  cookies.get('access-token') } }),
   },
 
   mutations: {
@@ -55,23 +53,16 @@ const userStore = {
       cookies.remove('access-token')
       window.localStorage.clear(); 
       router.push({ name: 'Login' })
-      // axios.post(SERVER.URL + SERVER.ROUTES.logout, null, getters.config.headers)
-      //   .then(() => {
-      //     commit('SET_TOKEN', null)
-      //     commit('SER_LOGIN_DATA', null)
-      //     cookies.remove('access-token')
-      //     router.push({ name: 'Login' })
-      //   })
-      //   .catch(err => console.log(err))
     },
-    changeUserInfo({ dispatch,getters }, changeInfo) {
-      axios.put(SERVER.URL + SERVER.ROUTES.user + changeInfo.user_id, changeInfo, getters.config)
-      .then(() => {
+     changeUserInfo({rootGetters,dispatch}, changeInfo) {
+      console.log(changeInfo)
+      axios.put(SERVER.URL + SERVER.ROUTES.user + changeInfo.user_id, changeInfo,rootGetters.config)
+      .then(async () => {
         alert('변경이 완료되었습니다.')
-        dispatch('goProfile', changeInfo.user_id)
-        router.push({ name: "Profile" })
+        dispatch('profileStore/goProfile', changeInfo.user_id,{root:true}) // root로 보내서 이동
       })
       .catch(err => console.log(err))
+
     },
   },
 }
