@@ -151,7 +151,6 @@ export default {
             data.forEach((element) => {
               element.health = false;
               element.scrap = false;
-               console.log(element)
               axios
                 .get(SERVER.URL + SERVER.ROUTES.scrap, {
                   params: {
