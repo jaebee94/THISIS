@@ -404,15 +404,17 @@ export default {
       this.$parent.$parent.isHidden = false;
       this.isModifyHidden = false;
     },
-    showModify(info) { //댓글이나 글 수정시 부르는 함수
+    showModify(info) {
+      //댓글이나 글 수정시 부르는 함수
+      console.log('showInfo', info)
       this.postInfo = info.postInfo;
       this.$parent.$parent.isHidden = info.isHidden;
       this.isModifyHidden = info.isModifyHidden;
       document.body.className = "lockbody";
       //댓글창 필요 변수
       this.isPostHidden = info.isPostHidden;
-      this.commentData.posts_id=info.postInfo.post_id;
-      this.commentData.user_nickname = this.loginData.nickname;
+      this.commentData.posts_id = info.postInfo.posts_id;
+      this.commentData.user_id = this.loginData.user_id;
     },
     showModifyQnA(info){
       this.qnaInfo = info.qnaInfo;
