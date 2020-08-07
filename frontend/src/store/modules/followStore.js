@@ -1,5 +1,4 @@
 import axios from 'axios'
-import cookies from 'vue-cookies'
 import SERVER from '@/api/RestApi.js'
 
 const followStore = {
@@ -10,7 +9,6 @@ const followStore = {
   },
 
   getters: {
-    config: () => ({ headers: { accessToken:  cookies.get('access-token') } }),
   },
 
   mutations: {
@@ -21,16 +19,16 @@ const followStore = {
 
   actions: {
     // 팔로우 요청 수락 (팔로우가 맺어짐)
-    createFollow({ getters }, params) {
-      axios.post(SERVER.URL + SERVER.ROUTES.follow, params, getters.config.headers)
+    createFollow({ rootGetters }, params) {
+      axios.post(SERVER.URL + SERVER.ROUTES.follow, params, rootGetters.config.headers)
         .then(res => {
           console.log(res)
         })
         .catch(err => console.log(err))
     },
     // 내가 클릭해서 요청 보내는 작업
-    createFollowing({ getters }, params) {
-      axios.post(SERVER.URL + SERVER.ROUTES.following, params, getters.config.headers)
+    createFollowing({ rootGetters }, params) {
+      axios.post(SERVER.URL + SERVER.ROUTES.following, params, rootGetters.config.headers)
         .then((res) => {
           console.log(res);
           console.log(params)
@@ -40,8 +38,8 @@ const followStore = {
         })
     },
     // 내가 클릭해서 요청 보냈던거 취소하는 작업
-    deleteFollowing({ getters }, params) {
-      axios.delete(SERVER.URL + SERVER.ROUTES.following, { data: params }, getters.config.headers)
+    deleteFollowing({ rootGetters }, params) {
+      axios.delete(SERVER.URL + SERVER.ROUTES.following, { data: params }, rootGetters.config.headers)
         .then((res) => {
           console.log(res);
           console.log(params);

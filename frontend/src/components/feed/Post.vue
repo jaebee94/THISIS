@@ -109,7 +109,7 @@ export default {
       if(sort === 'modify') info.isModifyHidden = true;
       else if(sort ==='comment') {
           info.isPostHidden = true; 
-          // this.fetchComments(post.post_id);
+          this.fetchComments(post.posts_id);
       }
     this.$emit('send-modify', info)
     },
