@@ -84,5 +84,5 @@ public class HealthController {
 	public ResponseEntity<Integer> selectuserhealth(@PathVariable int user_id) throws Exception {
 		return new ResponseEntity<Integer>(healthservice.selectUserHealth(user_id), HttpStatus.OK);
 	}
-
+	
 }
