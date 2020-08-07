@@ -131,10 +131,7 @@ export default {
       this.$refs.imageInput.click();
     },
     onChangeImages(e){
-      console.log("시작", e);
-      console.log(e.target.files);
       const file = e.target.files[0];
-      console.log(file);
 /////////////////////////////////////////////////////////////////
       var formData = new FormData();
       formData.append('upload_file', file);

@@ -14,7 +14,7 @@ const postStore = {
   },
 
   getters: {
-    config: state => ({ headers: { ACCESS_TOKEN: `${state.accessToken}` } }),
+    config: state => ({ headers: { accessToken: `${state.accessToken}` } }),
   },
   
   mutations: {

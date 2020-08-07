@@ -17,28 +17,35 @@
     <div v-if="this.isQnAHidden" class="post" ref="qna">
       <div class="qna-header">
         <div class="title"> 
-          <a>어디가 아픈지 모르겠어요</a>
+          <a>{{qnaInfo.post.posts_title}}</a>
         </div>
         <div class="nickname">
-          <a>달린다응쎄</a>
+          <a>{{qnaInfo.userinfo.nickname}}</a>
         </div>
         <div class="time">
-          <a>2020-08-04</a>
+          <a>{{qnaInfo.post.post_date}}</a>
         </div>
       </div>
       <div class="qna-photo-wrap">
-        <img src="https://lh3.googleusercontent.com/proxy/LDn5l8kTld5AwUY1kwoXc__r3d1j1XxAFEkS9WMkk7Ccr2cWDsqFSW5MCaSAJMxPScBbh6XagWCSVpa6XOB5bwJX_V8GkA-NJivoKylEYNbph5-3A9dX">
+        <img :src="qnaInfo.post.imgsrc">
       </div>
       <div class="qna-tag-wrap">
-        <span class="disease-tag">#골다공증</span><br>
+        <div>
+          <span class="disease-tag">#{{qnaInfo.post.diseasecode}}</span>
+        </div>
         <a class="custom-tag">#이제야알았지</a>
         <a class="custom-tag">#아프지않다는걸</a>
       </div>
       <div class="qna-content-wrap">
-        졸라 아프지만 참을 수 있지 졸라 아프지만 참을 수 있지 졸라 아프지만 참을 수 있지
+        {{qnaInfo.post.posts_main}}
       </div>
       <div class="qna-comment-wrap">
-        <h1>코멘트 들어가야 함</h1>
+        <comment v-for="comment in qnaInfo.comments" v-bind:key="comment.comment_id"
+         v-bind:comment = "comment"  ></comment>
+      </div>
+      <div class="qna-comment-write-wrap">
+        <input placeholder="댓글을 남겨보세요">
+        <button>댓글</button>
       </div>
       <div class="post-footer">
         <img @click="closeQnA()" src="../../assets/images/icon/icon_close.png" />
@@ -122,27 +129,15 @@
 
     <div v-show="currentTab == 1"> 
       <h1>Q&A게시판</h1>
-      <!-- <qna v-for="qnaInfo in qnas" v-bind:key="qnaInfo"
-      v-bind:qnaInfo="qnaInfo">
-      </qna> -->
-      <qna v-bind:qnaInfo="qnaInfo" 
-      @send-modify-qna="showModifyQnA"></qna>
-      <qna></qna>
-      <qna></qna>
-      <qna></qna>
-      <qna></qna>
-      <qna></qna>
-      <qna></qna>
-      <qna></qna>
-      <qna></qna>
-      <qna></qna>
-      <qna></qna>
+      <qna v-for="qnaInfo in qnas" v-bind:key="qnaInfo"
+      v-bind:qnaInfo="qnaInfo" @send-modify-qna="showModifyQnA">
+      </qna> 
     </div>
 
     <div v-show="currentTab == 2">
       <h1>뉴스게시판</h1>
     </div>
-
+    <!-- infinite-loading의 위치를 tab 마다 넣어야 할지 고민중 -->
     <infinite-loading @infinite="infiniteHandler"></infinite-loading>
   </div>
 </template>
@@ -153,11 +148,12 @@ import axios from "axios";
 import SERVER from "@/api/RestApi.js";
 
 import qna from '../feed/QnA.vue';
+import comment from '../feed/Comment.vue';
 
 export default {
   name: "Feed",
   components:{
-    qna,
+    qna, comment
   },
   data() {
     return {
@@ -175,7 +171,116 @@ export default {
       posts: [],
 
       qnaInfo: {},
-      qnas: [],
+      qnas: [
+        {
+          comments: [
+            {
+              posts_id: 25,
+              comment_main : "그러게요 코로나 사라져라 제바알",
+              hide : 0,
+              comment_id: 1,
+              comment_date: "2020-08-06 08:52:44",
+              user_id: 2,
+              // 실제로는 nickname이 없지만 이거 받아와야됨
+              nickname: '김과장'
+            }
+          ],
+          diseasename: "",
+          health: false,
+          healths: [
+            {
+              nickname: null,
+              posts_id: 25,
+              user_id: 1
+            }
+          ],
+          post : {
+            category: 1,
+            diseasecode: "코로나",
+            health_count: 1,
+            imgsrc: 'https://image.dongascience.com/Photo/2020/01/008f1295bea0e575bdb0d8fcdd1a7390.jpg',
+            post_date: "2020-08-06 08:51:55",
+            posts_id: 25,
+            posts_main: "코로나바이러스감염증(코로나 19)은 새롭게 발견된 건데 이거 많이 아플까요 많이 안아플까요? 너무 걱정입니다",
+            posts_title: "코로나 바이러스 걱정이네요",
+            user_id: 1,
+          },
+          posts_id: 25,
+          scrap: false,
+          userinfo: {
+            email : "woqls8499@gmail.com",
+            introduction: "한줄 소개를 작성해주세요",
+            nickname: 'Jaebin',
+            password: null,
+            user_id: 1,
+            username: "조재빈"
+          }
+        },
+        {
+          comments: [
+            {
+              posts_id: 26,
+              comment_main : "님은 다리골절? 나는 팔골절임",
+              hide : 0,
+              comment_id: 2,
+              comment_date: "2020-08-06 08:52:44",
+              user_id: 1,
+              // 실제로는 nickname이 없지만 이거 받아와야됨,
+              nickname: 'Jaebin'
+            },
+             {
+              posts_id: 26,
+              comment_main : "다 비켜라 나는 목골절",
+              hide : 0,
+              comment_id: 3,
+              comment_date: "2020-08-06 08:54:44",
+              user_id: 3,
+              // 실제로는 nickname이 없지만 이거 받아와야됨,
+              nickname: '달린다응쎄'
+            },
+             {
+              posts_id: 26,
+              comment_main : "제발 조용히 좀 해라",
+              hide : 0,
+              comment_id: 4,
+              comment_date: "2020-08-06 08:56:44",
+              user_id: 1,
+              // 실제로는 nickname이 없지만 이거 받아와야됨,
+              nickname: '김과장'
+            }
+          ],
+          diseasename: "",
+          health: false,
+          healths: [
+            {
+              nickname: null,
+              posts_id: 26,
+              user_id: 1
+            }
+          ],
+          post : {
+            category: 1,
+            diseasecode: "다리 골절",
+            health_count: 1,
+            imgsrc: 'https://lh3.googleusercontent.com/proxy/qYfe36ux7YV3FJLNlLqu97WR0YTJkVSYpaO7J-7gQqQ8d3oDrFGHWwSN5tce9nJUc-63bkMJBoQdtiq2_8T3rO9hbTl9HC366CEVIIuciRD584RDLpktW-EuF7Mn4yuWRthKK4UkTWvx0KYGPlhBeXujKQ0BJK8',
+            post_date: "2020-08-06 09:00:55",
+            posts_id: 26,
+            posts_main: "다리가 골절되면 많이 못 걷잖아요 근데 저는 지금 잘 걸을 수 있을 것 같은데 어떡하죠? ㅋㅋㅋㅋㅋㅋ",
+            posts_title: "다리가 골절되면..",
+            user_id: 2,
+          },
+          posts_id: 26,
+          scrap: false,
+          userinfo: {
+            email : "wlgus@gmail.com",
+            introduction: "한줄 소개를 작성해주세요",
+            nickname: '김과장',
+            password: null,
+            user_id: 2,
+            username: '김지현'
+          }
+        }
+      ],
 
       currentTab: 0,
       tabs: [
@@ -250,7 +355,8 @@ export default {
             $state.complete();
           }
         });
-
+        
+      console.log("posts",this.posts);
         }
     },
 
@@ -327,6 +433,11 @@ export default {
 
 .tabs {
   width: 100%;
+}
+
+.tab img {
+  margin-top: 10px;
+  height: 20px;
 }
 
 .feed {
@@ -597,6 +708,9 @@ export default {
 }
 
 /* ----- qna 내용 자세히 보기 모달창 코드 -----  */
+.post {
+  margin-left: 4%;
+}
 
 .qna-header {
   text-align: left;
@@ -631,6 +745,10 @@ export default {
   width: 100%;
 }
 
+.qna-tag-wrap div {
+  margin-bottom: 5px;
+}
+
 .qna-tag-wrap .disease-tag {
   background-color: rgb(0, 171, 132);
   color: white;
@@ -649,6 +767,49 @@ export default {
 .qna-content-wrap {
   width: 90%;
   margin-left: 5%;
+}
+
+.qna-comment-wrap {
+  width: 100%;
+  height: 200px;
+  overflow: auto;
+}
+
+.qna-comment-write-wrap {
+  position: absolute;
+  bottom: 10px;
+  width: 90%;
+  margin-left: 5%;
+}
+
+.qna-comment-write-wrap input {
+  width: 70%;
+  height: 25px;
+  background-color: rgb(240, 240, 240);
+  border: none;
+  border-radius: 5px;
+  padding-left: 5%;
+  outline: none;
+  transition-duration: 300ms;
+}
+
+.qna-comment-write-wrap input:focus {
+  background-color: rgb(220, 220, 220);
+}
+
+.qna-comment-write-wrap button {
+  width: 20%;
+  height: 25px;
+  border: none;
+  background-color: rgb(0, 171, 132);
+  font-weight: 600;
+  color: white;
+  line-height: 1;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  outline: none;
+  border-radius: 5px;
+  margin-left: 1%;
 }
 
 /* --------------------------------------------- */

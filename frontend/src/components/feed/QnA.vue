@@ -2,25 +2,26 @@
   <div class="qna wrap">
     <div class="qna-header">
         <div class="qna-title">
-            <a>제목입니다</a>
+            <a>{{qnaInfo.post.posts_title}}</a>
         </div>
         <div class="qna-tag">
-            <a>#태그입니다</a>
+            <a>#{{qnaInfo.post.diseasecode}}</a>
         </div>
         <img @click="changeSelectQnA(qnaInfo, 'modify')"  src="../../assets/images/icon/icon_edit_unselect.png">
     </div>
     <div class="qna-footer">
         <span>
-            <strong class="qna-writer">강세응</strong>
-            <a class="qna-time">2020-08-06</a>
+            <strong class="qna-writer">{{qnaInfo.userinfo.nickname}}</strong>
+            <a class="qna-time">{{qnaInfo.post.post_date}}</a>
             <img @click="changeSelectQnA(qnaInfo, 'comment')" src="../../assets/images/icon/icon_talk.png">
-            <a class="qna-reply">13</a>
+            <a class="qna-reply">{{qnaInfo.comments.length}}</a>
         </span>
     </div>
   </div>
 </template>
 
 <script>
+
 export default {
     name: 'qna',
     data() {
@@ -31,6 +32,7 @@ export default {
     methods : {
         changeSelectQnA(qna, sort) {
             this.selectedQnA = qna;
+            console.log("QNA에서 찍는 로그", this.selectedQnA);
             let info = {
                 qnaInfo: this.selectedQnA,
                 isHidden: true,
@@ -48,6 +50,9 @@ export default {
             }
             this.$emit('send-modify-qna', info);
         },
+    },
+    created() {
+        console.log(this.selectedQnA);
     },
     props: {
         qnaInfo: {
@@ -76,7 +81,7 @@ export default {
     }
 
     .qna-title a {
-        font-size: 25px;
+        font-size: 18px;
         font-weight: 600;
         margin-left: 5%;
     }
