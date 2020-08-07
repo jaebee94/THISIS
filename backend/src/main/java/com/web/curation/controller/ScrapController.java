@@ -133,9 +133,7 @@ public class ScrapController {
 			Auth auth = authService.findAuthByAccessToken(accessToken);
 			user_id = auth.getUser_id();
 		}
-		
 		scrap.setuser_id(user_id);
-		UserInfo userInfo = userinfoService.selectUserInfoByUserid(user_id);
 		
 		if (scrapService.createScrap(scrap) == 1) {
 			return new ResponseEntity<String>("success", HttpStatus.OK);

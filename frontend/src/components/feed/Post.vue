@@ -95,7 +95,7 @@ export default {
       "fetchComments",
       'health',
       "scrap",
-       "deleteScrap"
+      "deleteScrap"
       ]),
     changeSelectPost(post, sort){
      this.selectedPost = post;
@@ -109,10 +109,9 @@ export default {
       if(sort === 'modify') info.isModifyHidden = true;
       else if(sort ==='comment') {
           info.isPostHidden = true; 
-          this.fetchComments(post.posts_id);
+          // this.fetchComments(post.post_id);
       }
-     console.log(info);
-    this.$emit('send-modify',info)
+    this.$emit('send-modify', info)
     },
     clickHealth(post) {
       if (post.health == true) {
