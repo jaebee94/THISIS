@@ -1,5 +1,5 @@
 import axios from 'axios'
-// import router from '@/router'
+import cookies from 'vue-cookies'
 import SERVER from '@/api/RestApi.js'
 
 const notificationStore = {
@@ -13,6 +13,7 @@ const notificationStore = {
   },
 
   getters: {
+    config: () => ({ headers: { accessToken:  cookies.get('access-token') } }),
   },
 
   mutations: {

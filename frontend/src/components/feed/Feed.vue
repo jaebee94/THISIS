@@ -8,7 +8,7 @@
               <img class="profile-image" src="../../assets/images/icon/icon_default_image.png" />
             </td>
             <td>
-              <a class="name">{{ postInfo.post.nickname }}</a>
+              <a class="name">{{ postInfo.userinfo.nickname }}</a>
             </td>
             <td>
               <a class="time">{{ postInfo.post.post_date }}</a>
@@ -106,9 +106,9 @@ export default {
   },
   watch: {
     profile_data : function () {
-      this.posts = []
       this.page = 0
-      this.infiniteHandler();
+      this.posts = []
+      this.infiniteHandler(this);
     }
   },
   methods: {
@@ -126,20 +126,26 @@ export default {
       let params = {
         params: {
           num: this.page,
-          user_id: -1, //-1일 경우 전체 게시물
         },
       };
-      console.log(this.profile_data);
-      if (this.profile_data != undefined) {
-        var profile_id = this.profile_data.user_id;
-        params.params.user_id = profile_id;
-        //if (profile_id == this.loginData.user_id) params.params.user_id = 0; //0일 경우 내 게시물
+
+      let url = SERVER.URL;
+
+      if(this.profile_data== undefined || this.profile_data.tab == 0) {
+        url += SERVER.ROUTES.posts+"/new"
+        params.params.user_id= -1 //-1일 경우 전체 게시물
+        if (this.profile_data != undefined) { // 만약 다른 사람 계정피드에서의 포스트들이면
+          var profile_id = this.profile_data.user_id;
+          params.params.user_id = profile_id;
+          //if (profile_id == this.loginData.user_id) params.params.user_id = 0; //0일 경우 내 게시물
+        }
+      }
+      else if(this.profile_data.tab == 1){ //스크랩 보여주기
+        url += SERVER.ROUTES.scrap + "/" + this.profile_data.user_id;
       }
 
-      
-      if(this.profile_data== undefined || this.profile_data.tab == 0) {
-
-        axios.get(SERVER.URL + SERVER.ROUTES.posts+"/new", params).then(({ data }) => {
+      //통신부분
+      axios.get(url, params).then(({ data }) => {
           if (data.length) {
             this.page += 1;
            
@@ -161,7 +167,7 @@ export default {
               element.post.health_count = element.healths.length;
               element.healths.forEach((ele) => {
                 console.log(ele)
-                if (ele.nickname == this.loginData.nickname) {
+                if (ele.user_id == this.loginData.user_id) {
                   element.health = true;
                 }
               });
@@ -173,27 +179,6 @@ export default {
             $state.complete();
           }
         });
-      }
-      else if(this.profile_data.tab == 1){ //스크랩 보여주기
-      let params = {
-        params: {
-          num: this.page
-        }
-      }
-      axios.get(SERVER.URL + SERVER.ROUTES.scrap + "/" + this.profile_data.user_id, params)
-        .then(({ data }) => {
-          if (data.length) {
-            this.page += 1;
-            this.posts.push(...data);
-             console.log("data",data)
-            $state.loaded();
-          }else{
-            $state.complete();
-          }
-        }).catch(err => console.log(err))
-      }
-      
-      console.log(params);
 
     },
 
@@ -229,8 +214,8 @@ export default {
       document.body.className = "lockbody";
       //댓글창 필요 변수
       this.isPostHidden = info.isPostHidden;
-      this.commentData.posts_id = info.postInfo.post_id;
-      this.commentData.user_nickname = this.loginData.nickname;
+      this.commentData.posts_id = info.postInfo.posts_id;
+      this.commentData.nickname = this.loginData.nickname;
     },
   },
   created() {
