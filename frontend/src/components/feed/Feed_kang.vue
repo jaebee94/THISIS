@@ -138,7 +138,7 @@
     </div>
 
     <div v-show="currentTab == 2">
-      <h1>뉴스게시판</h1>
+      <news></news>
     </div>
     <!-- infinite-loading의 위치를 tab 마다 넣어야 할지 고민중 -->
     <infinite-loading @infinite="infiniteHandler"></infinite-loading>
@@ -152,11 +152,12 @@ import SERVER from "@/api/RestApi.js";
 
 import qna from '../feed/QnA.vue';
 import comment from '../feed/Comment.vue';
+import news from '../feed/News.vue';
 
 export default {
   name: "Feed",
   components:{
-    qna, comment
+    qna, comment, news
   },
   data() {
     return {
