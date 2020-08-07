@@ -12,4 +12,5 @@ public interface CommentDAO {
 	public int modifyComment(Comment comment);
 	public int deleteComment(int comment_id);
 	public int modifyhideComment(Comment comment);
+	public int checkComment(int user_id, int posts_id);
 }
