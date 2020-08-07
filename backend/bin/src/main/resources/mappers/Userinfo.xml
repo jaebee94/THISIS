@@ -73,5 +73,11 @@
 		where username LIKE concat('%',#{nickname}, '%')
 	</select>
 	
+	<!-- 회원 아이디 가져오기 -->
+	<select id="getUserId" resultType="Integer">
+		select user_id
+		from UserInfo
+		where email = #{email}
+	</select>
 
 </mapper>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.web.curation.dao.SubscribeDAO">
+	
+	<!-- 질병 전체 조회 -->
+	<select id="selectSubscribe" resultType="Subscribe">
+		select *
+		from subscribe
+	</select>
+	
+	<!-- 유저가 구독한 질병코드 조회 -->
+	<select id="selectSubscribeByUserid" resultType="Subscribe">
+		select *
+		from subscribe
+		where user_id=#{user_id}
+	</select>
+	
+	<!-- 유저가 질병 구독시 추가 -->
+	<insert id="createSubscribe" parameterType="Subscribe">
+		insert into subscribe(
+			user_id, diseasecode
+		) values (
+			#{user_id},#{diseasecode}
+		)
+	</insert>
+
+	<!-- 구독 취소 -->
+	<delete id="deleteSubscribe" parameterType="Subscribe">
+		delete 
+		from 	subscribe
+		where 	user_id = #{user_id} and diseasecode = #{diseasecode}
+	</delete>
+</mapper>
