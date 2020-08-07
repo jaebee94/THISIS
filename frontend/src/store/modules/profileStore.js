@@ -2,7 +2,6 @@ import axios from 'axios'
 import router from '@/router'
 import SERVER from '@/api/RestApi.js'
 
-import cookies from 'vue-cookies'
 
 const profileStore = {
   namespaced: true,
@@ -18,7 +17,7 @@ const profileStore = {
   },
 
   getters: {
-    config: () => ({ headers: { accessToken:  cookies.get('access-token') } }),
+   
   },
 
   mutations: {
@@ -35,53 +34,21 @@ const profileStore = {
   },
 
   actions: {
-    async goProfile({ state, commit, getters }, userId) {
-      console.log(getters.config)
+    async goProfile({ state, commit, rootGetters }, userId) {
+      console.log(rootGetters.config)
       if (userId == null) {
         userId = state.loginData.user_id
       }
-      await axios.get(SERVER.URL + SERVER.ROUTES.user + userId,getters.config)
+      await axios.get(SERVER.URL + SERVER.ROUTES.user + userId,rootGetters.config)
         .then(res => {
           commit('SET_USER_INFO', res.data)
         })
         .catch(err => console.log(err))
-      await axios.get(SERVER.URL + SERVER.ROUTES.profile + userId,getters.config)
+      await axios.get(SERVER.URL + SERVER.ROUTES.profile + userId,rootGetters.config)
         .then(res => {
           commit('SET_PROFILE_INFO', res.data)
         })
-      // await axios.get(SERVER.URL + SERVER.ROUTES.posts + `/${userId}`)
-      //   .then(function (res) {
-      //     res.data.forEach(async (element) => {
-      //       element.health = false;
-      //       element.scrap = false;
-      //       axios.get(SERVER.URL + SERVER.ROUTES.health + `/post/${element.posts_id}`)
-      //         .then(count => element.health_count = count.data)
-      //       axios.get(SERVER.URL + SERVER.ROUTES.health + `/${userId}`)
-      //         .then(items => {
-      //           items.data.forEach(item => {
-      //             if (item.posts_id == element.posts_id) {
-      //               element.health = true;
-      //             }
-      //           })
-      //         }
-      //         )
-      //       axios.get(SERVER.URL + SERVER.ROUTES.scrap,
-      //         {
-      //           params: {
-      //             posts_id: element.posts_id,
-      //             user_id: state.loginData.user_id,
-      //           },
-      //         },
-      //       )
-      //         .then((res) => {
-      //           if (res.data > 0) element.scrap = true;
-      //           //router.push({ name: 'Profile' })
-      //         })
-      //         .catch((err) => console.log(err));
-      //     })
-      //     commit('SET_POST_INFO', res.data)
-
-      //   })
+      
       router.push({ name: 'Profile' })
     },
 

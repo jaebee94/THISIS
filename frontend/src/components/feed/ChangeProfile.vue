@@ -92,18 +92,19 @@ export default {
       .letters();
 
     this.changeInfo.email = this.loginData.email;
-    this.changeInfo.introduction = this.loginData.introduction;
+    this.changeInfo.introduction = this.profileData.userInfo.introduction;
     this.changeInfo.nickname = this.loginData.nickname;
     this.changeInfo.password = this.loginData.password;
     this.changeInfo.user_id = this.loginData.user_id;
     this.changeInfo.username = this.loginData.username;
     this.email = this.loginData.email;
     this.nickname = this.loginData.nickname;
-    this.introduction = this.loginData.introduction;
+    this.introduction = this.profileData.userInfo.introduction;
   },
 
   computed: {
     ...mapState('userStore', ["loginData"]),
+    ...mapState('profileStore', ['profileData']),
   },
   data() {
     return {

@@ -7,6 +7,7 @@ import userStore from './modules/userStore.js'
 import followStore from './modules/followStore.js'
 import notificationStore from './modules/notificationStore.js'
 
+import cookies from 'vue-cookies'
 import axios from 'axios'
 import SERVER from '@/api/RestApi.js'
 
@@ -16,11 +17,13 @@ import createPersistedState from 'vuex-persistedstate';
 Vue.use(Vuex)
 
 export default new Vuex.Store({
+
   state: {
     searchList: {},
   },
 
   getters: {
+    config: () => ({ headers: { accessToken:  cookies.get('access-token') } }),
   },
 
   mutations: {
@@ -42,7 +45,6 @@ export default new Vuex.Store({
         })
         .catch(err => console.log(err))
     },
-
   },
 
   modules: {
