@@ -8,7 +8,7 @@
               <img class="profile-image" src="../../assets/images/icon/icon_default_image.png" />
             </td>
             <td>
-              <a class="name">{{ postInfo.post.nickname }}</a>
+              <a class="name">{{ postInfo.userinfo.nickname }}</a>
             </td>
             <td>
               <a class="time">{{ postInfo.post.post_date }}</a>
@@ -18,7 +18,7 @@
       </div>
       <div class="post-main">{{ postInfo.post.posts_main }}</div>
       <div class="comment-wrap">
-        <div class="comment" v-for="comment in comments" v-bind:key="comment.post_id">
+        <div class="comment" v-for="comment in postInfo.comments" v-bind:key="comment.post_id">
           <div class="comment-header">
             <table>
               <tr>
@@ -88,7 +88,6 @@ export default {
       commentData: {
         posts_id: null,
         comment_main: "",
-        user_nickname: "",
       },
 
       page: 0,
@@ -223,14 +222,14 @@ export default {
     },
     showModify(info) {
       //댓글이나 글 수정시 부르는 함수
+      console.log('showInfo', info)
       this.postInfo = info.postInfo;
       this.$parent.$parent.isHidden = info.isHidden;
       this.isModifyHidden = info.isModifyHidden;
       document.body.className = "lockbody";
       //댓글창 필요 변수
       this.isPostHidden = info.isPostHidden;
-      this.commentData.posts_id = info.postInfo.post_id;
-      this.commentData.user_nickname = this.loginData.nickname;
+      this.commentData.posts_id = info.postInfo.posts_id;
     },
   },
   created() {

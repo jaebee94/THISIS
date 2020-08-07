@@ -95,7 +95,7 @@ export default {
       "fetchComments",
       'health',
       "scrap",
-       "deleteScrap"
+      "deleteScrap"
       ]),
     changeSelectPost(post, sort){
      this.selectedPost = post;
@@ -109,10 +109,9 @@ export default {
       if(sort === 'modify') info.isModifyHidden = true;
       else if(sort ==='comment') {
           info.isPostHidden = true; 
-          this.fetchComments(post.post_id);
+          // this.fetchComments(post.post_id);
       }
-     console.log(info);
-    this.$emit('send-modify',info)
+    this.$emit('send-modify', info)
     },
     clickHealth(post) {
       if (post.health == true) {
@@ -125,9 +124,6 @@ export default {
 
       this.healthData.posts_id = post.post.posts_id;
       this.healthData.user_id = this.loginData.user_id;
-      console.log(post);
-      console.log("id", this.healthData.user_id);
-      console.log(post.post.posts_id);
       //this.healthData.user_id = this.loginData.user_id; // user_id
       this.health(this.healthData);
     },
