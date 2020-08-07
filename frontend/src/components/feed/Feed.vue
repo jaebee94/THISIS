@@ -26,7 +26,7 @@
                   <img class="profile-image" src="../../assets/images/icon/icon_default_image.png" />
                 </td>
                 <td>
-                  <a>{{ comment.user_nickname }}</a>
+                  <a>{{ comment.user_id }}</a>
                 </td>
                 <td>
                   <a>{{ comment.comment_date }}</a>
@@ -86,11 +86,10 @@ export default {
       isModifyHidden: false,
       postInfo: {},
       commentData: {
+        user_id : null,
         posts_id: null,
         comment_main: "",
-        user_nickname: "",
       },
-
       page: 0,
       posts: [],
     };
@@ -215,7 +214,7 @@ export default {
       //댓글창 필요 변수
       this.isPostHidden = info.isPostHidden;
       this.commentData.posts_id = info.postInfo.posts_id;
-      this.commentData.nickname = this.loginData.nickname;
+      this.commentData.user_id = this.loginData.user_id;
     },
   },
   created() {

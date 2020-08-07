@@ -125,9 +125,6 @@ export default {
 
       this.healthData.posts_id = post.post.posts_id;
       this.healthData.user_id = this.loginData.user_id;
-      console.log(post);
-      console.log("id", this.healthData.user_id);
-      console.log(post.post.posts_id);
       //this.healthData.user_id = this.loginData.user_id; // user_id
       this.health(this.healthData);
     },
