@@ -224,10 +224,7 @@ public class PostController {
 			Auth auth = authService.findAuthByAccessToken(accessToken);
 			user_id = auth.getUser_id();
 		}
-
 		post.setUser_id(user_id);
-		UserInfo userInfo = userinfoService.selectUserInfoByUserid(user_id);
-		//post.setNickname(userInfo.getNickname());
 
 		if (postservice.createPost(post) == 1) {
 			return new ResponseEntity<String>("success", HttpStatus.OK);
