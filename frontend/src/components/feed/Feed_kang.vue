@@ -60,7 +60,7 @@
               <img class="profile-image" src="../../assets/images/icon/icon_default_image.png" />
             </td>
             <td>
-              <a class="name">{{ postInfo.post.nickname }}</a>
+              <a class="name">{{ postInfo.userinfo.nickname }}</a>
             </td>
             <td>
               <a class="time">{{ postInfo.post.post_date }}</a>
@@ -70,7 +70,7 @@
       </div>
       <div class="post-main">{{ postInfo.post.posts_main }}</div>
       <div class="comment-wrap">
-        <div class="comment" v-for="comment in comments" v-bind:key="comment.post_id">
+        <div class="comment" v-for="comment in postInfo.comments" v-bind:key="comment.post_id">
           <div class="comment-header">
             <table>
               <tr>
@@ -78,7 +78,7 @@
                   <img class="profile-image" src="../../assets/images/icon/icon_default_image.png" />
                 </td>
                 <td>
-                  <a>{{ comment.user_nickname }}</a>
+                  <a>{{ comment.user_id }}</a>
                 </td>
                 <td>
                   <a>{{ comment.comment_date }}</a>
@@ -86,9 +86,7 @@
               </tr>
             </table>
           </div>
-          <div
-            class="comment-content"
-          >{{ comment.comment_main }}</div>
+          <div class="comment-content">{{ comment.comment_main }}</div>
         </div>
       </div>
       <div class="comment-submit">
@@ -119,9 +117,14 @@
 
 
     <div v-show="currentTab == 0">
-      <post v-for="postInfo in posts" v-bind:key="postInfo"  
-      v-bind:postInfo = "postInfo"  
-      @send-modify="showModify"></post>
+      <div>
+      <post
+        v-for="postInfo in posts"
+        v-bind:key="postInfo.posts_id"
+        v-bind:postInfo="postInfo"
+        @send-modify="showModify"
+      ></post>
+      </div>
     </div>
 
 
@@ -129,7 +132,7 @@
 
     <div v-show="currentTab == 1"> 
       <h1>Q&A게시판</h1>
-      <qna v-for="qnaInfo in qnas" v-bind:key="qnaInfo"
+      <qna v-for="qnaInfo in qnas" v-bind:key="qnaInfo.posts_id"
       v-bind:qnaInfo="qnaInfo" @send-modify-qna="showModifyQnA">
       </qna> 
     </div>
@@ -169,7 +172,7 @@ export default {
       
       page: 0,
       posts: [],
-
+///////////////////////// 강세응이 추가한 내용 (더미데이터) //////////////////////////////////
       qnaInfo: {},
       qnas: [
         {
@@ -281,7 +284,7 @@ export default {
           }
         }
       ],
-
+/////////////////////////////////////////////////////////////////////////////////////////
       currentTab: 0,
       tabs: [
         require("../../assets/images/icon/icon_post.png"),
@@ -291,13 +294,20 @@ export default {
     };
   },
   props: {
-    parent_post: {
+    profile_data: {
       default: void 0,
     },
   },
   computed: {
     ...mapState('userStore', ['loginData']),
     ...mapState('postStore', ['comments', 'checkScrap']),
+  },
+  watch: {
+    profile_data : function () {
+      this.page = 0
+      this.posts = []
+      this.infiniteHandler(this);
+    }
   },
   methods: {
     ...mapActions('postStore', [
@@ -308,56 +318,66 @@ export default {
       'goCheckScrap',
     ]),
 
-    // Infinite Scrolling
+   // Infinite Scrolling
     infiniteHandler($state) {
       //TODO 해당 유저아이디의 포스트만 반환부분 분기!
-        let params = {
-          params :{
-            num: this.page,
-            //user_id : -1 //-1일 경우 전체 게시물
-          }
+      let params = {
+        params: {
+          num: this.page,
+        },
+      };
+
+      let url = SERVER.URL;
+
+      if(this.profile_data== undefined || this.profile_data.tab == 0) {
+        url += SERVER.ROUTES.posts+"/new"
+        params.params.user_id= -1 //-1일 경우 전체 게시물
+        if (this.profile_data != undefined) { // 만약 다른 사람 계정피드에서의 포스트들이면
+          var profile_id = this.profile_data.user_id;
+          params.params.user_id = profile_id;
+          //if (profile_id == this.loginData.user_id) params.params.user_id = 0; //0일 경우 내 게시물
         }
-        console.log(this.parent_post)
-        if(this.parent_post != undefined){
-          console.log(1);
-          params.user_id =0; //0일 경우 내 게시물 
-        }
-        else{
-        axios
-        .get(SERVER.URL + SERVER.ROUTES.posts, params)
-        .then(({ data }) => {
+      }
+      else if(this.profile_data.tab == 1){ //스크랩 보여주기
+        url += SERVER.ROUTES.scrap + "/" + this.profile_data.user_id;
+      }
+
+      //통신부분
+      axios.get(url, params).then(({ data }) => {
           if (data.length) {
             this.page += 1;
+           
             data.forEach((element) => {
               element.health = false;
-              if (element.healths.length > 0) console.log(element);
               element.scrap = false;
-              axios.get(SERVER.URL + SERVER.ROUTES.scrap, {
-                params: {
-                  posts_id: element.post_id,
-                  user_id: this.loginData.user_id,
-                },
-              })
+               console.log(element)
+              axios
+                .get(SERVER.URL + SERVER.ROUTES.scrap, {
+                  params: {
+                    user_id: this.loginData.user_id,
+                    posts_id: element.posts_id,
+                  },
+                })
                 .then((res) => {
                   if (res.data > 0) element.scrap = true;
                 })
                 .catch((err) => console.log(err));
               element.post.health_count = element.healths.length;
               element.healths.forEach((ele) => {
-                if (ele.nickname == this.loginData.nickname) {
+                console.log(ele)
+                if (ele.user_id == this.loginData.user_id) {
                   element.health = true;
                 }
               });
             });
+            console.log("data",data)
             this.posts.push(...data);
             $state.loaded();
           } else {
             $state.complete();
           }
         });
-        
-      console.log("posts",this.posts);
-        }
+
     },
 
     clearCommentData() {
