@@ -8,17 +8,15 @@ const userStore = {
   namespaced: true,
 
   state: {
-    accessToken: cookies.get('access-token'),
     loginData: {},
   },
 
   getters: {
-    config: state => ({ headers: { accessToken: `${state.accessToken}` } }),
+    config: () => ({ headers: { accessToken:  cookies.get('access-token') } }),
   },
 
   mutations: {
     SET_TOKEN(state, token) {
-      state.accessToken = token
       cookies.set('access-token', token)
     },
     SET_LOGIN_DATA(state, loginData) {
@@ -35,7 +33,7 @@ const userStore = {
         }
       })
         .then(res => {
-          
+          console.log(res)
           commit('SET_TOKEN', res.data.accessToken)
           commit('SET_LOGIN_DATA', res.data)
           router.push({ name: 'Feed' })

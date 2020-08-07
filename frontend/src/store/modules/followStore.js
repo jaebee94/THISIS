@@ -7,11 +7,10 @@ const followStore = {
 
   state: {
     followee_list: false,
-    accessToken: cookies.get('access-token'),
   },
 
   getters: {
-    config: state => ({ headers: { accessToken: `${state.accessToken}` } }),
+    config: () => ({ headers: { accessToken:  cookies.get('access-token') } }),
   },
 
   mutations: {

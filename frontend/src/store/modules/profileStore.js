@@ -15,11 +15,10 @@ const profileStore = {
     //   postInfo: {},
     //   scrapInfo: {},
     // },
-    accessToken: cookies.get('access-token'),
   },
 
   getters: {
-    config: state => ({ headers: { accessToken: `${state.accessToken}` } }),
+    config: () => ({ headers: { accessToken:  cookies.get('access-token') } }),
   },
 
   mutations: {
@@ -37,6 +36,7 @@ const profileStore = {
 
   actions: {
     async goProfile({ state, commit, getters }, userId) {
+      console.log(getters.config)
       if (userId == null) {
         userId = state.loginData.user_id
       }
