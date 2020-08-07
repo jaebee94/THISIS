@@ -4,6 +4,12 @@
       <input v-model="posts_title" id="posts_title" placeholder="제목을 입력하세요" />
     </div>
     <div class="content-panel">
+      <div class="content-checkbox-panel">
+        <input type="radio" id="checkPost" name="category" :checked="isPost" @click="checkPost()"/>
+        <label for="checkPost">포스트 게시물</label>
+        <input type="radio" id="checkQnA" name="category" :checked="isQnA" @click="checkQnA()"/>
+        <label for="checkQnA">Q&A 게시물</label>
+      </div>
       <div class="content-image-panel"> 
         <img v-show="imgsrc != ''" :src="imgsrc">
       </div>
@@ -63,6 +69,8 @@ export default {
   name: "Upload",
   data() {
     return {
+      isPost: true,
+      isQnA: false,
       posts_title: "",
       posts_main: "",
       postData: {
@@ -99,7 +107,14 @@ export default {
   },
   methods: {
     ...mapActions('postStore', ['createPost']),
-
+    checkPost() {
+      this.isPost = true;
+      this.isQnA = false;
+    },
+    checkQnA() {
+      this.isQnA = true;
+      this.isPost = false;
+    },
     checkForm() {
       if (
         this.posts_title.length > 0 &&
@@ -116,10 +131,7 @@ export default {
       this.$refs.imageInput.click();
     },
     onChangeImages(e){
-      console.log("시작", e);
-      console.log(e.target.files);
       const file = e.target.files[0];
-      console.log(file);
 /////////////////////////////////////////////////////////////////
       var formData = new FormData();
       formData.append('upload_file', file);
@@ -237,7 +249,54 @@ export default {
   margin-left: 5%;
   border-radius: 5px;
 }
+/* ////////////////////////////////////////// */
+.content-checkbox-panel {
+  height: 40px;
+  width: 100%;
+}
 
+.content-checkbox-panel input {
+	position: absolute !important;
+	clip: rect(0, 0, 0, 0);
+	height: 1px;
+	width: 1px;
+	border: 0;
+	overflow: hidden;
+}
+
+.content-checkbox-panel label {
+	background-color: #e4e4e4;
+	color: rgba(0, 0, 0, 0.6);
+	font-size: 14px;
+	line-height: 4;
+	text-align: center;
+	padding: 8px 16px;
+	margin-right: -1px;
+	border: 1px solid rgba(0, 0, 0, 0.2);
+	/* box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px rgba(255, 255, 255, 0.1); */
+	transition: all 0.1s ease-in-out;
+}
+
+.content-checkbox-panel label:hover {
+	cursor: pointer;
+}
+
+.content-checkbox-panel input:checked + label {
+	background-color: rgb(0, 171, 132);
+  font-weight: 600;
+  color: white;
+	box-shadow: none;
+}
+
+.content-checkbox-panel label:first-of-type {
+	border-radius: 4px 0 0 4px;
+}
+
+.content-checkbox-panel label:last-of-type {
+	border-radius: 0 4px 4px 0;
+}
+
+/* ////////////////////////////////////////// */
 .title-panel input {
   width: 93%;
   height: 30px;

@@ -13,6 +13,15 @@
         </div>
       </div>
       <div v-show="profileTab == 0">
+        <div class="profile-photo">
+          <div class="profile-modify-image">
+            <img v-show="imgsrc != ''" :src="imgsrc">
+          </div>
+          <div class="profile-image-button">
+            <button @click="onClickImageUpload">프로필 사진 변경</button>
+          </div>
+          <input ref="profileImg" type="file" hidden @change="onchangeImages">
+        </div>
         <div class="input-with-label">
           <input v-model="email" id="email" type="text" disabled />
         </div>
@@ -132,6 +141,8 @@ export default {
         require("../../assets/images/icon/icon_info.png"),
         require("../../assets/images/icon/icon_key.png"),
       ],
+
+      imgsrc : require('../../assets/images/icon/icon_default_image.png'),
     };
   },
 
@@ -223,6 +234,15 @@ export default {
           }
         });
     },
+    onClickImageUpload () {
+      console.log("!")
+      this.$refs.profileImg.click();
+    },
+    onchangeImages(e) {
+      console.log("!!");
+      const file = e.target.files[0];
+      this.imgsrc = URL.createObjectURL(file);
+    }
   },
 };
 </script>
@@ -232,6 +252,40 @@ export default {
   width: 100%;
   height: 100%;
 }
+
+.profile-photo {
+  width: 100%;
+}
+
+.profile-modify-image {
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.profile-modify-image img {
+  width: 150px;
+  height: 150px;
+  border-radius: 70%;
+}
+
+.profile-image-button button {
+  width: 40%;
+  height: 30px;
+  border: none;
+  border-radius: 5px;
+  background-color: rgb(0, 171, 132);
+  color: white;
+  font-weight: 600;
+  outline: none;
+  transition-duration: 300ms;
+}
+
+.profile-image-button button:focus {
+  background-color: rgb(247, 247, 247);
+  color: black;
+}
+
+
 .input-with-label input {
   width: 90%;
   border-radius: 5px;
