@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.web.curation.model.Auth;
 import com.web.curation.model.Comment;
+import com.web.curation.service.AuthService;
 import com.web.curation.service.CommentService;
 
 import io.swagger.annotations.ApiOperation;
@@ -30,7 +32,10 @@ public class CommentController {
 
 	@Autowired
 	CommentService commentservice;
-
+	
+	@Autowired
+	AuthService authService;
+	
 	@ApiOperation(value = "게시판에 해당하는 댓글들를 반환한다.", response = List.class)
 	@GetMapping("{posts_id}")
 	public ResponseEntity<List<Comment>> selectComment(@PathVariable int posts_id) throws Exception {
@@ -39,7 +44,14 @@ public class CommentController {
 
 	@ApiOperation(value = "댓글 생성", response = String.class)
 	@PostMapping
-	public ResponseEntity<String> Createcomment(@RequestBody Comment comment) {
+	public ResponseEntity<String> Createcomment(@RequestBody Comment comment, HttpServletRequest request) {
+		String accessToken = (String) request.getAttribute("accessToken");
+		int user_id = 1;
+		if (accessToken != null) {
+			Auth auth = authService.findAuthByAccessToken(accessToken);
+			user_id = auth.getUser_id();
+		}
+		comment.setUser_id(user_id);
 		if (commentservice.createComment(comment) == 1) {
 			return new ResponseEntity<String>("success", HttpStatus.OK);
 		}
