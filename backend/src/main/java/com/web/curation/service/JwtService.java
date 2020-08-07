@@ -56,9 +56,9 @@ public class JwtService {
 		int user_id = userinfo.getUser_id();
 		if(authService.selectAuthByUserid(user_id) != null) {
 			authService.updateAuth(new Auth(user_id, tokenSet.getRefreshToken(),tokenSet.getAccessToken()));
-		}else
+		}else {
 			authService.insertAuth(new Auth(user_id, tokenSet.getRefreshToken(),tokenSet.getAccessToken()));
-		
+		}
 		return tokenSet;
 	}
 	

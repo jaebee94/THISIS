@@ -15,11 +15,10 @@ const profileStore = {
     //   postInfo: {},
     //   scrapInfo: {},
     // },
-    accessToken: cookies.get('access-token'),
   },
 
   getters: {
-    config: state => ({ headers: { ACCESS_TOKEN: `${state.accessToken}` } }),
+    config: () => ({ headers: { accessToken:  cookies.get('access-token') } }),
   },
 
   mutations: {
@@ -36,17 +35,17 @@ const profileStore = {
   },
 
   actions: {
-    async goProfile({ state, commit }, userId) {
+    async goProfile({ state, commit, getters }, userId) {
+      console.log(getters.config)
       if (userId == null) {
         userId = state.loginData.user_id
       }
-
-      await axios.get(SERVER.URL + SERVER.ROUTES.user + userId)
+      await axios.get(SERVER.URL + SERVER.ROUTES.user + userId,getters.config)
         .then(res => {
           commit('SET_USER_INFO', res.data)
         })
         .catch(err => console.log(err))
-      await axios.get(SERVER.URL + SERVER.ROUTES.profile + userId)
+      await axios.get(SERVER.URL + SERVER.ROUTES.profile + userId,getters.config)
         .then(res => {
           commit('SET_PROFILE_INFO', res.data)
         })

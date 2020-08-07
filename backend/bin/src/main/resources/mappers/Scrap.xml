@@ -11,8 +11,16 @@
 		where user_id=#{user_id}
 	</select>
 	
-	<insert id="createScarp">
-		insert into scrap
+	<select id="isExistedScrap" resultType="Integer">
+		select COUNT(*)
+		from scrap
+		where user_id=#{user_id} and posts_id=#{posts_id}
+	</select>
+	
+	
+	
+	<insert id="createScrap">
+		insert into scrap (user_id, posts_id)
 		values(#{user_id}, #{posts_id})
 	</insert>
 

@@ -10,11 +10,10 @@ const postStore = {
     comments: {},
     healths: {},
     checkScrap: 0,
-    accessToken: cookies.get('access-token'),
   },
 
   getters: {
-    config: state => ({ headers: { accessToken: `${state.accessToken}` } }),
+    config: () => ({ headers: { accessToken:  cookies.get('access-token') } }),
   },
   
   mutations: {
@@ -78,8 +77,10 @@ const postStore = {
 
     // Health
     health({ getters }, healthData) {
-      axios.post(SERVER.URL + SERVER.ROUTES.health + `/${healthData.posts_id}`, healthData, getters.config)
+      
+      axios.post(SERVER.URL + SERVER.ROUTES.health + `/${healthData.posts_id}`,healthData,getters.config)
         .then(res => {
+          console.log(getters.config)
           console.log(res.data)
         })
     },

@@ -25,6 +25,7 @@
 			separator=",">
 			#{item.posts_id}
 		</foreach>
+		order by post_date desc
 	</select>
 	
 	<!-- post수 합계 조회 -->
@@ -59,6 +60,7 @@
 		where posts.user_id in (select followee from followers_following where follower = #{user_id})
 		OR posts.user_id = #{user_id}
 		OR posts.diseasecode in (select diseasecode from disease where exists (select * from subscribe where subscribe.user_id = #{user_id}))
+		order by post_date desc
 	</select>
 	
 	<select id="selectAutoIncrement" resultType="Integer">
