@@ -53,6 +53,7 @@ const postStore = {
 
     // Comment
     createComment({ commit, getters }, commentData) {
+      console.log(commentData)
       axios.post(SERVER.URL + SERVER.ROUTES.comment, commentData, getters.config)
         .then(
           setTimeout(() => {
