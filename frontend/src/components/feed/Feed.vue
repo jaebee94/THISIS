@@ -18,7 +18,7 @@
       </div>
       <div class="post-main">{{ postInfo.post.posts_main }}</div>
       <div class="comment-wrap">
-        <div class="comment" v-for="comment in postInfo.comments" v-bind:key="comment.post_id">
+        <div class="comment" v-for="comment in comments" v-bind:key="comment.post_id">
           <div class="comment-header">
             <table>
               <tr>
@@ -69,7 +69,7 @@
         @send-modify="showModify"
       ></post>
     </div>
-    <infinite-loading @infinite="infiniteHandler"></infinite-loading>
+    <infinite-loading ref="infiniteLoading" @infinite="infiniteHandler"></infinite-loading>
   </div>
 </template>
 
@@ -107,7 +107,7 @@ export default {
     profile_data : function () {
       this.page = 0
       this.posts = []
-      this.infiniteHandler(this);
+      this.$refs.infiniteLoading.stateChanger.reset();
     }
   },
   methods: {
@@ -127,7 +127,7 @@ export default {
           num: this.page,
         },
       };
-
+      console.log($state);
       let url = SERVER.URL;
 
       if(this.profile_data== undefined || this.profile_data.tab == 0) {
