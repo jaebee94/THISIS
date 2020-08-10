@@ -1,5 +1,19 @@
 <template>
   <div class="search wrap">
+    <!-- 질병 설명 -->
+    <div class="disease-wrap" v-if="!this.isDiseaseHidden"> 
+      <div>
+        <h2>{{this.selectedDisease.name}}</h2>
+      </div>
+      <div class="post-content">
+        <textarea v-model="selectedDisease.description"></textarea>
+      </div>
+      <div class="modify-footer">
+        <img @click="close()" src="../../assets/images/icon/icon_close.png" />
+      </div>
+    </div>
+
+
     <div class="tab-container">
       <div
         class="tab"
@@ -20,7 +34,7 @@
     <div id="search-main">
       <div v-show="currentTab == 0">
         <div class="search" v-for="item in this.items" v-bind:key="item.sickCd" :value="item.sickCd + ':' + item.sickNm">
-          <div class="search-item" >
+          <div class="search-item" @click = "selectDisease(item)">
              <div class="search-text2">{{item.sickNm}}</div> 
              <button v-if = checkFollow(item) @click="deleteDisease(item.sickCd)"  > 팔로우 취소</button>
              <button v-else  @click="addDisease({ diseasecode : item.sickCd,  diseasename : item.sickNm})">팔로우</button>
@@ -85,7 +99,11 @@ export default {
       isSearched: false,
       checkedItems: [],
       items: [],
-      nowItem: "",
+      selectedDisease: {
+        name : "",
+        description: "",
+      },
+      isDiseaseHidden : true
     };
   },
   watch: {
@@ -99,7 +117,7 @@ export default {
   },
   methods: {
     ...mapActions("profileStore", ["goProfile"]),
-     ...mapActions("diseaseStore", ["getFolloingwDisease","addDisease","deleteDisease"]),
+     ...mapActions("diseaseStore", ["getFolloingwDisease","addDisease","deleteDisease"]), //add와 딜리트 할때마다 내부에서 disease업데이트함
     getSearchList(keyword) {
       if (this.currentTab == 0) {
         this.getDisease(keyword);
@@ -172,6 +190,51 @@ export default {
         if(disease.diseasecode===item.sickNm) return true
       });
       return false
+    },
+    selectDisease(disease){
+      this.$parent.$parent.isHidden = true;
+      this.isDiseaseHidden = false;
+      this.selectedDisease.name = disease.sickNm;
+      this.findDisease(disease.sickNm)
+    },
+    async findDisease(disease){
+      this.selectedDisease.description=""
+      var params = {
+          query: disease,
+          display: 100,
+          start: 1,
+      }
+      await axios.request({
+          url: proxyurl + 'https://openapi.naver.com/v1/search/encyc.json',
+          headers: {
+              'X-Naver-Client-Id' : 'fTUNPODC3LOXXIgFgqfZ',
+              'X-Naver-Client-Secret' : 'xqqkXHlwzG'
+          },
+          params: params
+      })
+      .then((res) => {
+          res.data.items.forEach((item) => {
+              
+              item.description = String(item.description).replace(/<br\/>/ig, "\n");
+              item.description = String(item.description).replace(/&quot;/ig, "");
+              item.description = String(item.description).replace(/<(\/)?([a-zA-Z]*)(\s[a-zA-Z]*=[^>]*)?(\s)*(\/)?>/ig, "");
+              this.selectedDisease.description += item.description+"\n";
+              // item.title = String(item.title).replace(/<br\/>/ig, "\n");
+              // item.title = String(item.title).replace(/&quot;/ig, "");
+              // item.title = String(item.title).replace(/<(\/)?([a-zA-Z]*)(\s[a-zA-Z]*=[^>]*)?(\s)*(\/)?>/ig, "");
+          });
+          //this.selectedDisease.description = res.data.items;
+
+          console.log(res);
+      })
+      .catch((err) => {
+          console.error(err);
+      })
+    },
+    
+    close(){
+      this.$parent.$parent.isHidden = false;
+      this.isDiseaseHidden = true;    
     }
   },
 };
@@ -202,7 +265,40 @@ export default {
 .tab.active {
   background-color: rgb(0, 171, 132);
 }
+.disease-wrap {
+  position: fixed;
+  z-index: 99;
+  top: 10%;
+  width: 92%;
+  height: 70%;
+  background-color: white;
+  border-radius: 5px;
+  margin : auto 0;
+}
+.post-content textarea {
+  padding: 5px 5px;
+  font-size: 20px;
+  margin-top: 10px;
+  width: 90%;
+  height: 350px;
+  word-wrap: break-word;
+  transition-duration: 300ms;
+  border: none;
+}
+.post-content textarea:focus {
+  outline: none;
+  border: rgb(0, 171, 132) 3px solid;
+}
+.modify-footer {
+  position: absolute;
+  width: 100%;
+  height: 10%;
+  bottom: -12%;
+}
 
+.modify-footer img {
+  height: 80%;
+}
 .search-panel input {
   background-image: url("../../assets/images/icon/icon_search_unselect.png");
   background-size: 20px;
