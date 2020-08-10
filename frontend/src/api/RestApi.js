@@ -14,7 +14,9 @@ export default {
     logout: '/account/',
     withdrawal: '/account/{user_id}',
 
-    posts: '/articles',
+    // posts: '/articles',
+    posts: '/articles/new',
+    upload: '/articles/upload',
     scrap: '/scrap',
     health: '/health',
     healthCount: '/health/post/',
