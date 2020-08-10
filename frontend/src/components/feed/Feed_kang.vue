@@ -63,14 +63,24 @@
               <a class="name">{{ postInfo.userinfo.nickname }}</a>
             </td>
             <td>
-              <a class="time">{{ postInfo.post.post_date }}</a>
+              <a class="time">{{timeForToday(postInfo.post.post_date)}}</a>
             </td>
           </tr>
         </table>
       </div>
-      <div class="post-main">{{ postInfo.post.posts_main }}</div>
+      <carousel class="carousel wrap" style="height: 40%;" :per-page="1" v-bind:pagination-enabled="false">
+        <slide class="myslide" style="height: 100%;">
+            <div style=" height: 100%;">
+                <img style="width: 100%; " src="../../assets/sample.jpg">
+            </div>
+        </slide>
+        <slide class="myslide" >
+             <div class="post-main">{{ postInfo.post.posts_main }}</div>
+        </slide>
+    </carousel>
+     
       <div class="comment-wrap">
-        <div class="comment" v-for="comment in postInfo.comments" v-bind:key="comment.post_id">
+        <div class="comment" v-for="comment in comments" v-bind:key="comment.post_id">
           <div class="comment-header">
             <table>
               <tr>
@@ -78,15 +88,15 @@
                   <img class="profile-image" src="../../assets/images/icon/icon_default_image.png" />
                 </td>
                 <td>
-                  <a>{{ comment.user_id }}</a>
+                  <a>{{ comment.userinfo.nickname }}</a>
                 </td>
                 <td>
-                  <a>{{ comment.comment_date }}</a>
+                  <a>{{ comment.comment.comment_date }}</a>
                 </td>
               </tr>
             </table>
           </div>
-          <div class="comment-content">{{ comment.comment_main }}</div>
+          <div class="comment-content">{{ comment.comment.comment_main }}</div>
         </div>
       </div>
       <div class="comment-submit">
@@ -154,10 +164,12 @@ import qna from '../feed/QnA.vue';
 import comment from '../feed/Comment.vue';
 import news from '../feed/News.vue';
 
+import {Carousel, Slide} from 'vue-carousel';
+
 export default {
   name: "Feed",
   components:{
-    qna, comment, news
+    qna, comment, news, Carousel, Slide
   },
   data() {
     return {
@@ -170,6 +182,11 @@ export default {
         comment_main: "",
         user_nickname:"",
       },
+
+      slide:[
+        '<div class="post-main">{{ postInfo.post.posts_main }}</div>',
+        '<div class="post-main">{{ postInfo.post.posts_main }}</div>'
+      ],
       
       page: 0,
       posts: [],
@@ -432,6 +449,24 @@ export default {
       document.body.className = "";
       /*------ 피드 스크롤 unlock ------*/
     },
+    timeForToday(time) {
+      const today = new Date();
+      const timeValue = new Date(time);
+      const betweenTime = Math.floor((today.getTime() - timeValue.getTime()) / 1000 / 60);
+      if (betweenTime < 1) return '방금전';
+      if (betweenTime < 60) {
+          return `${betweenTime}분전`;
+      }
+      const betweenTimeHour = Math.floor(betweenTime / 60);
+      if (betweenTimeHour < 24) {
+          return `${betweenTimeHour}시간전`;
+      }
+      const betweenTimeDay = Math.floor(betweenTime / 60 / 24);
+      if (betweenTimeDay < 365) {
+          return `${betweenTimeDay}일전`;
+      }
+      return `${Math.floor(betweenTimeDay / 365)}년전`;
+    }
   },
   created() {
     this.$store.dispatch("getCheckScrap");
@@ -448,6 +483,7 @@ export default {
   text-align: center;
   background-color: white;
   padding-bottom: 20px;
+  margin-top: 0;
   margin-left: 0;
   width: 100%; 
   padding: 0 0;
@@ -456,6 +492,18 @@ export default {
 
 .tabs {
   width: 100%;
+  margin-top: 0;
+}
+
+.tab {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom: 3px rgb(247, 247, 247) solid;
+}
+
+.tab.active {
+  background-color:rgb(247, 247, 247);
+  border-bottom: 3px rgb(0, 171, 132) solid;
 }
 
 .tab img {
@@ -471,6 +519,11 @@ export default {
   background-color: rgb(247, 247, 247);
   border: none;
   border-radius: 5px;
+}
+
+div.feed {
+  margin: 0;
+  width: 98%;
 }
 
 .feed-header {
@@ -565,7 +618,7 @@ export default {
 
 .post-header {
   display: flex;
-  background-color: rgb(0, 171, 132);
+  background-color: rgb(247, 247, 247);
   text-align: left;
   width: 100%;
   height: 40px;
@@ -583,9 +636,19 @@ export default {
 .post-header table tr td {
   height: 40px;
 }
+.post-header table tr td:nth-child(1){
+  width: 50px;
+}
+
+.post-header a.time {
+    font-size: 10px;
+    /* color: rgb(247, 247, 247); */
+    color: slategray;
+    font-weight: 400;
+  }
 
 .post-header table tr td a {
-  color: white;
+  color: black;
   font-weight: 600;
 }
 
@@ -603,11 +666,13 @@ export default {
 }
 
 .post-main {
-  height: 30%;
+  height: 100%;
   overflow: auto;
   padding: 10px 10px;
   text-align: left;
 }
+
+
 
 .post-footer {
   position: absolute;
@@ -623,7 +688,7 @@ export default {
 .comment-wrap {
   display: inherit;
   overflow: auto;
-  height: 50%;
+  height: 40%;
 }
 
 .comment {
