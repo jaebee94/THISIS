@@ -62,4 +62,9 @@ public class PostServiceImpl implements PostService {
 	public int selectAutoIncrement() {
 		return PostDao.selectAutoIncrement();
 	}
+
+	@Override
+	public List<Post> selectQnA() {
+		return PostDao.selectQnA();
+	}
 }

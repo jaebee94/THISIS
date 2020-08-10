@@ -34,4 +34,10 @@
 		delete from tag
 		where tagid = #{tagid} 
 	</delete>
+	
+	<select id="selectTagByPostsId" resultType="Tag">
+		select *
+		from tag
+		where tag.tagid in (select tagid from tag_relation where posts_id=#{posts_id})
+	</select>
 </mapper>

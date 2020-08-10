@@ -18,4 +18,5 @@ public interface PostDAO {
 	public List<Post> selectScrapInfo(List<Scrap> scrapList);
 	public List<Post> selectMainFeed(int user_id);
 	public int selectAutoIncrement();
+	public List<Post> selectQnA();
 }
