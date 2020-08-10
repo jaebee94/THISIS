@@ -31,27 +31,32 @@ const postStore = {
   actions: {
     // Post
     createPost({ rootGetters }, uploadData) {
-      // var formData = new FormData();
-      // formData.append('upload_file', file);
-      // console.log(file)
-      console.log(uploadData.postData)
-      axios.post(SERVER.URL + SERVER.ROUTES.upload, uploadData.formData, {
-        header: {
-          'Accept': 'application/json',
-          'Content-Type': 'multipart/form-data',
-        },
-      })
-        .then(res => {
-          uploadData.postData.imgsrc = res.data
-          console.log(uploadData.postData)
-          axios.post(SERVER.URL + SERVER.ROUTES.posts, uploadData.postData, rootGetters.config)
-            .then(() => {
-              alert('작성이 완료되었습니다.')
-              router.push({ name: 'Feed' })
-            })
-            .catch(err => console.log('게시글 작성 에러: ', err))
+      if (uploadData.formData == null) {
+        axios.post(SERVER.URL + SERVER.ROUTES.posts, uploadData.postData, rootGetters.config)
+          .then(() => {
+            alert('작성이 완료되었습니다.')
+            router.push({ name: 'Feed' })
+          })
+          .catch(err => console.log('게시글 작성 에러: ', err))
+      } else {
+        axios.post(SERVER.URL + SERVER.ROUTES.upload, uploadData.formData, {
+          header: {
+            'Accept': 'application/json',
+            'Content-Type': 'multipart/form-data',
+          },
         })
-        .catch(err => console.log('사진 업로드 에러: ', err))
+          .then(res => {
+            uploadData.postData.imgsrc = res.data
+            console.log(uploadData.postData)
+            axios.post(SERVER.URL + SERVER.ROUTES.posts, uploadData.postData, rootGetters.config)
+              .then(() => {
+                alert('작성이 완료되었습니다.')
+                router.push({ name: 'Feed' })
+              })
+              .catch(err => console.log('게시글 작성 에러: ', err))
+          })
+          .catch(err => console.log('사진 업로드 에러: ', err))
+      }
       // axios.post(SERVER.URL + SERVER.ROUTES.posts, postData, rootGetters.config)
       //   .then(() => {
       //     router.push({ name: 'Feed' })

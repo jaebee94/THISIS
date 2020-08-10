@@ -75,7 +75,7 @@ export default {
       posts_main: "",
       file: null,
       uploadData: {
-        formData: {},
+        formData: null,
         postData: {
           post: {
             category: 0,
