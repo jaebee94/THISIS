@@ -1,44 +1,61 @@
 <template>
   <div class="search wrap">
-    <div class="tab-panel">
-      <div @click="clickDisease()">질병</div>
-      <div @click="clickUser()">사용자</div>
-    </div>
-    <div class="search-panel">
-      <div @click="getSearchList(carName)">
-        <input type="text" v-model="carName" placeholder="검색어를 입력하세요" />
+    <div class="tab-container">
+      <div
+        class="tab"
+        v-for="(tab, index) in tabs"
+        v-bind:key="tab"
+        v-bind:class="{active: currentTab === index}"
+        @click="currentTab = index"
+      >
+        <h3>{{tab}}</h3>
       </div>
-      <!-- <ul v-for="car in this.people" v-bind:key="car.name">
-                <li v-if="car.name.includes(carName)">
-                <i class = "searching">{{carName}}</i>{{car.name.replace(carName,'')}}
-                </li>
-      </ul>-->
+    </div>
+
+    <div class="search-panel">
+      <div @click="getSearchList(keyword)">
+        <input type="text" v-model="keyword" placeholder="검색어를 입력하세요" />
+      </div>
     </div>
     <div id="search-main">
-      <div class="search" v-for="user in this.people" v-bind:key="user.nickname">
-        <div
-          class="search-item"
-          v-if="user.nickname.includes(carName) || user.username.includes(carName) || user.introduction.includes(carName)"
-          @click="goProfile(user.user_id)"
-        >
-          <div class="search-img">
-            <img src="../../assets/user.png" style="height:50px" />
-          </div>
-          <div class="search-text2">
-            <div class="search-nickname">
-              <span v-for="char in user.nickname" :key="char">
-                <strong v-if="carName.includes(char)">{{ char }}</strong>
-                <span v-if="!carName.includes(char)">{{ char }}</span>
-              </span>
-              <span>-</span>
-              <span v-for="char in user.username" :key="char">
-                <strong v-if="carName.includes(char)">{{ char }}</strong>
-                <span v-if="!carName.includes(char)">{{ char }}</span>
-              </span>
+      <div v-show="currentTab == 0">
+        <div class="search" v-for="item in this.items" v-bind:key="item.sickCd" :value="item.sickCd + ':' + item.sickNm">
+          <div class="search-item" >
+             <div class="search-text2">{{item.sickNm}}</div> 
+             <button v-if = checkFollow(item) @click="deleteDisease(item.sickCd)"  > 팔로우 취소</button>
+             <button v-else  @click="addDisease({ diseasecode : item.sickCd,  diseasename : item.sickNm})">팔로우</button>
+          </div>         
+        </div>
+      </div>
+      <div v-show="currentTab == 1">
+        <div class="search" v-for="user in this.users" v-bind:key="user.nickname">
+          <div
+            class="search-item"
+            v-if="user.nickname.includes(keyword) || user.username.includes(keyword) || user.introduction.includes(keyword)"
+            @click="goProfile(user.user_id)"
+          >
+            <div class="search-img">
+              <img src="../../assets/user.png" style="height:50px" />
             </div>
-            <div class="search-Introduction" v-if="user.introduction != null">{{user.introduction}}</div>
-            <div class="search-Introduction" v-if="user.introduction == null">
-              <br />
+            <div class="search-text2">
+              <div class="search-nickname">
+                <span v-for="char in user.nickname" :key="char">
+                  <strong v-if="keyword.includes(char)">{{ char }}</strong>
+                  <span v-if="!keyword.includes(char)">{{ char }}</span>
+                </span>
+                <span>-</span>
+                <span v-for="char in user.username" :key="char">
+                  <strong v-if="keyword.includes(char)">{{ char }}</strong>
+                  <span v-if="!keyword.includes(char)">{{ char }}</span>
+                </span>
+              </div>
+              <div
+                class="search-Introduction"
+                v-if="user.introduction != null"
+              >{{user.introduction}}</div>
+              <div class="search-Introduction" v-if="user.introduction == null">
+                <br />
+              </div>
             </div>
           </div>
         </div>
@@ -48,39 +65,114 @@
 </template>
 
 <script>
+import { mapActions,mapState } from "vuex";
 import axios from "axios";
-import store from "@/store/index.js";
-import { mapActions } from "vuex";
+import SERVER from "@/api/RestApi.js";
+import cookies from "vue-cookies";
+const proxyurl = "https://cors-anywhere.herokuapp.com/";
 export default {
   name: "Search",
   computed: {
-    //...mapState(['searchList'])
+    ...mapState('diseaseStore', ['diseases']),
   },
   data() {
     return {
-      people: [],
-      car: {
-        name: "",
-      },
+      tabs: ["질병", "사용자"],
+      keyword: "",
+      currentTab: 0,
+      users: "",
       nickName: "",
+      isSearched: false,
+      checkedItems: [],
+      items: [],
+      nowItem: "",
     };
   },
+  watch: {
+    keyword: function () {
+      if (this.currentTab == 0) {
+        this.getDisease(this.keyword);
+      } else {
+        this.getUsers(this.keyword);
+      }
+    },
+  },
   methods: {
-    ...mapActions('profileStore', ['goProfile']),
-    
+    ...mapActions("profileStore", ["goProfile"]),
+     ...mapActions("diseaseStore", ["getFolloingwDisease","addDisease","deleteDisease"]),
     getSearchList(keyword) {
+      if (this.currentTab == 0) {
+        this.getDisease(keyword);
+      } else {
+        this.getUsers(keyword);
+      }
+    },
+    getUsers(keyword) {
       axios
-        .get("http://i3a301.p.ssafy.io:8088/THISIS/account/search", {
-          params: {
-            keyword: keyword,
+        .get(
+          SERVER.URL + SERVER.ROUTES.search,
+          {
+            params: {
+              keyword: keyword,
+            },
           },
-          headers: { ACCESS_TOKEN: store.state.accessToken },
-        })
+          { headers: { accessToken: cookies.get("access-token") } }
+        )
         .then((res) => {
-          this.people = res.data;
+          this.users = res.data;
+          console.log(res.data);
         })
         .catch((err) => console.log(err));
     },
+    getDisease(keyword) {
+      // API에서 질병을 검색하고 셀렉트 박스로 보여줌
+      var params = {
+        pageNo: 1,
+        numOfRows: 10,
+        sickType: 1,
+        medTp: 2,
+        diseaseType: "SICK_NM",
+        searchText: keyword,
+        ServiceKey:
+          "hhU4fvLXqUtlijp+SQxnotQgI7A4yLrBASX3GMofY45xyks9LOe05UKyCfH5gkyN1U+7YKFfujffwflXy4TzfA==",
+      };
+      axios
+        .request({
+          // 서버에 마운트하면서 바꿔야 할 부분 :
+          // proxyurl 지우고 올려야 함
+          // proxyurl은 일정 request 하면 자체 차단해버림
+          url:
+            proxyurl +
+            `http://apis.data.go.kr/B551182/diseaseInfoService/getDissNameCodeList`,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/xml",
+            "Access-Control-Max-Age": 600,
+          },
+          params: params,
+        })
+        .then((res) => {
+          this.items = [];
+          var len = res.data.response.body.totalCount;
+          var items = res.data.response.body.items.item;
+          if (len == 0) { //찾은게 있음
+            this.isSearched = false;
+            return;
+          } else if (len == 1) this.items.push(items);
+          else this.items = items;
+          this.isSearched = true;
+        })
+        .catch((err) => {
+          this.isSearched = false;
+          console.log(err);
+        });
+    },
+    checkFollow(item){ //내가 갖고있는 질병 팔로우목록중 해당 아이템이 포함되어있나.
+      this.diseases.forEach(disease => {
+        if(disease.diseasecode===item.sickNm) return true
+      });
+      return false
+    }
   },
 };
 </script>
@@ -95,32 +187,22 @@ export default {
   width: 100%;
   height: 35px;
 }
-.tab-panel {
-  display: flex;
-  width: 100%;
-}
-.tab-panel div:nth-child(1) {
-  float: left;
+.tab {
+  width: 50%;
+  height: 40px;
+  vertical-align: middle;
   background-color: rgb(247, 247, 247);
-  width: 50%;
-  font-size: 20px;
-  color: rgb(0, 171, 132);
-  font-weight: 600;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
 }
-.tab-panel div:nth-child(2) {
-  float: right;
+.tab h3 {
+  margin-top: 10px;
+  height: 20px;
+}
+.tab.active {
   background-color: rgb(0, 171, 132);
-  width: 50%;
-  font-size: 20px;
-  color: white;
-  font-weight: 600;
 }
-.tab-panel div {
-  padding: 4px;
-  border-radius: 5px;
-  border: none;
-  outline: none;
-}
+
 .search-panel input {
   background-image: url("../../assets/images/icon/icon_search_unselect.png");
   background-size: 20px;
@@ -180,11 +262,25 @@ ul {
 .search-text2 {
   padding: 10px;
   text-align: left;
+  width : 70%;
+  float: left;
+  height : inherit;
 }
 .search-nickname {
   font-size: 20px;
 }
 .search-Introduction {
   font-size: 14px;
+}
+
+button {
+  background-color: rgb(0, 171, 132);
+  border : none;
+  border-radius: 5px;
+  width : 80px;
+  
+  padding : 5px;
+  margin-top : 10px;
+  margin-bottom : 10px;
 }
 </style>

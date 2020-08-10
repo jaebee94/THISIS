@@ -26,15 +26,15 @@
                   <img class="profile-image" src="../../assets/images/icon/icon_default_image.png" />
                 </td>
                 <td>
-                  <a>{{ comment.user_id }}</a>
+                  <a>{{ comment.userinfo.nickname }}</a>
                 </td>
                 <td>
-                  <a>{{ comment.comment_date }}</a>
+                  <a>{{ comment.comment.comment_date }}</a>
                 </td>
               </tr>
             </table>
           </div>
-          <div class="comment-content">{{ comment.comment_main }}</div>
+          <div class="comment-content">{{ comment.comment.comment_main }}</div>
         </div>
       </div>
       <div class="comment-submit">
