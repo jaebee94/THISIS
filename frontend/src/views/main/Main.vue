@@ -31,7 +31,7 @@
           </td>
           <td>
             <!-- <router-link to="/main/profile"> -->
-              <img @click="checkProfile()" :src="profileData.userInfo.userimage" />
+              <img @click="checkProfile()" :src="loginData.userimage" />
             <!-- </router-link> -->
           </td>
         </tr>
