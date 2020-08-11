@@ -46,7 +46,7 @@ const postStore = {
           },
         })
           .then(res => {
-            uploadData.postData.imgsrc = res.data
+            uploadData.postData.post.imgsrc = res.data
             console.log(uploadData.postData)
             axios.post(SERVER.URL + SERVER.ROUTES.posts, uploadData.postData, rootGetters.config)
               .then(() => {
