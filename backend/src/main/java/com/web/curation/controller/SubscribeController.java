@@ -70,6 +70,14 @@ public class SubscribeController {
 			user_id = auth.getUser_id();
 		}
 		
+		//질병 태그가 DB에 존재하는지 확인 후 없으면 디비에 넣기!!
+
+		if(diseaseService.selectDiseaseByDiseasecode(diseasecode) == null) {
+			Disease disease = new Disease(diseasecode, diseasename);
+			diseaseService.createDisease(disease);
+		}
+
+		
 		Subscribe sub = new Subscribe();
 		sub.setDiseasecode(diseasecode);
 		sub.setUser_id(user_id);
