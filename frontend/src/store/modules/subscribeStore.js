@@ -1,19 +1,19 @@
 
 import axios from "axios";
 import SERVER from "@/api/RestApi.js";
-const diseaseStore = {
+const subscribeStore = {
     namespaced: true,
 
     state: {
-        diseases: [],
+        subscribes: [],
     },
 
     getters: {
     },
 
     mutations: {
-        SET_DISEASE(state, diseases) {
-            state.diseases = diseases;
+        SET_DISEASE(state, subscribes) {
+            state.subscribes = subscribes;
         },
 
     },
@@ -21,13 +21,13 @@ const diseaseStore = {
 
     actions: {
         getFolloingwDisease({ rootGetters, commit }) {
-            axios.get(SERVER.URL + SERVER.ROUTES.disease, rootGetters.config)
+            axios.get(SERVER.URL + SERVER.ROUTES.userDisease, rootGetters.config)
                 .then(res => {
                     commit('SET_DISEASE', res.data)
                 })
         },
-        createDisease({rootGetters, commit} , diseasename,diseasecode){
-            axios.get(SERVER.URL + SERVER.ROUTES.disease,
+        createSubscribe({rootGetters, commit} , diseasename,diseasecode){
+            axios.get(SERVER.URL + SERVER.ROUTES.userDisease,
                 {
                     diseasecode : diseasecode,
                     diseasename : diseasename
@@ -39,7 +39,7 @@ const diseaseStore = {
             })
         },
         addDisease({ rootGetters }, diseasecode) { //이부분 아직 백엔드에 구현 안되어 있음
-            axios.put(SERVER.URL + SERVER.ROUTES.disease,
+            axios.put(SERVER.URL + SERVER.ROUTES.userDisease,
                 {
                     diseasecode: diseasecode
                 }
@@ -51,7 +51,7 @@ const diseaseStore = {
 
         },
         deleteDisease({ rootGetters }, diseasecode) {
-            axios.delete(SERVER.URL + SERVER.ROUTES.disease,
+            axios.delete(SERVER.URL + SERVER.ROUTES.userDisease,
                 {
                     params: {
                         diseasecode: diseasecode
@@ -66,4 +66,4 @@ const diseaseStore = {
     }
 }
 
-export default diseaseStore
+export default subscribeStore

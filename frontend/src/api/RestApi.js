@@ -35,6 +35,8 @@ export default {
     searchUser: '/account/search',
     modify:'/articles/',
 
-    userDisease: '/disease/user'
+    disease: '/disease/user',
+    subscribe: '/subscribe'
+
   }
 }
