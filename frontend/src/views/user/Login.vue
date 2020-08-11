@@ -18,6 +18,7 @@
           id="password"
           type="password" 
           placeholder="비밀번호를 입력해주세요" 
+          v-on:keyup.enter="login(loginData)"
         />
       </div>
       <div class="login-button-wrap"> 
