@@ -185,8 +185,8 @@ public class UserInfoController {
 	
 	@ApiOperation(value = "AccessToken 재생성 테스트", response = String.class)     
 	@PostMapping("refreshAccessToken")
-	public ResponseEntity<String> refreshAccessToken(@RequestBody String token) {
-		TokenSet tokenSet = jwtService.refreshAccessToken(token);
+	public ResponseEntity<String> refreshAccessToken(@RequestBody String accessToken) {
+		TokenSet tokenSet = jwtService.refreshAccessToken(accessToken);
 		ResponseEntity response = null;
 		final BasicResponse result = new BasicResponse();
 		

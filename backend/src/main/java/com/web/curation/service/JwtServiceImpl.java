@@ -73,9 +73,11 @@ public class JwtServiceImpl implements JwtService{
 		return key;
 	}
 	
-	public TokenSet refreshAccessToken(String refreshToken) {
+	public TokenSet refreshAccessToken(String accessToken) {
 		long curTime = System.currentTimeMillis();
 		//refreshToken의 만료기간이 남았는지 확인하고, 
+		Auth auth = authService.findAuthByAccessToken(accessToken);
+		String refreshToken = auth.getRefresh_token();
 		if(!isValidToken(refreshToken, RT_SECRET_KEY)) {
 			throw new AuthenticationException("로그인되어있지 않습니다.");
 		}

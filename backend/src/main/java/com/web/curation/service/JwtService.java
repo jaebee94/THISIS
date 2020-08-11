@@ -25,7 +25,7 @@ public interface JwtService {
 	public static final String AT_SECRET_KEY = "CREATEDBYTID_AT";
 		//refresh token secret key
 	public static final String RT_SECRET_KEY = "CREATEDBYTID_RT";
-	public static final Logger LOGGER = LoggerFactory.getLogger(JwtServiceImpl.class);
+	public static final Logger LOGGER = LoggerFactory.getLogger(JwtService.class);
 	public static final String DATA_KEY = "user";
 		
 	public TokenSet createTokenSet(UserInfo userinfo);
