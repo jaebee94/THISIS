@@ -184,12 +184,14 @@ public class UserInfoController {
 	}
 	
 	@ApiOperation(value = "AccessToken 재생성 테스트", response = String.class)     
-	@PostMapping("refreshAccessToken")
-	public ResponseEntity<String> refreshAccessToken(@RequestBody String accessToken) {
+	@GetMapping("refreshAccessToken")
+	public ResponseEntity<String> refreshAccessToken(HttpServletRequest request) {
+		String accessToken = (String) request.getAttribute("accessToken");
+		System.out.println("여기는 들어옴??");
 		TokenSet tokenSet = jwtService.refreshAccessToken(accessToken);
 		ResponseEntity response = null;
 		final BasicResponse result = new BasicResponse();
-		
+		System.out.println("뉴 토큰 : " + tokenSet.toString());
 		if(tokenSet != null) {
 			 result.object = tokenSet;
         	 response = new ResponseEntity<>(result, HttpStatus.OK);
