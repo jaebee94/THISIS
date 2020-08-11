@@ -331,7 +331,7 @@ public class UserInfoController {
 			String real_path = "/home/ubuntu/s03p13a301/backend/src/main/resources/profile/";
 			// String attach_path = "resources\\upload\\";
 
-			String filename = userinfo.getNickname() + ".jpg";
+			String filename = user_id + ".jpg";
 			File checkFile = new File(real_path + filename);
 			if (checkFile.exists()) {
 				System.out.println("Delete");

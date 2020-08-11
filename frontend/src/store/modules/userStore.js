@@ -54,6 +54,18 @@ const userStore = {
       window.localStorage.clear(); 
       router.push({ name: 'Login' })
     },
+    // findPassword(email) {
+    //   axios.get(SERVER.URL + SERVER.ROUTES.email, { params: {
+    //     email: email
+    //   }})
+    //     .then(res => {console.log('성공', res)
+    //      alert("이메일을 전송하였습니다.")
+    //      this.$router.push('/account/login')
+    //      }
+    //      )
+    //     .catch(err => {console.log(err)
+    //      alert("이메일 전송에 실패하였습니다.")})
+    // },
      changeUserInfo({rootGetters,dispatch}, changeInfo) {
       console.log(changeInfo)
       axios.put(SERVER.URL + SERVER.ROUTES.user + changeInfo.user_id, changeInfo,rootGetters.config)
