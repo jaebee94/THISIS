@@ -126,6 +126,9 @@ public class UserInfoController {
 		if (userinfo.getPassword() != null) {
 			userinfo2.setPassword(userinfo.getPassword());
 		}
+		if(userinfo.getUserimage() != null) {
+			userinfo2.setUserimage(userinfo.getUserimage());
+		}
 
 		if (userInfoService.updateUserInfo(userinfo2) == 1) {
 			return new ResponseEntity<String>("success", HttpStatus.OK);
