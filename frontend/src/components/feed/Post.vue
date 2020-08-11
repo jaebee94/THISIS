@@ -23,6 +23,7 @@
       </table>
     </div>
     <div class="feed-main">
+      <img v-show="postInfo.post.imgsrc != null" :src="postInfo.post.imgsrc">
       <strong @click="goProfile(postInfo.post.user_id)">{{postInfo.userinfo.nickname}}</strong> 
       {{postInfo.post.posts_main }}
       <div>

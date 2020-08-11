@@ -414,7 +414,7 @@ export default {
       let url = SERVER.URL;
 
       if(this.profile_data== undefined || this.profile_data.tab == 0) {
-        url += SERVER.ROUTES.posts+"/new"
+        url += SERVER.ROUTES.posts
         params.params.user_id= -1 //-1일 경우 전체 게시물
         if (this.profile_data != undefined) { // 만약 다른 사람 계정피드에서의 포스트들이면
           var profile_id = this.profile_data.user_id;

@@ -72,6 +72,10 @@
     text-align: left;
   }
 
+  .feed-main img {
+    width: 100%;
+  }
+
   .feed-main strong {
     color: rgb(0, 171, 132);
   }
