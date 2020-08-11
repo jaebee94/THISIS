@@ -4,5 +4,6 @@ import java.util.List;
 
 public class PostRequest {
 	public Post post;
+	public String diseasename;
 	public List<String> tags;
 }

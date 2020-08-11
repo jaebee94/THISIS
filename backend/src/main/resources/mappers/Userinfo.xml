@@ -79,5 +79,19 @@
 		from UserInfo
 		where email = #{email}
 	</select>
-
+	
+	<!-- 닉네임 가져오기  -->
+	<select id="findNicknameByID" resultType="String">
+		select nickname
+		from UserInfo
+		where user_id=#{user_id}
+	</select>
+	
+	<!-- 회원정보 수정 -->
+	<update id="updateImage" parameterType="UserInfo">
+		update	UserInfo
+		   set	userimage = #{userimage}
+		 where 	user_id = #{user_id}
+	</update>
+	
 </mapper>

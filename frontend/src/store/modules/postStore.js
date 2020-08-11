@@ -30,12 +30,38 @@ const postStore = {
 
   actions: {
     // Post
-    createPost({ rootGetters }, postData) {
-      axios.post(SERVER.URL + SERVER.ROUTES.posts, postData, rootGetters.config)
-        .then(() => {
-          router.push({ name: 'Feed' })
+    createPost({ rootGetters }, uploadData) {
+      if (uploadData.formData == null) {
+        axios.post(SERVER.URL + SERVER.ROUTES.posts, uploadData.postData, rootGetters.config)
+          .then(() => {
+            alert('작성이 완료되었습니다.')
+            router.push({ name: 'Feed' })
+          })
+          .catch(err => console.log('게시글 작성 에러: ', err))
+      } else {
+        axios.post(SERVER.URL + SERVER.ROUTES.upload, uploadData.formData, {
+          header: {
+            'Accept': 'application/json',
+            'Content-Type': 'multipart/form-data',
+          },
         })
-        .catch(err => console.log(err))
+          .then(res => {
+            uploadData.postData.imgsrc = res.data
+            console.log(uploadData.postData)
+            axios.post(SERVER.URL + SERVER.ROUTES.posts, uploadData.postData, rootGetters.config)
+              .then(() => {
+                alert('작성이 완료되었습니다.')
+                router.push({ name: 'Feed' })
+              })
+              .catch(err => console.log('게시글 작성 에러: ', err))
+          })
+          .catch(err => console.log('사진 업로드 에러: ', err))
+      }
+      // axios.post(SERVER.URL + SERVER.ROUTES.posts, postData, rootGetters.config)
+      //   .then(() => {
+      //     router.push({ name: 'Feed' })
+      //   })
+      //   .catch(err => console.log(err))
     },
     updatePost({ rootGetters }, postInfo) {
       axios.put(SERVER.URL + SERVER.ROUTES.modify + postInfo.user_id, postInfo, rootGetters.config)
@@ -76,7 +102,6 @@ const postStore = {
 
     // Health
     health({ rootGetters }, healthData) {
-      
       axios.post(SERVER.URL + SERVER.ROUTES.health + `/${healthData.posts_id}`,healthData,rootGetters.config)
         .then(res => {
           console.log(rootGetters.config)
@@ -121,6 +146,14 @@ const postStore = {
           commit('SET_SCRAPS', res.data);
         }).catch(err => console.log(err))
     },
+
+    // Disease
+    // createDisease() {
+    //   axios.post(SERVER.URL + SERVER.ROUTES.disease, diseaseData, rootGetters.config)
+    //     .then(() => {
+
+    //     })
+    // }
   }
 }
 

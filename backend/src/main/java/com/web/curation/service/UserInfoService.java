@@ -14,5 +14,7 @@ public interface UserInfoService {
 	public UserInfo findUserByEmailAndPassword(String email, String password);
 	public UserInfo findUserInfoByNickname(String nickname);
 	public List<UserInfo> selectUserInfoSearch(String username);
+	public String findNicknameById(int user_id);
 	public int getUserId(String email);
+	public int updateImage(UserInfo userinfo);
 }
