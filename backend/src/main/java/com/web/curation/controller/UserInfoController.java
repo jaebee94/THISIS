@@ -353,10 +353,8 @@ public class UserInfoController {
 			String path = access_path + filename;
 			
 			if(userinfo.getUserimage()!=path) {
-				System.out.println("hi");
 				userinfo.setUserimage(path);
 				userInfoService.updateImage(userinfo);
-				System.out.println("hi");
 			}
 			
 			return path;
