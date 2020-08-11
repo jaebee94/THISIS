@@ -69,7 +69,7 @@
 	</select>
 	
 	<select id="selectQnA" resultType="Post">
-		select * from posts2
+		select * from posts
 		where posts.category = 1
 		order by post_date desc
 	</select>
