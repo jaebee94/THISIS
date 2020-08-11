@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import com.web.curation.exception.AuthenticationException;
 import com.web.curation.model.Auth;
 import com.web.curation.model.TokenSet;
 import com.web.curation.service.AuthService;
@@ -61,7 +62,8 @@ public class AuthInterceptor extends HandlerInterceptorAdapter{
 			else if(!isValidToken(accessToken, JwtService.AT_SECRET_KEY)){
 				//Auth auth = authService.findAuthByAccessToken(accessToken);
 				System.out.println("만료");
-				//throw new AuthenticationException("액세스 토큰이 유효하지 않습니다");
+				//return false;
+				throw new AuthenticationException("액세스 토큰이 유효하지 않습니다");
 				//accessToken = null;
 			}
 			else {
