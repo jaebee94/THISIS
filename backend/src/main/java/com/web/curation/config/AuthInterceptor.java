@@ -53,9 +53,9 @@ public class AuthInterceptor extends HandlerInterceptorAdapter{
 				//response.addHeader("refreshToken", tokenSet.getRefreshToken());
 			}
 
-			/*if(jwtService.isValidToken(accessToken, JwtService.AT_SECRET_KEY)){
+			if(userInfoService.selectUserInfo() != null){
 				System.out.println("확인");
-			}*/
+			}
 			//if (hm.hasMethodAnnotation(LoginRequired.class) && (accessToken == null || !jwtService.isValidToken(accessToken, JwtService.AT_SECRET_KEY)))
 			if (accessToken == null /*|| !jwtService.isValidToken(accessToken, JwtService.AT_SECRET_KEY)*/) {
 				//throw new AuthenticationException("로그인되어있지 않습니다.");
