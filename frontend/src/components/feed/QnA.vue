@@ -5,14 +5,14 @@
             <a>{{qnaInfo.post.posts_title}}</a>
         </div>
         <div class="qna-tag">
-            <a>#{{qnaInfo.post.diseasecode}}</a>
+            <a>#{{qnaInfo.diseasename}}</a>
         </div>
-        <img @click="changeSelectQnA(qnaInfo, 'modify')"  src="../../assets/images/icon/icon_edit_unselect.png">
+        <img v-if="loginData.user_id == qnaInfo.userinfo.user_id" @click="changeSelectQnA(qnaInfo, 'modify')"  src="../../assets/images/icon/icon_edit_unselect.png">
     </div>
     <div class="qna-footer">
         <span>
             <strong class="qna-writer">{{qnaInfo.userinfo.nickname}}</strong>
-            <a class="qna-time">{{qnaInfo.post.post_date}}</a>
+            <a class="qna-time">{{timeForToday(qnaInfo.post.post_date) }}</a>
             <img @click="changeSelectQnA(qnaInfo, 'comment')" src="../../assets/images/icon/icon_talk.png">
             <a class="qna-reply">{{qnaInfo.comments.length}}</a>
         </span>
@@ -21,15 +21,27 @@
 </template>
 
 <script>
-
+import { mapActions,mapState } from "vuex";
 export default {
     name: 'qna',
+    computed: {
+        ...mapState('userStore', ["loginData"]),
+    },
     data() {
         return {
             selectedQnA: {},
         }
     },
     methods : {
+        ...mapActions('profileStore', [
+        'goProfile',
+        ]),
+        ...mapActions('postStore', [
+        "fetchComments",
+        'health',
+        "scrap",
+        "deleteScrap"
+        ]),
         changeSelectQnA(qna, sort) {
             this.selectedQnA = qna;
             console.log("QNA에서 찍는 로그", this.selectedQnA);
@@ -39,17 +51,36 @@ export default {
                 isModifyHidden : false,
                 isQnAHidden: false,
             }
-            console.log(qna);
+            console.log('qna', qna);
             if (sort == 'comment') {
                 info.isQnAHidden = true;
+                this.fetchComments(qna.posts_id);
                 console.log('comment')
             } else if (sort == 'modify') {
                 info.isModifyHidden = true;
-                // fetch comments 필요
                 console.log('modify')
             }
             this.$emit('send-modify-qna', info);
         },
+        timeForToday(time) {
+            const today = new Date();
+            var timeValue = new Date(time);
+            timeValue.setHours(timeValue.getHours() + 9);
+            const betweenTime = Math.floor((today.getTime() - timeValue.getTime()) / 1000 / 60);
+            if (betweenTime < 1) return '방금전';
+            if (betweenTime < 60) {
+                return `${betweenTime}분전`;
+            }
+            const betweenTimeHour = Math.floor(betweenTime / 60);
+            if (betweenTimeHour < 24) {
+                return `${betweenTimeHour}시간전`;
+            }
+            const betweenTimeDay = Math.floor(betweenTime / 60 / 24);
+            if (betweenTimeDay < 365) {
+                return `${betweenTimeDay}일전`;
+            }
+            return `${Math.floor(betweenTimeDay / 365)}년전`;
+        }
     },
     created() {
         console.log(this.selectedQnA);
@@ -105,6 +136,10 @@ export default {
     .qna-footer {
         font-size: 15px;
         text-align: left;
+    }
+
+    .qna-footer .qna-time {
+        color: slategray;
     }
 
     .qna-footer strong, a {
