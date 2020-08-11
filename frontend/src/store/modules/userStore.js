@@ -8,6 +8,7 @@ const userStore = {
 
   state: {
     loginData: {},
+    profileData: {},
   },
 
   getters: {
@@ -19,6 +20,16 @@ const userStore = {
     },
     SET_LOGIN_DATA(state, loginData) {
       state.loginData = loginData
+    },
+
+    SET_USER_INFO(state, userInfo) {
+      state.profileData.userInfo = userInfo
+    },
+    SET_PROFILE_INFO(state, profileInfo) {
+      state.profileData.profileInfo = profileInfo
+    },
+    SET_POST_INFO(state, postInfo) {
+      state.profileData.postInfo = postInfo
     },
   },
 
@@ -51,30 +62,58 @@ const userStore = {
       commit('SET_TOKEN', null)
       commit('SET_LOGIN_DATA', null)
       cookies.remove('access-token')
-      window.localStorage.clear(); 
+      window.localStorage.clear();
       router.push({ name: 'Login' })
     },
-    // findPassword(email) {
-    //   axios.get(SERVER.URL + SERVER.ROUTES.email, { params: {
-    //     email: email
-    //   }})
-    //     .then(res => {console.log('성공', res)
-    //      alert("이메일을 전송하였습니다.")
-    //      this.$router.push('/account/login')
-    //      }
-    //      )
-    //     .catch(err => {console.log(err)
-    //      alert("이메일 전송에 실패하였습니다.")})
-    // },
-     changeUserInfo({rootGetters,dispatch}, changeInfo) {
-      console.log(changeInfo)
-      axios.put(SERVER.URL + SERVER.ROUTES.user + changeInfo.user_id, changeInfo,rootGetters.config)
-      .then(async () => {
-        alert('변경이 완료되었습니다.')
-        dispatch('profileStore/goProfile', changeInfo.user_id,{root:true}) // root로 보내서 이동
-      })
-      .catch(err => console.log(err))
-
+    async changeUserInfo({ rootGetters, dispatch }, changeInfo) {
+      axios.put(SERVER.URL + SERVER.ROUTES.updateProfile, changeInfo.userInfo, rootGetters.config)
+        .then(() => {
+          console.log('소개 변경 완료')
+          alert('변경이 완료되었습니다.')
+          dispatch('userStore/goProfile', changeInfo.userInfo.user_id, { root: true })
+        })
+        .catch(err => console.log('프로필 변경 에러: ', err))
+      if (changeInfo.formData) {
+        let config = { headers: {} }  
+        config.headers = rootGetters.config.headers
+        config.headers['Accept'] = 'application/json'
+        config.headers['Content-Type'] = 'multipart/form-data'
+        axios.post(SERVER.URL + SERVER.ROUTES.uploadProfile, changeInfo.formData, config)
+        .then(async () => {
+          console.log('사진 변경 완료')
+          dispatch('userStore/goProfile', changeInfo.userInfo.user_id, { root: true })
+          // router.push({ name: 'Profile' })
+        })
+        .catch(err => console.log('사진 변경 에러: ', err))
+      }
+    },
+    async goProfile({ state, commit, rootGetters }, userId) {
+      if (userId == null) {
+        userId = state.loginData.user_id
+        console.log('userId == null')
+      }
+      await axios.get(SERVER.URL + SERVER.ROUTES.user + userId, rootGetters.config)
+        .then(res => {
+          console.log('유저인포 요청완료')
+          commit('SET_USER_INFO', res.data)
+            // .then(() => router.push({ name: 'Profile' }))
+          // setTimeout(() => commit('SET_USER_INFO', res.data), 10000)
+        })
+        .catch(err => console.log(err))
+      axios.get(SERVER.URL + SERVER.ROUTES.profile + userId, rootGetters.config)
+        .then(res => {
+          console.log('프로필인포 요청 완료')
+          commit('SET_PROFILE_INFO', res.data)
+        })
+        .then(() => {
+          console.log('라우터 푸시 프로필')
+          router.push({ name: 'Profile' })
+        })
+        .then(() => {
+          router.go()
+        })
+      // console.log('라우터 푸시 프로필')
+      // router.push({ name: 'Profile' }) 
     },
   },
 }

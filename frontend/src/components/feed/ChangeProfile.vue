@@ -15,12 +15,12 @@
       <div v-show="profileTab == 0">
         <div class="profile-photo">
           <div class="profile-modify-image">
-            <img v-show="imgsrc != ''" :src="imgsrc">
+            <img v-show="imgsrc != ''" :src="imgsrc" />
           </div>
           <div class="profile-image-button">
             <button @click="onClickImageUpload">프로필 사진 변경</button>
           </div>
-          <input ref="profileImg" type="file" hidden @change="onchangeImages">
+          <input ref="profileImg" type="file" hidden @change="onChangeImages" />
         </div>
         <div class="input-with-label">
           <input v-model="email" id="email" type="text" disabled />
@@ -91,20 +91,25 @@ export default {
       .has()
       .letters();
 
-    this.changeInfo.email = this.loginData.email;
-    this.changeInfo.introduction = this.profileData.userInfo.introduction;
-    this.changeInfo.nickname = this.loginData.nickname;
-    this.changeInfo.password = this.loginData.password;
-    this.changeInfo.user_id = this.loginData.user_id;
-    this.changeInfo.username = this.loginData.username;
-    this.email = this.loginData.email;
-    this.nickname = this.loginData.nickname;
+    // this.changeInfo.email = this.loginData.email;
+    // this.changeInfo.introduction = this.profileData.userInfo.introduction;
+    // this.changeInfo.nickname = this.loginData.nickname;
+    // this.changeInfo.password = this.loginData.password;
+    // this.changeInfo.user_id = this.loginData.user_id;
+    // this.changeInfo.username = this.loginData.username;
+    // this.changeInfo.userInfo = this.loginData
+    console.log(this.profileData)
+    this.email = this.profileData.userInfo.email;
+    this.nickname = this.profileData.userInfo.nickname;
     this.introduction = this.profileData.userInfo.introduction;
   },
 
   computed: {
-    ...mapState('userStore', ["loginData"]),
-    ...mapState('profileStore', ['profileData']),
+    ...mapState("userStore", [
+      "loginData",
+      "profileData"
+      ]),
+    // ...mapState("profileStore", ["profileData"]),
   },
   data() {
     return {
@@ -117,12 +122,12 @@ export default {
       passwordConfirm: null,
       passwordSchema: new PV(),
       changeInfo: {
-        email: "",
-        intro: "",
-        nickname: "",
-        password: "",
-        user_id: "",
-        username: "",
+        formData: null,
+        userInfo: {
+          email: "",
+          nickname: "",
+          introduction: "",
+        },
       },
       confirm: {
         email: false,
@@ -143,30 +148,27 @@ export default {
         require("../../assets/images/icon/icon_key.png"),
       ],
 
-      imgsrc : require('../../assets/images/icon/icon_default_image.png'),
+      imgsrc: require("../../assets/images/icon/icon_default_image.png"),
     };
   },
 
   watch: {
     nickname: function () {
-      this.checkFormFirst();
+      this.checkFormInfo();
     },
     introduction: function () {
-      this.checkFormFirst();
+      this.checkFormInfo();
     },
     password: function () {
-      this.checkFormSecond();
+      this.checkFormPassword();
     },
     passwordConfirm: function () {
-      this.checkFormSecond();
+      this.checkFormPassword();
     },
   },
   methods: {
-    ...mapActions('userStore', [
-      "changeUserInfo",
-      "getAccessData"
-    ]),
-    checkFormFirst() {
+    ...mapActions("userStore", ["changeUserInfo", "getAccessData"]),
+    checkFormInfo() {
       if (this.nickname.length == 0) {
         this.error.nickname = false;
       } else {
@@ -189,14 +191,15 @@ export default {
 
       if (this.error.nickname && this.error.intro) {
         this.isSubmit = true;
-        this.changeInfo.email = this.email;
-        this.changeInfo.nickname = this.nickname;
-        this.changeInfo.introduction = this.introduction;
+        this.changeInfo.userInfo.user_id = this.loginData.user_id
+        this.changeInfo.userInfo.email = this.email;
+        this.changeInfo.userInfo.nickname = this.nickname;
+        this.changeInfo.userInfo.introduction = this.introduction;
       } else {
         this.isSubmit = false;
       }
     },
-    checkFormSecond() {
+    checkFormPassword() {
       if (this.password.length >= 0) {
         if (!this.passwordSchema.validate(this.password)) {
           this.error.password = "영문,숫자 포함 8 자리이상이어야 합니다.";
@@ -235,15 +238,16 @@ export default {
           }
         });
     },
-    onClickImageUpload () {
-      console.log("!")
+    onClickImageUpload() {
       this.$refs.profileImg.click();
     },
-    onchangeImages(e) {
-      console.log("!!");
+    onChangeImages(e) {
       const file = e.target.files[0];
+      var formData = new FormData();
+      formData.append("upload_file", file);
+      this.changeInfo.formData = formData;
       this.imgsrc = URL.createObjectURL(file);
-    }
+    },
   },
 };
 </script>
@@ -285,7 +289,6 @@ export default {
   background-color: rgb(247, 247, 247);
   color: black;
 }
-
 
 .input-with-label input {
   width: 90%;

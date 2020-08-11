@@ -3,7 +3,7 @@
     <div class="intro-wrap">
       <div class="left-content">
         <div class="profile-image">
-          <img src="../../assets/sample.jpg" />
+          <img :src="profileData.userInfo.userimage" />
         </div>
         <div class="profile-name">
           <a>{{ profileData.userInfo.nickname }}</a>
@@ -127,15 +127,20 @@ export default {
   },
   mounted() {
     this.user.user_id = this.$route.params.id;
+    console.log('mounted')
   },
   computed: {
+    ...mapState('userStore', [
+      'loginData',
+      'profileData'
+    ]),
+    // ...mapState('profileStore', ['profileData']),
     ...mapState('followStore', ['followee_list']),
-    ...mapState('profileStore', ['profileData']),
-    ...mapState('userStore', ['loginData']),
     ...mapState('postStore', ['comments']),
   },
   methods: {
-    ...mapActions('profileStore', ['goProfile']),
+    // ...mapActions('profileStore', ['goProfile']),
+    ...mapActions('userStore', ['goProfile']),
     ...mapActions('postStore', [
       'updatePost',
       'createComment',
@@ -293,6 +298,7 @@ export default {
     },
   },
   created() {
+    // this.goProfile()
     this.getUserScraps(this.profileData.userInfo.user_id);
     var vueInstance = this;
     let params = {
@@ -316,7 +322,6 @@ export default {
       .catch(function (err) {
         console.log("ERROR OCCURED : ", err);
       });
-    console.log(this.profileData)
   },
 };
 </script>
