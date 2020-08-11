@@ -63,6 +63,17 @@ public class UserInfoServiceImpl implements UserInfoService{
 	public int getUserId(String email) {
 		return userInfoDao.getUserId(email);
 	}
+
+	@Override
+	public String findNicknameById(int user_id) {
+		return userInfoDao.findNicknameById(user_id);
+	}
+
+	@Override
+	public int updateImage(UserInfo userinfo) {
+		return userInfoDao.updateImage(userinfo);
+	}
+
 	
 	
 

@@ -9,4 +9,5 @@ public class PostResponse {
 	public UserInfo userinfo;
 	public List<Comment> comments;
 	public List<Health> healths;
+	public List<Tag> tags;
 }
