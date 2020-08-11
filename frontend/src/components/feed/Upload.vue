@@ -202,7 +202,7 @@ export default {
     checkItem(item) {
       this.checkedItem = item.split(":");
       this.uploadData.postData.post.diseasecode = this.checkedItem[0]
-      // this.uploadData.postData.diseasename = this.checkedItem[1]
+      this.uploadData.postData.diseasename = this.checkedItem[1]
     },
     deleteItem() {
       // x표를 눌러 선택한 질병을 삭제하는 내용

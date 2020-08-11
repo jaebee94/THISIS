@@ -10,12 +10,12 @@
       <input v-model="email" id="email" type="text" placeholder="이메일을 입력해주세요" />
       <button @click="checkEmail()">중복확인</button>
       <div class="error-text" v-if="error.email">{{error.email}}</div>
-      <div class="confirm-text" v-if="!error.emailConfirm">{{error.emailConfirm}}</div>
+      <!-- <div class="confirm-text" v-if="!error.emailConfirm">{{error.emailConfirm}}</div> -->
     </div>
     <div class="input-with-label">
       <input v-model="nickname" id="nickname" type="text" placeholder="닉네임을 입력해주세요" />
       <button @click="checkNickname()">중복확인</button>
-      <div class="confirm-text" v-if="!error.nicknameConfirm">{{error.nicknameConfirm}}</div>
+      <!-- <div class="confirm-text" v-if="!error.nicknameConfirm">{{error.nicknameConfirm}}</div> -->
     </div>
     <div class="input-with-label">
       <input v-model="password" id="password" type="password" placeholder="비밀번호를 입력해주세요" />
@@ -64,9 +64,9 @@ export default {
       error: {
         username: false,
         email: false,
-        // emailConfirm: true,
+        emailConfirm: true,
         nickname: true,
-        // nicknameConfirm: true,
+        nicknameConfirm: true,
         password: false,
         passwordConfirm: false,
       },
@@ -170,12 +170,12 @@ export default {
         }
       })
         .then(() => {
-          this.error.emailConfirm = true;
+          this.error.emailConfirm = false;
           alert("사용가능한 E-mail 입니다.")
         })
         .catch(err => {
           if (err.response.data.data == "wrong email") {
-            this.confirm.email = false;
+            this.confirm.email = true;
             alert("이미 사용중인 E-mail 입니다.")
           }
         })
@@ -187,12 +187,12 @@ export default {
         }
       })
         .then(() => {
-          this.error.nicknameConfirm = true;
+          this.error.nicknameConfirm = false;
           alert("사용가능한 닉네임 입니다.")
         })
         .catch(err => {
           if (err.response.data.data == "wrong nickname") {
-            this.confirm.nickname = false;
+            this.confirm.nickname = true;
             alert("이미 사용중인 닉네임 입니다.")
           }
         })
