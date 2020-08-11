@@ -18,9 +18,11 @@
 </template>
 
 <script>
+// import { mapActions } from 'vuex'
 import axios from 'axios'
+// import SERVER from '@/api/RestApi.js'
 
-const api = 'http://i3a301.p.ssafy.io:8088/THISIS/email'
+const api = 'http://i3a301.p.ssafy.io:8089/THISIS/email'
 
 export default {
   data() {
@@ -40,7 +42,7 @@ export default {
          )
         .catch(err => {console.log(err)
          alert("이메일 전송에 실패하였습니다.")})
-    }
+    },
   },
 };
 </script>

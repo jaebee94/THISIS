@@ -19,6 +19,7 @@ export default {
 
     // posts: '/articles',
     posts: '/articles/new',
+    qnas: '/articles/qna',
     upload: '/articles/upload',
     scrap: '/scrap',
     health: '/health',

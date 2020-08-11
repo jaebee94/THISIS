@@ -155,7 +155,8 @@ export default {
     },
     timeForToday(time) {
       const today = new Date();
-      const timeValue = new Date(time);
+      var timeValue = new Date(time);
+      timeValue.setHours(timeValue.getHours() + 9);
       const betweenTime = Math.floor((today.getTime() - timeValue.getTime()) / 1000 / 60);
       if (betweenTime < 1) return '방금전';
       if (betweenTime < 60) {

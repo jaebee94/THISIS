@@ -76,7 +76,6 @@ const postStore = {
 
     // Comment
     createComment({ commit, rootGetters }, commentData) {
-      console.log(commentData)
       axios.post(SERVER.URL + SERVER.ROUTES.comment, commentData, rootGetters.config)
         .then(
           setTimeout(() => {
@@ -95,7 +94,10 @@ const postStore = {
         })
     },
     updateComment({ rootGetters }, commentData) {
-      axios.post(SERVER.URL + SERVER.ROUTES.comment + `/`, commentData, rootGetters.config)
+      console.log('server 요청 전', rootGetters)
+      axios.put(SERVER.URL + SERVER.ROUTES.comment + '/' + commentData.comment_id, commentData, rootGetters.config)
+      .then((res) => {console.log(res)})
+      .catch((err) => {console.log(err)})
     },
     deleteComment() {     // 삭제 로직 개발 필요
     },
