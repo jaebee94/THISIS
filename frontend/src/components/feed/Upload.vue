@@ -52,7 +52,7 @@
     </div>
 
     <div class="button-panel">
-      <button @click="sendPhoto()" :disabled="!isFill" :class="{disabled : !isFill}">올리기</button>
+      <button @click="sendPhoto(), createPost(uploadData)" :disabled="!isFill" :class="{disabled : !isFill}">올리기</button>
       <!-- <button @click="createPost(postData)" :disabled="!isFill" :class="{disabled : !isFill}">올리기</button> -->
     </div>
   </div>
@@ -73,9 +73,20 @@ export default {
       isQnA: false,
       posts_title: "",
       posts_main: "",
-      postData: {
-        posts_title: null,
-        posts_main: null,
+      file: null,
+      uploadData: {
+        formData: null,
+        postData: {
+          post: {
+            category: 0,
+            diseasecode: null,
+            // diseasename: null,
+            imgsrc: null,
+            posts_main: null,
+            posts_title: null,
+          },
+          tags: []
+        },
       },
       isFill: false,
       imgsrc: null,
@@ -110,10 +121,12 @@ export default {
     checkPost() {
       this.isPost = true;
       this.isQnA = false;
+      this.uploadData.postData.post.category = 0
     },
     checkQnA() {
       this.isQnA = true;
       this.isPost = false;
+      this.uploadData.postData.post.category = 1
     },
     checkForm() {
       if (
@@ -121,8 +134,8 @@ export default {
         this.posts_main.length > 0
       ) {
         this.isFill = true;
-        this.postData.posts_title = this.posts_title;
-        this.postData.posts_main = this.posts_main;
+        this.uploadData.postData.post.posts_title = this.posts_title;
+        this.uploadData.postData.post.posts_main = this.posts_main;
       } else {
         this.isFill = false;
       }
@@ -132,18 +145,20 @@ export default {
     },
     onChangeImages(e){
       const file = e.target.files[0];
+      console.log(file)
 /////////////////////////////////////////////////////////////////
       var formData = new FormData();
       formData.append('upload_file', file);
-      axios({
-        method: 'post',
-        url: 'http://4bc06cd8b4fc.ngrok.io/THISIS/articles/upload',
-        data: formData,
-        header: {
-          'Accept': 'application/json',
-          'Content-Type': 'multipart/form-data',
-        },
-      })      
+      this.uploadData.formData = formData
+      // axios({
+      //   method: 'post',
+      //   url: 'http://4bc06cd8b4fc.ngrok.io/THISIS/articles/upload',
+      //   data: formData,
+      //   header: {
+      //     'Accept': 'application/json',
+      //     'Content-Type': 'multipart/form-data',
+      //   },
+      // })      
 //////////////////////////////////////////////////////////////////
       this.imgsrc = URL.createObjectURL(file);
     },
@@ -186,6 +201,8 @@ export default {
     },
     checkItem(item) {
       this.checkedItem = item.split(":");
+      this.uploadData.postData.post.diseasecode = this.checkedItem[0]
+      this.uploadData.postData.diseasename = this.checkedItem[1]
     },
     deleteItem() {
       // x표를 눌러 선택한 질병을 삭제하는 내용
@@ -211,6 +228,8 @@ export default {
         return;
       }
       this.tags.push(this.customTag);
+      this.uploadData.postData.tags = this.tags
+      console.log(this.uploadData.postData)
       this.customTag = "";
     },
     deleteTag(tag) {
@@ -226,7 +245,7 @@ export default {
       console.log(this.$refs.imageInput);
       console.log(this.imgsrc);
     },
-    ...mapActions(["createPost"]),
+    // ...mapActions(["createPost"]),
   },
 };
 </script>

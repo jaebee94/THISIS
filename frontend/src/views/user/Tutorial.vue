@@ -29,7 +29,7 @@
 </template>
 <script>
 import axios from 'axios';
-
+import { mapActions } from "vuex";
 const proxyurl = "https://cors-anywhere.herokuapp.com/";
 export default {
     data() {
@@ -55,6 +55,7 @@ export default {
         },
     },
     methods: {
+        ...mapActions("diseaseStore", ["createDisease"]),
         checkForm() {
             // 현재 선택한 구독 질병의 갯수로 다음으로 넘어갈 수 있는지 체크
             if(this.checkedItems.length >= 3) {
@@ -109,7 +110,7 @@ export default {
                 if(item[0] == str[0]) flag = false;
             }
             if(flag)
-            this.checkedItems.push(str);
+            this.checkedItems.push({diseasecode : str[0], diseasename : str[1]});
         },
         deleteItem(item) {
             // x표를 눌러 선택한 질병을 삭제하는 내용
@@ -118,6 +119,10 @@ export default {
         },
         onStart() {
             console.log(this.checkedItems)
+            this.checkedItems.forEach(chkItem => {
+                this.createDisease(chkItem); //db에 보내기
+            });
+            
             // 여기서 들어갈 작업 : 
             // 1. this.checkedItems(선택한 구독 질병들)를 POST로 서버 DB에 보내주기
             // 2. 메인 페이지의 피드로 가게 하기

@@ -13,8 +13,11 @@ export default {
     login: '/account/login',
     logout: '/account/',
     withdrawal: '/account/{user_id}',
+    search : '/account/search',
 
-    posts: '/articles',
+    // posts: '/articles',
+    posts: '/articles/new',
+    upload: '/articles/upload',
     scrap: '/scrap',
     health: '/health',
     healthCount: '/health/post/',
@@ -30,6 +33,8 @@ export default {
     follower: '/follow/follower/',
 
     searchUser: '/account/search',
-    modify:'/articles/'
+    modify:'/articles/',
+
+    userDisease: '/disease/user'
   }
 }
