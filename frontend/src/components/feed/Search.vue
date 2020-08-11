@@ -5,8 +5,17 @@
       <div>
         <h2>{{this.selectedDisease.name}}</h2>
       </div>
-      <div class="post-content">
+      <!-- <div class="post-content">
         <textarea v-model="selectedDisease.description"></textarea>
+      </div> -->
+      <div class="post-content">
+       <carousel class="carousel wrap" :per-page="1" v-bind:pagination-enabled="true">
+        <slide v-for="item in searchedItems" v-bind:key="item.title" class="myslide">
+          <div><strong>{{item.title}}</strong></div>
+          <div><img v-show="item.thumbnail != null" :src="item.thumbnail"></div>
+          <div><a>{{item.description}}</a></div>
+        </slide>
+      </carousel>
       </div>
       <div class="modify-footer">
         <img @click="close()" src="../../assets/images/icon/icon_close.png" />
@@ -83,9 +92,13 @@ import { mapActions,mapState } from "vuex";
 import axios from "axios";
 import SERVER from "@/api/RestApi.js";
 import cookies from "vue-cookies";
+import {Carousel, Slide} from 'vue-carousel';
 const proxyurl = "https://cors-anywhere.herokuapp.com/";
 export default {
   name: "Search",
+  components:{
+    Carousel, Slide
+  },
   computed: {
     ...mapState('diseaseStore', ['diseases']),
   },
@@ -103,6 +116,7 @@ export default {
         name : "",
         description: "",
       },
+      searchedItems: [],
       isDiseaseHidden : true
     };
   },
@@ -198,10 +212,11 @@ export default {
       this.findDisease(disease.sickNm)
     },
     async findDisease(disease){
+      this.searchedItems = [];
       this.selectedDisease.description=""
       var params = {
           query: disease,
-          display: 100,
+          display: 10,
           start: 1,
       }
       await axios.request({
@@ -218,18 +233,24 @@ export default {
               item.description = String(item.description).replace(/<br\/>/ig, "\n");
               item.description = String(item.description).replace(/&quot;/ig, "");
               item.description = String(item.description).replace(/<(\/)?([a-zA-Z]*)(\s[a-zA-Z]*=[^>]*)?(\s)*(\/)?>/ig, "");
-              this.selectedDisease.description += item.description+"\n";
+
+              item.title = String(item.title).replace(/<br\/>/ig, "\n");
+              item.title = String(item.title).replace(/&quot;/ig, "");
+              item.title = String(item.title).replace(/<(\/)?([a-zA-Z]*)(\s[a-zA-Z]*=[^>]*)?(\s)*(\/)?>/ig, "");
+              this.searchedItems.push(item);
+              // this.selectedDisease.description += item.description+"\n";
               // item.title = String(item.title).replace(/<br\/>/ig, "\n");
               // item.title = String(item.title).replace(/&quot;/ig, "");
               // item.title = String(item.title).replace(/<(\/)?([a-zA-Z]*)(\s[a-zA-Z]*=[^>]*)?(\s)*(\/)?>/ig, "");
           });
           //this.selectedDisease.description = res.data.items;
 
-          console.log(res);
+          // console.log(res);
       })
       .catch((err) => {
           console.error(err);
       })
+      console.log(this.searchedItems)
     },
     
     close(){
@@ -273,9 +294,35 @@ export default {
   height: 70%;
   background-color: white;
   border-radius: 5px;
-  margin : auto 0;
+  margin : auto 4%;
 }
-.post-content textarea {
+
+.post-content {
+  width: 100%;
+}
+
+.post-content .carousel.wrap {
+  width: 100%;
+  height: 80%;
+}
+
+.post-content img {
+  max-height: 70%;
+  max-width: 80%;
+}
+
+.myslide strong{
+  font-weight: 600;
+}
+
+
+
+.myslide div:nth-child(3) {
+  padding-left: 10%;
+  padding-right: 10%;
+}
+
+/* .post-content textarea {
   padding: 5px 5px;
   font-size: 20px;
   margin-top: 10px;
@@ -288,7 +335,7 @@ export default {
 .post-content textarea:focus {
   outline: none;
   border: rgb(0, 171, 132) 3px solid;
-}
+} */
 .modify-footer {
   position: absolute;
   width: 100%;

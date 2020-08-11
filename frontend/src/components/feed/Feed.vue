@@ -777,6 +777,8 @@ div.feed {
   height: 80%;
 }
 
+
+
 /* ----- qna 내용 자세히 보기 모달창 코드 -----  */
 .post {
   margin-left: 4%;
