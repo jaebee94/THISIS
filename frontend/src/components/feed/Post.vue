@@ -7,7 +7,7 @@
             <img
               class="profile-image"
               @click="goProfile(postInfo.post.user_id)"
-              src="../../assets/images/icon/icon_default_image.png"
+              :src="postInfo.userinfo.userimage"
             />
           </td>
           <td>
