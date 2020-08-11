@@ -31,7 +31,7 @@
           </td>
           <td>
             <!-- <router-link to="/main/profile"> -->
-              <img @click="checkProfile()" src="@/assets/sample.jpg" />
+              <img @click="checkProfile()" :src="profileData.userInfo.userimage" />
             <!-- </router-link> -->
           </td>
         </tr>
@@ -67,11 +67,12 @@ export default {
     }
   },
   computed: {
-    ...mapState('userStore', ['loginData']),
-    ...mapState('profileStore', ['profileData']),
+    ...mapState('userStore', ['loginData', 'profileData']),
+    // ...mapState('profileStore', ['profileData']),
   },
   methods: {
-    ...mapActions('profileStore', ['goProfile']),
+    // ...mapActions('profileStore', ['goProfile']),
+    ...mapActions('userStore', ['goProfile']),
     ...mapActions('postStore', ['getUserScraps']),
 
     getNoti(id) {

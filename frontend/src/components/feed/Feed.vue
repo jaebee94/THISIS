@@ -127,7 +127,6 @@ export default {
           num: this.page,
         },
       };
-      console.log($state);
       let url = SERVER.URL;
 
       if(this.profile_data== undefined || this.profile_data.tab == 0) {
@@ -164,13 +163,11 @@ export default {
                 .catch((err) => console.log(err));
               element.post.health_count = element.healths.length;
               element.healths.forEach((ele) => {
-                console.log(ele)
                 if (ele.user_id == this.loginData.user_id) {
                   element.health = true;
                 }
               });
             });
-            console.log("data",data)
             this.posts.push(...data);
             $state.loaded();
           } else {
@@ -219,7 +216,6 @@ export default {
   },
   created() {
     this.$store.dispatch("getCheckScrap");
-    console.log('logindata',this.loginData)
   },
 };
 </script>

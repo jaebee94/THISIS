@@ -146,20 +146,9 @@ export default {
     onChangeImages(e){
       const file = e.target.files[0];
       console.log(file)
-/////////////////////////////////////////////////////////////////
       var formData = new FormData();
       formData.append('upload_file', file);
       this.uploadData.formData = formData
-      // axios({
-      //   method: 'post',
-      //   url: 'http://4bc06cd8b4fc.ngrok.io/THISIS/articles/upload',
-      //   data: formData,
-      //   header: {
-      //     'Accept': 'application/json',
-      //     'Content-Type': 'multipart/form-data',
-      //   },
-      // })      
-//////////////////////////////////////////////////////////////////
       this.imgsrc = URL.createObjectURL(file);
     },
     getDisease (keyword) {

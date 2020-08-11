@@ -66,8 +66,8 @@ const increment = firebase.firestore.FieldValue.increment(1);
 export default {
   computed: {
     ...mapState('notificationStore', ['notification']),
-    ...mapState('userStore', ['loginData']),
-    ...mapState('profileStore', ['profileData'])
+    ...mapState('userStore', ['loginData', 'profileData']),
+    // ...mapState('profileStore', ['profileData'])
   },
   data() {
     return {
