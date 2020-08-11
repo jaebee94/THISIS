@@ -22,6 +22,8 @@ import Upload from '../components/feed/Upload.vue'
 import Notify from '../components/feed/Notify.vue'
 import Profile from '../components/feed/Profile.vue'
 
+import PostDetail from '../components/feed/PostDetail.vue'
+
 import ChangeProfile from '../components/feed/ChangeProfile.vue'
 //import { component } from 'vue/types/umd'
 
@@ -54,6 +56,12 @@ const routes = [
         path: 'feed_kang',
         name: 'FeedKang',
         component: Feed_KANG
+      },
+      {
+        path: 'detail',
+        name: 'Detail',
+        component: PostDetail,
+        props: true
       },
       {
         path: 'search',

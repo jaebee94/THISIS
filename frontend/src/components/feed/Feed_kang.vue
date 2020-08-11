@@ -63,14 +63,24 @@
               <a class="name">{{ postInfo.userinfo.nickname }}</a>
             </td>
             <td>
-              <a class="time">{{ postInfo.post.post_date }}</a>
+              <a class="time">{{timeForToday(postInfo.post.post_date)}}</a>
             </td>
           </tr>
         </table>
       </div>
-      <div class="post-main">{{ postInfo.post.posts_main }}</div>
+      <carousel class="carousel wrap" :per-page="1" v-bind:pagination-enabled="false">
+        <slide class="myslide">
+            <div>
+                <img src="../../assets/sample.jpg">
+            </div>
+        </slide>
+        <slide class="myslide" >
+             <div class="post-main"><strong>{{postInfo.userinfo.nickname}}</strong> {{ postInfo.post.posts_main }}</div>
+        </slide>
+      </carousel>
+     
       <div class="comment-wrap">
-        <div class="comment" v-for="comment in postInfo.comments" v-bind:key="comment.post_id">
+        <div class="comment" v-for="comment in comments" v-bind:key="comment.post_id">
           <div class="comment-header">
             <table>
               <tr>
@@ -78,15 +88,15 @@
                   <img class="profile-image" src="../../assets/images/icon/icon_default_image.png" />
                 </td>
                 <td>
-                  <a>{{ comment.user_id }}</a>
+                  <a>{{ comment.userinfo.nickname }}</a>
                 </td>
                 <td>
-                  <a>{{ comment.comment_date }}</a>
+                  <a>{{ comment.comment.comment_date }}</a>
                 </td>
               </tr>
             </table>
           </div>
-          <div class="comment-content">{{ comment.comment_main }}</div>
+          <div class="comment-content">{{ comment.comment.comment_main }}</div>
         </div>
       </div>
       <div class="comment-submit">
@@ -125,23 +135,29 @@
         @send-modify="showModify"
       ></post>
       </div>
+      <infinite-loading @infinite="infiniteHandler"></infinite-loading>
     </div>
 
 
 
 
     <div v-show="currentTab == 1"> 
-      <h1>Q&A게시판</h1>
+      <!-- <h1>Q&A게시판</h1> -->
+      <input placeholder="검색어를 입력하세요">
+      <button>검색</button>
+      <input id="check-mine" type="checkbox">
+      <label for="check-mine">내꺼 보기</label>
       <qna v-for="qnaInfo in qnas" v-bind:key="qnaInfo.posts_id"
       v-bind:qnaInfo="qnaInfo" @send-modify-qna="showModifyQnA">
       </qna> 
+      <infinite-loading @infinite="infiniteHandlerQnA"></infinite-loading>
     </div>
 
     <div v-show="currentTab == 2">
-      <h1>뉴스게시판</h1>
+      <news></news>
     </div>
     <!-- infinite-loading의 위치를 tab 마다 넣어야 할지 고민중 -->
-    <infinite-loading @infinite="infiniteHandler"></infinite-loading>
+    
   </div>
 </template>
 
@@ -152,11 +168,14 @@ import SERVER from "@/api/RestApi.js";
 
 import qna from '../feed/QnA.vue';
 import comment from '../feed/Comment.vue';
+import news from '../feed/News.vue';
+
+import {Carousel, Slide} from 'vue-carousel';
 
 export default {
   name: "Feed",
   components:{
-    qna, comment
+    qna, comment, news, Carousel, Slide
   },
   data() {
     return {
@@ -172,6 +191,9 @@ export default {
       
       page: 0,
       posts: [],
+
+      qnaPage: 0,
+      // qnas:[],
 ///////////////////////// 강세응이 추가한 내용 (더미데이터) //////////////////////////////////
       qnaInfo: {},
       qnas: [
@@ -305,8 +327,11 @@ export default {
   watch: {
     profile_data : function () {
       this.page = 0
+      this.qnaPage = 0
+      this.qnas = []
       this.posts = []
       this.infiniteHandler(this);
+      this.infiniteHandlerQnA(this);
     }
   },
   methods: {
@@ -317,6 +342,65 @@ export default {
       //'fetchHealths',
       'goCheckScrap',
     ]),
+
+    infiniteHandlerQnA ($state) {
+      console.log($state)
+      // let params = {
+      //   params: {
+      //     num: this.qnaPage,
+      //   },
+      // };
+      // let url = SERVER.URL;
+      // if(this.profile_data== undefined || this.profile_data.tab == 0) {
+      //   url += SERVER.ROUTES.posts+"/new"
+      //   params.params.user_id= -1 //-1일 경우 전체 게시물
+      //   if (this.profile_data != undefined) { // 만약 다른 사람 계정피드에서의 포스트들이면
+      //     var profile_id = this.profile_data.user_id;
+      //     params.params.user_id = profile_id;
+      //     //if (profile_id == this.loginData.user_id) params.params.user_id = 0; //0일 경우 내 게시물
+      //   }
+      // }
+      // else if(this.profile_data.tab == 1){ //스크랩 보여주기
+      //   url += SERVER.ROUTES.scrap + "/" + this.profile_data.user_id;
+      // }
+      // console.log(params);
+      // //통신부분
+      // axios.get(url, params).then(({ data }) => {
+      //     if (data.length) {
+      //       this.page += 1;
+           
+      //       data.forEach((element) => {
+      //         element.health = false;
+      //         element.scrap = false;
+      //          console.log(element)
+      //         axios
+      //           .get(SERVER.URL + SERVER.ROUTES.scrap, {
+      //             params: {
+      //               user_id: this.loginData.user_id,
+      //               posts_id: element.posts_id,
+      //             },
+      //           })
+      //           .then((res) => {
+      //             if (res.data > 0) element.scrap = true;
+      //           })
+      //           .catch((err) => console.log(err));
+      //         element.post.health_count = element.healths.length;
+      //         element.healths.forEach((ele) => {
+      //           console.log(ele)
+      //           if (ele.user_id == this.loginData.user_id) {
+      //             element.health = true;
+      //           }
+      //         });
+      //       });
+      //       console.log("data",data)
+      //       this.posts.push(...data);
+      //       $state.loaded();
+      //     } else {
+      //       $state.complete();
+      //     }
+      //   });
+      
+    },
 
    // Infinite Scrolling
     infiniteHandler($state) {
@@ -341,7 +425,7 @@ export default {
       else if(this.profile_data.tab == 1){ //스크랩 보여주기
         url += SERVER.ROUTES.scrap + "/" + this.profile_data.user_id;
       }
-
+      console.log(params);
       //통신부분
       axios.get(url, params).then(({ data }) => {
           if (data.length) {
@@ -416,6 +500,15 @@ export default {
       this.commentData.posts_id = info.postInfo.posts_id;
       this.commentData.user_id = this.loginData.user_id;
     },
+    // showModify(info) {
+    //   //댓글이나 글 수정시 부르는 함수
+    //   console.log('showInfo', info)
+    //   this.postInfo = info.postInfo;
+    //   this.commentData.posts_id = info.postInfo.posts_id;
+    //   this.commentData.user_id = this.loginData.user_id;
+    //   // this.$router.push({name: 'Login'});
+    //   this.$router.push({name: 'Detail', params: info});
+    // },
     showModifyQnA(info){
       this.qnaInfo = info.qnaInfo;
       this.$parent.$parent.isHidden = info.isHidden;
@@ -431,6 +524,24 @@ export default {
       document.body.className = "";
       /*------ 피드 스크롤 unlock ------*/
     },
+    timeForToday(time) {
+      const today = new Date();
+      const timeValue = new Date(time);
+      const betweenTime = Math.floor((today.getTime() - timeValue.getTime()) / 1000 / 60);
+      if (betweenTime < 1) return '방금전';
+      if (betweenTime < 60) {
+          return `${betweenTime}분전`;
+      }
+      const betweenTimeHour = Math.floor(betweenTime / 60);
+      if (betweenTimeHour < 24) {
+          return `${betweenTimeHour}시간전`;
+      }
+      const betweenTimeDay = Math.floor(betweenTime / 60 / 24);
+      if (betweenTimeDay < 365) {
+          return `${betweenTimeDay}일전`;
+      }
+      return `${Math.floor(betweenTimeDay / 365)}년전`;
+    }
   },
   created() {
     this.$store.dispatch("getCheckScrap");
@@ -447,6 +558,7 @@ export default {
   text-align: center;
   background-color: white;
   padding-bottom: 20px;
+  margin-top: 0;
   margin-left: 0;
   width: 100%; 
   padding: 0 0;
@@ -455,6 +567,18 @@ export default {
 
 .tabs {
   width: 100%;
+  margin-top: 0;
+}
+
+.tab {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom: 3px rgb(247, 247, 247) solid;
+}
+
+.tab.active {
+  background-color:rgb(247, 247, 247);
+  border-bottom: 3px rgb(0, 171, 132) solid;
 }
 
 .tab img {
@@ -470,6 +594,11 @@ export default {
   background-color: rgb(247, 247, 247);
   border: none;
   border-radius: 5px;
+}
+
+div.feed {
+  margin: 0;
+  width: 98%;
 }
 
 .feed-header {
@@ -564,7 +693,7 @@ export default {
 
 .post-header {
   display: flex;
-  background-color: rgb(0, 171, 132);
+  background-color: rgb(247, 247, 247);
   text-align: left;
   width: 100%;
   height: 40px;
@@ -582,9 +711,19 @@ export default {
 .post-header table tr td {
   height: 40px;
 }
+.post-header table tr td:nth-child(1){
+  width: 50px;
+}
+
+.post-header a.time {
+    font-size: 10px;
+    /* color: rgb(247, 247, 247); */
+    color: slategray;
+    font-weight: 400;
+  }
 
 .post-header table tr td a {
-  color: white;
+  color: black;
   font-weight: 600;
 }
 
@@ -601,12 +740,29 @@ export default {
   text-align: right;
 }
 
+.carousel.wrap {
+  width: 100%;
+  height: 40%;
+}
+
+.myslide {
+  width: 100%;
+  height: 100%;
+}
+
+.myslide div img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
 .post-main {
-  height: 30%;
+  height: 100%;
   overflow: auto;
   padding: 10px 10px;
   text-align: left;
 }
+
+
 
 .post-footer {
   position: absolute;
@@ -622,7 +778,7 @@ export default {
 .comment-wrap {
   display: inherit;
   overflow: auto;
-  height: 50%;
+  height: 40%;
 }
 
 .comment {

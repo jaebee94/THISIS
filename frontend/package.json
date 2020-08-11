@@ -15,6 +15,7 @@
     "firebase": "^7.17.1",
     "password-validator": "^5.0.3",
     "vue": "^2.6.11",
+    "vue-carousel": "^0.18.0",
     "vue-cookies": "^1.7.3",
     "vue-firestore": "^0.3.30",
     "vue-infinite-loading": "^2.4.5",

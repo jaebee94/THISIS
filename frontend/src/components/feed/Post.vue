@@ -17,12 +17,20 @@
             >{{ postInfo.userinfo.nickname }}</a>
           </td>
           <td>
-            <a class="time">{{postInfo.post.post_date }}</a>
+            <a class="time">{{ timeForToday(postInfo.post.post_date)  }}</a>
           </td>
         </tr>
       </table>
     </div>
-    <div class="feed-main">{{postInfo.post.posts_main }}</div>
+    <div class="feed-main">
+      <img v-show="postInfo.post.imgsrc != null" :src="postInfo.post.imgsrc">
+      <strong @click="goProfile(postInfo.post.user_id)">{{postInfo.userinfo.nickname}}</strong> 
+      {{postInfo.post.posts_main }}
+      <div>
+        <a v-show="postInfo.post.health_count != 0"><strong>{{postInfo.post.health_count}}명</strong>이 건강해요를 눌렀습니다</a>
+        <a v-show="postInfo.post.health_count == 0">먼저 건강해요를 눌러보세요</a>
+        </div>
+    </div>
     <div class="feed-footer">
       <table>
         <tr>
@@ -30,7 +38,7 @@
             <span v-if="postInfo.healths.user_id"></span>
             <img v-show="postInfo.health" :src="isHealth" @click="clickHealth(postInfo)" />
             <img v-show="!postInfo.health" :src="isNotHealth" @click="clickHealth(postInfo)" />
-            <span class="health-count">{{ postInfo.post.health_count }}</span>
+            <!-- <span class="health-count">{{ postInfo.post.health_count }}</span> -->
           </td>
           <td>
             <img @click="changeSelectPost(postInfo,'comment')" 
@@ -106,12 +114,14 @@ export default {
       isPostHidden: false,
       };
 
-      if(sort === 'modify') info.isModifyHidden = true;
+      if(sort === 'modify') {
+        info.isModifyHidden = true;
+      }
       else if(sort ==='comment') {
           info.isPostHidden = true; 
           this.fetchComments(post.posts_id);
       }
-    this.$emit('send-modify', info)
+      this.$emit('send-modify', info)
     },
     clickHealth(post) {
       if (post.health == true) {
@@ -142,7 +152,24 @@ export default {
       }
       console.log("click_post", post);
     },
-
+    timeForToday(time) {
+      const today = new Date();
+      const timeValue = new Date(time);
+      const betweenTime = Math.floor((today.getTime() - timeValue.getTime()) / 1000 / 60);
+      if (betweenTime < 1) return '방금전';
+      if (betweenTime < 60) {
+          return `${betweenTime}분전`;
+      }
+      const betweenTimeHour = Math.floor(betweenTime / 60);
+      if (betweenTimeHour < 24) {
+          return `${betweenTimeHour}시간전`;
+      }
+      const betweenTimeDay = Math.floor(betweenTime / 60 / 24);
+      if (betweenTimeDay < 365) {
+          return `${betweenTimeDay}일전`;
+      }
+      return `${Math.floor(betweenTimeDay / 365)}년전`;
+    }
   },
   created(){
     console.log(this.postInfo)
