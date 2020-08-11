@@ -27,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.web.curation.dao.TagDAO;
 import com.web.curation.model.Auth;
+import com.web.curation.model.Disease;
 import com.web.curation.model.Post;
 import com.web.curation.model.PostRequest;
 import com.web.curation.model.PostResponse;
@@ -184,6 +185,7 @@ public class PostController {
 				temp.userinfo.setPassword(null);
 				temp.comments = commentsService.selectComment(temp.posts_id);
 				temp.healths = healthService.selectHealthList(temp.posts_id);
+				temp.tags = tagService.selectTagByPostsId(temp.posts_id);
 				response.add(temp);
 			}
 			return new ResponseEntity<List<PostResponse>>(response, HttpStatus.OK);
@@ -206,6 +208,7 @@ public class PostController {
 				temp.userinfo.setPassword(null);
 				temp.comments = commentsService.selectComment(temp.posts_id);
 				temp.healths = healthService.selectHealthList(temp.posts_id);
+				temp.tags = tagService.selectTagByPostsId(temp.posts_id);
 				response.add(temp);
 			}
 			return new ResponseEntity<List<PostResponse>>(response, HttpStatus.OK);
@@ -244,8 +247,13 @@ public class PostController {
 			Auth auth = authService.findAuthByAccessToken(accessToken);
 			user_id = auth.getUser_id();
 		}
-
 		postRequest.post.setUser_id(user_id);
+		
+		//질병 태그가 DB에 존재하는지 확인 후 없으면 디비에 넣기!!
+		if(diseaseService.selectDiseaseByDiseasecode(postRequest.post.getDiseasecode()) == null) {
+			Disease disease = new Disease(postRequest.post.getDiseasecode(), postRequest.diseasename);
+			diseaseService.createDisease(disease);
+		}
 		
 		if (postservice.createPost(postRequest.post) == 1) {
 			//태그 저장
@@ -327,5 +335,58 @@ public class PostController {
 		    }
 		}
 
+	 @ApiOperation(value = "모든 qna 게시판을 반환한다.", response = List.class)
+		@GetMapping("qna")
+		public ResponseEntity<List<PostResponse>> selectQnA(@RequestParam int num) throws Exception {
+			List<Post> Allpage = postservice.selectQnA();
+			List<Post> page = null;
+			List<PostResponse> response = new ArrayList<>();
+			if (Allpage.size() / 10 > num && num * 10 + 10 <= Allpage.size()) {
+				page = Allpage.subList(num * 10, num * 10 + 10);
+				
+				//페이지 돌면서 response에 다시 저장
+				for(int i=0; i<page.size(); i++) {
+					PostResponse temp = new PostResponse();
+					temp.posts_id = page.get(i).getPosts_id();
+					temp.post = page.get(i);
+					try {
+						temp.diseasename = diseaseService.selectDiseaseByDiseasecode(temp.post.getDiseasecode()).getDiseasename();
+					}catch(NullPointerException e) {
+						temp.diseasename = "";
+					}
+					int user_id = temp.post.getUser_id();
+					temp.userinfo = userinfoService.selectUserInfoByUserid(user_id);
+					temp.userinfo.setPassword(null);
+					temp.comments = commentsService.selectComment(temp.posts_id);
+					temp.healths = healthService.selectHealthList(temp.posts_id);
+					temp.tags = tagService.selectTagByPostsId(temp.posts_id);
+					response.add(temp);
+				}
+				return new ResponseEntity<List<PostResponse>>(response, HttpStatus.OK);
+			} else if (Allpage.size() / 10 < num) {
+				return new ResponseEntity<List<PostResponse>>(response, HttpStatus.NO_CONTENT);
+			}
+			else {
+				page = Allpage.subList(num*10, Allpage.size());
+				for(int i=0; i<page.size(); i++) {
+					PostResponse temp = new PostResponse();
+					temp.posts_id = page.get(i).getPosts_id();
+					temp.post = page.get(i);
+					try {
+						temp.diseasename = diseaseService.selectDiseaseByDiseasecode(temp.post.getDiseasecode()).getDiseasename();
+					}catch(NullPointerException e) {
+						temp.diseasename = "";
+					}
+					int user_id = temp.post.getUser_id();
+					temp.userinfo = userinfoService.selectUserInfoByUserid(user_id);
+					temp.userinfo.setPassword(null);
+					temp.comments = commentsService.selectComment(temp.posts_id);
+					temp.healths = healthService.selectHealthList(temp.posts_id);
+					temp.tags = tagService.selectTagByPostsId(temp.posts_id);
+					response.add(temp);
+				}
+				return new ResponseEntity<List<PostResponse>>(response, HttpStatus.OK);
+			}
+		}
 	
 }
