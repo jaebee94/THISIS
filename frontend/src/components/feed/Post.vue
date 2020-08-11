@@ -113,12 +113,14 @@ export default {
       isPostHidden: false,
       };
 
-      if(sort === 'modify') info.isModifyHidden = true;
+      if(sort === 'modify') {
+        info.isModifyHidden = true;
+      }
       else if(sort ==='comment') {
           info.isPostHidden = true; 
           this.fetchComments(post.posts_id);
       }
-    this.$emit('send-modify', info)
+      this.$emit('send-modify', info)
     },
     clickHealth(post) {
       if (post.health == true) {
