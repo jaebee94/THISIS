@@ -16,10 +16,11 @@
   
   .feed-header {
     display: flex;
-    background-color: rgb(0, 171, 132);
+    background-color: rgb(247, 247, 247);
+    /* background-color: rgb(0, 171, 132); */
     text-align: left;
     width: 100%;
-    height: 40px;
+    height: 45px;
     border: none;
     border-radius: 5px;
     vertical-align: middle;
@@ -34,14 +35,27 @@
     height: 40px;
     margin-top: 0px;
   }
+
+  .feed-header table tr td:nth-child(1){
+    width: 50px;
+  }
   
   .feed-header table tr td a {
-    color: white;
+    /* color: white; */
+    color: black;
     font-weight: 600;
+  }
+
+  .feed-header a.time {
+    font-size: 10px;
+    /* color: rgb(247, 247, 247); */
+    color: slategray;
+    font-weight: 400;
   }
   
   .feed-header table tr td img {
-    height: 80%;
+    margin-top: 15%;
+    height: 70%;
   }
   
   .feed-header table tr td:nth-child(2) {
@@ -55,18 +69,35 @@
   
   .feed-main {
     padding: 10px 5px;
+    text-align: left;
+  }
+
+  .feed-main img {
+    width: 100%;
+  }
+
+  .feed-main strong {
+    color: rgb(0, 171, 132);
+  }
+
+  .feed-main div a {
+    color: slategray;
+    font-size: 10px;
+    font-weight: 600;
   }
   
-  .profile-image {
+  .feed-header table tr td .profile-image {
     background-color: white;
+    border: 2px rgb(0, 171, 132) solid;
     border-radius: 70%;
   }
   
   .feed-footer {
     width: 100%;
+    margin-bottom: 15px;
     height: 30px;
     text-align: left;
-    background-color: rgb(200, 200, 200);
+    background-color: rgb(220, 220, 220);
   }
   
   .feed-footer table {
@@ -82,7 +113,7 @@
     margin: 2% 5%;
     height: 60%;
   }
-  
+
   .health-count {
     position: absolute;
     margin-left: -5px;

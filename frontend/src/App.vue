@@ -9,6 +9,7 @@
 </template>
 
 <script>
+
 export default {
   el: '#app',
   data () {
@@ -20,6 +21,7 @@ export default {
 </script>
 
 <style>
+@import url(http://fonts.googleapis.com/earlyaccess/notosanskr.css); *{font-family: 'Noto Sans KR', sans-serif;}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -35,6 +37,18 @@ body {
 }
 .whitebody {
   background-color: white;
+}
+.whitebodyfadeout {
+  background-color: white;
+  -webkit-animation: fadein 2s;
+}
+@-webkit-keyframes fadein { /* Safari and Chrome */
+  from {
+    background-color: rgb(0, 171, 132);
+  }
+  to {
+    background-color: wthie;
+  }
 }
 .lockbody {
   overflow-y: hidden;

@@ -137,7 +137,7 @@ export default {
 }
 .logo.wrap img {
   margin: 5px 5px auto;
-  width: 30%;
+  width: 20%;
 }
 .footer.wrap {
   position: fixed;
