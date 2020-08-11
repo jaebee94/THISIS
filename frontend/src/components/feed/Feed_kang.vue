@@ -142,7 +142,7 @@
 
 
     <div v-show="currentTab == 1"> 
-      <h1>Q&A게시판</h1>
+      <!-- <h1>Q&A게시판</h1> -->
       <input placeholder="검색어를 입력하세요">
       <button>검색</button>
       <input id="check-mine" type="checkbox">
