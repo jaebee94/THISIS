@@ -104,7 +104,7 @@ public class UserInfoController {
 	}
 
 	@ApiOperation(value = "유저 id에 해당하는 회원 정보를 수정한다.", response = String.class)
-	@PutMapping("{user_id}")
+	@PutMapping
 	public ResponseEntity<String> updateUserInfo(@RequestBody UserInfo userinfo, HttpServletRequest request) {
 
 		String accessToken = (String) request.getAttribute("accessToken");
@@ -126,9 +126,6 @@ public class UserInfoController {
 		if (userinfo.getPassword() != null) {
 			userinfo2.setPassword(userinfo.getPassword());
 		}
-		if(userinfo.getUserimage() != null) {
-			userinfo2.setUserimage(userinfo.getUserimage());
-		}
 
 		if (userInfoService.updateUserInfo(userinfo2) == 1) {
 			return new ResponseEntity<String>("success", HttpStatus.OK);
@@ -137,9 +134,19 @@ public class UserInfoController {
 	}
 
 	@ApiOperation(value = "회원 탈퇴시 id에 해당하는 회원 정보를 삭제한다.", response = String.class)
-	@DeleteMapping("{user_id}")
-	public ResponseEntity<String> deleteUserInfo(@PathVariable String user_id) {
-		if (userInfoService.deleteUserInfo(user_id) == 1) {
+	@DeleteMapping
+	public ResponseEntity<String> deleteUserInfo(HttpServletRequest request) {
+		String accessToken = (String) request.getAttribute("accessToken");
+
+		UserInfo userinfo;
+		if (accessToken != null) {
+			Auth auth = authService.findAuthByAccessToken(accessToken);
+			userinfo = userInfoService.selectUserInfoByUserid(auth.getUser_id());
+		} else { // accessToken없을때는 user_id 1인 유저로 들어감
+			userinfo = userInfoService.selectUserInfoByUserid(1);
+		}
+		
+		if (userInfoService.deleteUserInfo(userinfo.getUser_id()) == 1) {
 			return new ResponseEntity<String>("success", HttpStatus.OK);
 		}
 		return new ResponseEntity<String>("fail", HttpStatus.NO_CONTENT);

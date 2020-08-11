@@ -35,7 +35,7 @@ public class UserInfoServiceImpl implements UserInfoService{
 	}
 
 	@Override
-	public int deleteUserInfo(String user_id) {
+	public int deleteUserInfo(int user_id) {
 		return userInfoDao.deleteUserInfo(user_id);
 	}
 
