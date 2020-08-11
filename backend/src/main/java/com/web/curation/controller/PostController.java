@@ -250,9 +250,11 @@ public class PostController {
 		postRequest.post.setUser_id(user_id);
 		
 		//질병 태그가 DB에 존재하는지 확인 후 없으면 디비에 넣기!!
-		if(diseaseService.selectDiseaseByDiseasecode(postRequest.post.getDiseasecode()) == null) {
-			Disease disease = new Disease(postRequest.post.getDiseasecode(), postRequest.diseasename);
-			diseaseService.createDisease(disease);
+		if(postRequest.post.getDiseasecode() != null && postRequest.diseasename != null) {
+			if(diseaseService.selectDiseaseByDiseasecode(postRequest.post.getDiseasecode()) == null) {
+				Disease disease = new Disease(postRequest.post.getDiseasecode(), postRequest.diseasename);
+				diseaseService.createDisease(disease);
+			}
 		}
 		
 		if (postservice.createPost(postRequest.post) == 1) {
