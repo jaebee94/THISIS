@@ -90,6 +90,7 @@ const postStore = {
     fetchComments({ commit }, posts_id) {
       axios.get(SERVER.URL + SERVER.ROUTES.comment + '/' + posts_id)
         .then(res => {
+          console.log(res.data)
           commit('SET_COMMENTS', res.data)
         })
     },

@@ -49,8 +49,8 @@ const followStore = {
         })
     },
     // 프로필 유저를 내가 팔로우 한 상태인지 확인하기 위해 그 사람을 팔로우 하는 유저 목록 조회
-    getFollowee({ getters, commit }, params) {
-      axios.get(SERVER.URL + SERVER.ROUTES.followee + params.follower_id, getters.config.headers)
+    getFollowee({rootGetters, commit }, params) {
+      axios.get(SERVER.URL + SERVER.ROUTES.followee + params.follower_id, rootGetters.config.headers)
         .then((res) => {
           var flag = false;
           res.data.object.forEach((element) => {
