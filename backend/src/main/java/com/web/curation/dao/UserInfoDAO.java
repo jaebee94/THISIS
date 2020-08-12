@@ -20,4 +20,5 @@ public interface UserInfoDAO {
 	public String findNicknameById(int user_id);
 	public int getUserId(String email);
 	public int updateImage(UserInfo userinfo);
+	public int updatePassword(UserInfo userinfo);
 }

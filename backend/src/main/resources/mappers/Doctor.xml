@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.web.curation.dao.DoctorDAO">
+	
+	<insert id="insertDoctor" parameterType="Doctor">
+		insert into doctor(
+		user_id, doctorimg, doctorauth
+		) values (
+		#{user_id}, #{doctorimg}, #{doctorauth}
+		)
+	</insert>
+
+	<delete id="deleteDoctor" parameterType="String">
+		delete
+		from doctor
+		where user_id = #{user_id}
+	</delete>
+	
+	<!-- 회원정보 수정 -->
+	<update id="updateDoctor" parameterType="Doctor">
+		update doctor
+		set doctorimg = #{doctorimg}
+		where user_id = #{user_id}
+	</update>
+	
+	<select id="selectDoctor" resultType="Doctor">
+		select *
+		from doctor
+		where doctorauth = "accept"
+	</select>
+
+	<select id="selectCheckDoctor" resultType="Doctor">
+		select *
+		from doctor
+		where doctorauth = "unread" 
+	</select>
+
+	<select id="selectDoctorByUserid" resultType="Doctor">
+		select *
+		from doctor
+		where user_id = #{user_id}
+	</select>
+
+	<update id="updateDoctorImg">
+		update doctor
+		set doctorimg = #{doctorimg}
+		where user_id = #{user_id}
+	</update>
+
+	<update id="updateDoctorAuth">
+		update doctor
+		set doctorauth = "allowance"
+		where user_id = #{user_id}
+	</update>
+
+</mapper>
