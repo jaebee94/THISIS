@@ -8,7 +8,8 @@ public class UserInfo {
 	private String password;
 	private String introduction;
 	private String userimage;
-	private String doctorauth;
+	private String role;
+	private int disabled;
 
 	public int getUser_id() {
 		return user_id;
@@ -66,12 +67,20 @@ public class UserInfo {
 		this.userimage = userimage;
 	}
 
-	public String getDoctorauth() {
-		return doctorauth;
+	public String getRole() {
+		return role;
 	}
 
-	public void setDoctorauth(String doctorauth) {
-		this.doctorauth = doctorauth;
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+	public int getDisabled() {
+		return disabled;
+	}
+
+	public void setDisabled(int disabled) {
+		this.disabled = disabled;
 	}
 
 	public UserInfo() {
@@ -79,7 +88,8 @@ public class UserInfo {
 	}
 
 	public UserInfo(int user_id, String username, String nickname, String email, String password, String introduction,
-			String userimage, String doctorauth) {
+			String userimage, String role, int disabled) {
+		super();
 		this.user_id = user_id;
 		this.username = username;
 		this.nickname = nickname;
@@ -87,7 +97,9 @@ public class UserInfo {
 		this.password = password;
 		this.introduction = introduction;
 		this.userimage = userimage;
-		this.doctorauth = doctorauth;
+		this.role = role;
+		this.disabled = disabled;
 	}
+
 
 }

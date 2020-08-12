@@ -13,4 +13,6 @@ public class UserResponse {
 	public String introduction;
 	public String email;
 	public String nickname;
+	public String role;
+	public int disabled;
 }
