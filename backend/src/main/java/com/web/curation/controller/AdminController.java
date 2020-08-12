@@ -127,7 +127,7 @@ public class AdminController {
 	}
 
 	@ApiOperation(value = "유저에 해당하는 모든 신고 자료를 반환한다.", response = List.class)
-	@GetMapping("police/{user_id}")
+	@GetMapping("police/users/{user_id}")
 	public ResponseEntity<List<PoliceJoin>> selectuserPolice(@PathVariable int user_id, HttpServletRequest request)
 			throws Exception {
 		List<PoliceJoin> NULL = null;
