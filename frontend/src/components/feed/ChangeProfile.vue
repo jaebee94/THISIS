@@ -67,7 +67,7 @@
             @click="changeUserInfo(changeInfo)"
             :disabled="!isSubmitPassword"
             :class="{disabled: !isSubmitPassword}"
-          >변경</button>
+          >비밀번호 변경</button>
         </div>
       </div>
     </div>
