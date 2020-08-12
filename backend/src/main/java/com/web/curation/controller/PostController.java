@@ -138,6 +138,7 @@ public class PostController {
 	public ResponseEntity<List<PostResponse>> selectPostList(@RequestParam int num, @RequestParam int user_id, HttpServletRequest request) throws Exception {
 		List<Post> Allpage = null;
 		if(user_id >= 1) {	//다른 사람이 작성한 피드
+			System.out.println("user_id :" +user_id);
 			Allpage = postservice.selectPostInfo(user_id);
 		}else if(user_id == 0){	//내가 작성한 피드
 			// 자기 아이디 가져옴
@@ -149,7 +150,7 @@ public class PostController {
 			}else {
 				user_id = 1;
 			}
-			
+			System.out.println("user_id :" +user_id);
 			Allpage = postservice.selectPostInfo(user_id);
 		}
 		else {	//나의 메인 피드
@@ -162,6 +163,7 @@ public class PostController {
 			}else {
 				user_id = 1;
 			}
+			System.out.println("user_id :" +user_id);
 			Allpage = postservice.selectMainFeed(user_id);
 		}
 		
