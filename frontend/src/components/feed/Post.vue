@@ -21,10 +21,10 @@
           </td>
           <td>
             <div class="dropdown">
-            <img class="dropmenu" src="../../assets/images/icon/icon_3dots.png" />
-            <div class="dropdown-content">
-              <a href="#" @click="deletePost(postInfo.post.posts_id)">삭제</a>
+              <img class="dropmenu" @click="isDelete = !isDelete" src="../../assets/images/icon/icon_3dots.png" />
             </div>
+            <div v-show="isDelete" class="dropdown-content">
+              <a href="#" @click="deletePost({postInfo:postInfo,user_id:loginData.user_id})">삭제</a>
             </div>
           </td>
         </tr>
@@ -103,6 +103,7 @@ export default {
         user_id: null,
       },
       selectedPost: {},
+      isDelete: false,
     };
   },
 
@@ -191,28 +192,40 @@ export default {
 </script>
 
 <style>
+.article-header {
+  height: 45px;
+}
 .article-header tr td:nth-child(3) {
   width : 20%;
 }
 .article-header tr td:nth-child(4) {
-  width : 20%;
-}
-.dropmenu {
-  width:20%;
-  float: right;
+  width : 10px;
 }
 .dropdown {
   position: relative;
   display: inline-block;
+  padding-top: 8px;
+}
+
+.dropmenu {
+  width: 18px;
+  float: right;
 }
 
 .dropdown-content {
-  display: none;
   position: absolute;
-  background-color: #f1f1f1;
+  right: 0;
+  background-color: rgb(247, 247, 247);
+  outline: none;
   min-width: 160px;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 1;
+  z-index: 55;
+  -webkit-tap-highlight-color : rgba(247, 247, 247, 0);
+}
+
+.dropdown-content:focus {
+  outline: none;
+  background-color: rgb(200, 200, 200);
 }
 
 .dropdown-content a {

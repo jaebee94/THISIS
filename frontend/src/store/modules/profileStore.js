@@ -43,11 +43,12 @@ const profileStore = {
         .then(res => {
           console.log('userinfo', res.data)
           
-          setTimeout(() => commit('SET_USER_INFO', res.data), 10000)
+          commit('SET_USER_INFO', res.data);
         })
         .catch(err => console.log(err))
       await axios.get(SERVER.URL + SERVER.ROUTES.profile + userId, rootGetters.config)
         .then(res => {
+          console.log(res);
           commit('SET_PROFILE_INFO', res.data)
         })
         router.push({ name: 'Profile' })
