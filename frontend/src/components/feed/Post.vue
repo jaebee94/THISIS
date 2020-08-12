@@ -195,7 +195,7 @@ export default {
   width : 20%;
 }
 .article-header tr td:nth-child(4) {
-  width : 10%;
+  width : 20%;
 }
 .dropmenu {
   width:20%;

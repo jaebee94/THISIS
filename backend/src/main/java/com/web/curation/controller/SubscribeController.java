@@ -90,7 +90,7 @@ public class SubscribeController {
 	
 	@ApiOperation(value = "유저가 질병 구독을 취소한다", response = String.class)     
  	@DeleteMapping
-		public ResponseEntity<String> deleteDisease(@RequestParam String diseasecode, HttpServletRequest request) { 
+		public ResponseEntity<String> deleteDisease(@RequestBody String diseasecode, HttpServletRequest request) { 
 		
 		// subscribe 자신 아이디로 생성하게 수정
 		String accessToken = (String) request.getAttribute("accessToken");
