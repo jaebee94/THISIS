@@ -24,9 +24,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Service
 public class JwtServiceImpl implements JwtService{
 	
-	@Autowired
-	private AuthService authService;
-	
 	//access token secret key
 	public static final String AT_SECRET_KEY = "CREATEDBYTID_AT";
 	//refresh token secret key
@@ -53,12 +50,7 @@ public class JwtServiceImpl implements JwtService{
 							 .signWith(SignatureAlgorithm.HS256, this.generateKey(AT_SECRET_KEY))
 							 .compact());
 		//mongoOperations.insert(tokenSet, "refreshToken");
-		int user_id = userinfo.getUser_id();
-		if(authService.selectAuthByUserid(user_id) != null) {
-			authService.updateAuth(new Auth(user_id, tokenSet.getRefreshToken(),tokenSet.getAccessToken()));
-		}else {
-			authService.insertAuth(new Auth(user_id, tokenSet.getRefreshToken(),tokenSet.getAccessToken()));
-		}
+
 		return tokenSet;
 	}
 	
@@ -73,23 +65,22 @@ public class JwtServiceImpl implements JwtService{
 		return key;
 	}
 	
-	public TokenSet refreshAccessToken(String accessToken) {
+	public TokenSet refreshAccessToken(String refreshToken) {
 		long curTime = System.currentTimeMillis();
 		//refreshToken의 만료기간이 남았는지 확인하고, 
-		Auth auth = authService.findAuthByAccessToken(accessToken);
-		System.out.println(auth.toString());
-		String refreshToken = auth.getRefresh_token();
+		
+		System.out.println("Refresh_token : " + refreshToken);
 		if(!isValidToken(refreshToken, RT_SECRET_KEY)) {
 			throw new AuthenticationException("로그인되어있지 않습니다.");
 		}
 		//DB로부터 refreshToken 유효한지 조회
-		Auth validToken = authService.findAuthByRefreshToken(refreshToken);
+		//Auth validToken = authService.findAuthByRefreshToken(refreshToken);
 //		Query query = new Query();
 //		query.addCriteria(Criteria.where("refreshToken").is(refreshToken));
 //		List<TokenSet> validToken = mongoOperations.find(query, TokenSet.class, "refreshToken");
-		if(validToken == null) {
+		/*if(validToken == null) {
 			throw new AuthenticationException("로그인되어있지 않습니다.");
-		}
+		}*/
 		
 		Jws<Claims> claims = null;
 		try {
@@ -105,7 +96,7 @@ public class JwtServiceImpl implements JwtService{
 		return TokenSet.create()
 				  .accessToken(Jwts.builder()
 									 .setHeaderParam("typ", "JWT")
-									 .setExpiration(new Date(curTime + (1000*60*30)))
+									 .setExpiration(new Date(curTime + (1000*60*1)))
 									 .setIssuedAt(new Date(curTime))
 									 .claim(DATA_KEY, getUserInfo(refreshToken, RT_SECRET_KEY))
 									 .signWith(SignatureAlgorithm.HS256, this.generateKey(AT_SECRET_KEY))

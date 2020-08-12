@@ -28,6 +28,9 @@ public class AuthInterceptor extends HandlerInterceptorAdapter{
 	@Resource
 	private JwtService jwtService;
 	
+	@Resource
+	private AuthService authService;
+	
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Override

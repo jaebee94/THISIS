@@ -154,6 +154,12 @@ public class UserInfoController {
                  UserInfo userinfo = userOpt.get();
                  //로그인이 완료됬으니 토큰 만들기
                  TokenSet tokenSet = jwtService.createTokenSet(userinfo);
+                
+                 if(authService.selectAuthByUserid(userinfo.getUser_id()) != null) {
+                	 authService.updateAuth(new Auth(userinfo.getUser_id(), tokenSet.getRefreshToken(), tokenSet.getAccessToken()));      	 
+                 }
+                 else
+                	 authService.insertAuth(new Auth(userinfo.getUser_id(), tokenSet.getRefreshToken(), tokenSet.getAccessToken())); 
                  
                  if(tokenSet != null) {	//토큰까지 만듬
                 	result.accessToken = tokenSet.getAccessToken();
@@ -186,14 +192,30 @@ public class UserInfoController {
 	@ApiOperation(value = "AccessToken 재생성 테스트", response = String.class)     
 	@GetMapping("refreshAccessToken")
 	public ResponseEntity<String> refreshAccessToken(HttpServletRequest request) {
-		String accessToken = (String) request.getAttribute("accessToken");
-		System.out.println("여기는 들어옴??");
-		TokenSet tokenSet = jwtService.refreshAccessToken(accessToken);
+		String accessToken = request.getHeader("accessToken");
+		System.out.println("accessToken : " + accessToken);
+		UserInfo userinfo;
+		if(accessToken != null) {
+		Auth auth = authService.findAuthByAccessToken(accessToken);
+		userinfo = userInfoService.selectUserInfoByUserid(auth.getUser_id());
+		}
+		else {	//accessToken없을때는 user_id 1인 유저로 들어감
+			userinfo = userInfoService.selectUserInfoByUserid(1);
+		}
+		
+		System.out.println("user_id :" + userinfo.getUser_id());
+		Auth auth = authService.selectAuthByUserid(userinfo.getUser_id());
+		String refreshToken = auth.getRefresh_token();
+		
+		TokenSet tokenSet = jwtService.refreshAccessToken(refreshToken);
+		//auth table update
+		authService.updateAuth(new Auth(userinfo.getUser_id(), auth.getRefresh_token(), tokenSet.getAccessToken()));
+		
 		ResponseEntity response = null;
-		final BasicResponse result = new BasicResponse();
+		final UserResponse result = new UserResponse();
 		System.out.println("뉴 토큰 : " + tokenSet.toString());
 		if(tokenSet != null) {
-			 result.object = tokenSet;
+			 result.accessToken = tokenSet.getAccessToken();
         	 response = new ResponseEntity<>(result, HttpStatus.OK);
 		}else {
 			 response = new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED);
