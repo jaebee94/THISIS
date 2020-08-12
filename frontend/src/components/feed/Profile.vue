@@ -209,7 +209,7 @@ export default {
       params["followee_id"] = this.profileData.userInfo.user_id;
       params["approval"] = 0;
 
-      this.$store.dispatch("createFollowing", params);
+      this.$store.dispatch("followStore/createFollowing", params);
     },
     followCancel() {
       let vueInstance = this;
@@ -245,7 +245,7 @@ export default {
       params["followee_id"] = this.profileData.userInfo.user_id;
       params["approval"] = 1;
 
-      this.$store.dispatch("deleteFollowing", params);
+      this.$store.dispatch("followStore/deleteFollowing", params);
     },
     followingCancel() {
       this.isFollowing = false;
