@@ -79,4 +79,14 @@ public class UserInfoServiceImpl implements UserInfoService {
 		return userInfoDao.updatePassword(userinfo);
 	}
 
+	@Override
+	public int updateDisable(int user_id) {
+		return userInfoDao.updateDisable(user_id);
+	}
+
+	@Override
+	public int updateRole(int user_id) {
+		return userInfoDao.updateRole(user_id);
+	}
+
 }

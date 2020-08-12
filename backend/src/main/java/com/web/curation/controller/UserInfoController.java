@@ -295,7 +295,7 @@ public class UserInfoController {
 
 		System.out.println("follower : " + follower);
 
-		List<Post> userpost = postservice.selectPostInfo(user_id);
+		List<Post> userpost = postservice.selectPost(user_id);
 		int healthnum = 0;
 		for (int i = 0; i < userpost.size(); i++) {
 			healthnum += healthservice.selectHealth(userpost.get(i).getPosts_id());

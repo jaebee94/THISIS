@@ -19,4 +19,5 @@ public interface PostDAO {
 	public List<Post> selectMainFeed(int user_id);
 	public int selectAutoIncrement();
 	public List<Post> selectQnA();
+	public int hiddenupdate(int posts_id);
 }
