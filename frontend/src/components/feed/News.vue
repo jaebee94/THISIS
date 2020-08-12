@@ -1,11 +1,11 @@
 <template>
   <div class="news-wrap">
     <div class="news-search-input">
-        <input v-model="keyword" placeholder="키워드를 입력하세요">
+        <input v-model="keyword" placeholder="키워드를 입력하세요" v-on:keyup.enter="findNews">
         <span><img @click="findNews" src="../../assets/images/icon/icon_search_unselect.png"></span>
         <!-- <button >검색</button> -->
     </div>
-    <div v-if="sample_images.one" class="news-search-image">
+    <div v-if="sample_images.one"  class="news-search-image">
         <img :src="sample_images.one"> 
         <img :src="sample_images.two">
     </div>
@@ -34,7 +34,7 @@ export default {
         }
     },
     methods: {
-        findNews() {
+        async findNews() {
             console.log(this.keyword);
             var params = {
                 query: this.keyword,
@@ -49,7 +49,7 @@ export default {
                 sort: 'sim',
                 filter: 'small'
             }
-            axios.request({
+            await axios.request({
                 url: proxyurl + 'https://openapi.naver.com/v1/search/image',
                 headers: {
                     'X-Naver-Client-Id' : 'VmhwDszuy_Em4wjSyKBs',
@@ -62,7 +62,7 @@ export default {
                 this.sample_images.one = res.data.items[0].link;
                 this.sample_images.two = res.data.items[1].link;
             })
-            axios.request({
+            await axios.request({
                 url: proxyurl + 'https://openapi.naver.com/v1/search/news.json',
                 headers: {
                     'X-Naver-Client-Id' : 'VmhwDszuy_Em4wjSyKBs',

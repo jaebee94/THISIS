@@ -417,6 +417,7 @@ export default {
     }
   },
   created() {
+     this.$refs.infiniteLoading.stateChanger.reset();
     this.$store.dispatch("getCheckScrap");
   },
 };

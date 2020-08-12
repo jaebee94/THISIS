@@ -20,38 +20,36 @@ const diseaseStore = {
 
 
     actions: {
-        getFolloingwDisease({ rootGetters, commit }) {
-            axios.get(SERVER.URL + SERVER.ROUTES.userDisease, rootGetters.config)
+        getFollowingDisease({ rootGetters, commit }) {
+            axios.get(SERVER.URL + SERVER.ROUTES.disease, rootGetters.config)
                 .then(res => {
+                    console.log(res)
                     commit('SET_DISEASE', res.data)
                 })
+                .catch(err => console.log(err))
         },
-        createDisease({rootGetters, commit} , diseasename,diseasecode){
-            axios.get(SERVER.URL + SERVER.ROUTES.userDisease,
-                {
-                    diseasecode : diseasecode,
-                    diseasename : diseasename
-                    
-                }
-                ,rootGetters.config)
-            .then(res => {
-                commit('SET_DISEASE', res.data)
+        createDisease({rootGetters,dispatch} ,params){ //질병 구독
+            console.log(params)
+            axios.post(SERVER.URL + SERVER.ROUTES.subscribe,params ,rootGetters.config)
+            .then((res) => {
+                console.log(res);
+                dispatch('getFollowingDisease')
             })
         },
-        addDisease({ rootGetters }, diseasecode) { //이부분 아직 백엔드에 구현 안되어 있음
-            axios.put(SERVER.URL + SERVER.ROUTES.userDisease,
-                {
-                    diseasecode: diseasecode
-                }
-                , rootGetters.config)
-                .then(res => {
-                    console.log("result", res);
-                    this.getFolloingwDisease(rootGetters.config) //다시 업데이트
-                }).catch(err => console.log(err))
+        // addDisease({ rootGetters }, diseasecode) { //이부분 아직 백엔드에 구현 안되어 있음
+        //     axios.put(SERVER.URL + SERVER.ROUTES.disease,
+        //         {
+        //             diseasecode: diseasecode
+        //         }
+        //         , rootGetters.config)
+        //         .then(res => {
+        //             console.log("result", res);
+        //             this.getFolloingwDisease(rootGetters.config) //다시 업데이트
+        //         }).catch(err => console.log(err))
 
-        },
-        deleteDisease({ rootGetters }, diseasecode) {
-            axios.delete(SERVER.URL + SERVER.ROUTES.userDisease,
+        // },
+        deleteDisease({ rootGetters, dispatch }, diseasecode) {
+            axios.delete(SERVER.URL + SERVER.ROUTES.subscribe,
                 {
                     params: {
                         diseasecode: diseasecode
@@ -60,7 +58,7 @@ const diseaseStore = {
                 , rootGetters.config)
                 .then(res => {
                     console.log("result", res);
-                    this.getFolloingwDisease(rootGetters.config) //다시 업데이트
+                    dispatch('getFollowingDisease') 
                 }).catch(err => console.log(err))
         }
     }

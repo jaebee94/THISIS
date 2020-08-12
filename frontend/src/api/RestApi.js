@@ -18,6 +18,7 @@ export default {
     uploadProfile: '/account/upload',
 
     // posts: '/articles',
+    post : '/articles/',
     posts: '/articles/new',
     qnas: '/articles/qna',
     upload: '/articles/upload',
@@ -38,6 +39,8 @@ export default {
     searchUser: '/account/search',
     modify:'/articles/',
 
-    userDisease: '/disease/user'
+    disease: '/disease/user',
+    subscribe: '/subscribe'
+
   }
 }
