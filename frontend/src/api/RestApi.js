@@ -6,6 +6,7 @@ export default {
   ROUTES: {
     myprofile: '/account/0',
     user: '/account/',
+    updateProfile: '/account',
     profile: '/account/profile/',
     signup: '/account/signup',
     email: '/account/email',
@@ -14,10 +15,12 @@ export default {
     logout: '/account/',
     withdrawal: '/account/{user_id}',
     search : '/account/search',
+    uploadProfile: '/account/upload',
 
     // posts: '/articles',
     post : '/articles/',
     posts: '/articles/new',
+    qnas: '/articles/qna',
     upload: '/articles/upload',
     scrap: '/scrap',
     health: '/health',

@@ -1,13 +1,13 @@
 <template>
   <div class="feed">
     <div class="feed-header">
-      <table class="post-header">
+      <table class = "article-header">
         <tr>
           <td>
             <img
               class="profile-image"
               @click="goProfile(postInfo.post.user_id)"
-              src="../../assets/images/icon/icon_default_image.png"
+              :src="postInfo.userinfo.userimage"
             />
           </td>
           <td>
@@ -107,8 +107,11 @@ export default {
   },
 
   methods: {
-    ...mapActions("profileStore", ["goProfile"]),
-    ...mapActions("postStore", [
+    // ...mapActions('profileStore', [
+    //   'goProfile',
+    //   ]),
+    ...mapActions('userStore', ["goProfile"]),
+    ...mapActions('postStore', [
       "fetchComments",
       "health",
       "scrap",
@@ -161,26 +164,25 @@ export default {
       }
       console.log("click_post", post);
     },
-    timeForToday(time) {
+   timeForToday(time) {
       const today = new Date();
-      const timeValue = new Date(time);
-      const betweenTime = Math.floor(
-        (today.getTime() - timeValue.getTime()) / 1000 / 60
-      );
-      if (betweenTime < 1) return "방금전";
+      var timeValue = new Date(time);
+      timeValue.setHours(timeValue.getHours() + 9);
+      const betweenTime = Math.floor((today.getTime() - timeValue.getTime()) / 1000 / 60);
+      if (betweenTime < 1) return '방금전';
       if (betweenTime < 60) {
-        return `${betweenTime}분전`;
+          return `${betweenTime}분전`;
       }
       const betweenTimeHour = Math.floor(betweenTime / 60);
       if (betweenTimeHour < 24) {
-        return `${betweenTimeHour}시간전`;
+          return `${betweenTimeHour}시간전`;
       }
       const betweenTimeDay = Math.floor(betweenTime / 60 / 24);
       if (betweenTimeDay < 365) {
-        return `${betweenTimeDay}일전`;
+          return `${betweenTimeDay}일전`;
       }
       return `${Math.floor(betweenTimeDay / 365)}년전`;
-    },
+    }
   },
   created() {
     console.log(this.postInfo);
@@ -189,8 +191,11 @@ export default {
 </script>
 
 <style>
-.post-header tr td:nth-child(4) {
+.article-header tr td:nth-child(3) {
   width : 20%;
+}
+.article-header tr td:nth-child(4) {
+  width : 10%;
 }
 .dropmenu {
   width:20%;

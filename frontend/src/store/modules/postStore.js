@@ -32,6 +32,10 @@ const postStore = {
     // Post
     createPost({ rootGetters }, uploadData) {
       if (uploadData.formData == null) {
+        let headers = rootGetters.config.headers
+        headers['Accept'] = 'application/json'
+        headers['Content-Type'] = 'multipart/form-data'
+        console.log('headers', headers)
         axios.post(SERVER.URL + SERVER.ROUTES.posts, uploadData.postData, rootGetters.config)
           .then(() => {
             alert('작성이 완료되었습니다.')
@@ -39,6 +43,7 @@ const postStore = {
           })
           .catch(err => console.log('게시글 작성 에러: ', err))
       } else {
+
         axios.post(SERVER.URL + SERVER.ROUTES.upload, uploadData.formData, {
           header: {
             'Accept': 'application/json',
@@ -57,11 +62,6 @@ const postStore = {
           })
           .catch(err => console.log('사진 업로드 에러: ', err))
       }
-      // axios.post(SERVER.URL + SERVER.ROUTES.posts, postData, rootGetters.config)
-      //   .then(() => {
-      //     router.push({ name: 'Feed' })
-      //   })
-      //   .catch(err => console.log(err))
     },
     updatePost({ rootGetters }, postInfo) {
       axios.put(SERVER.URL + SERVER.ROUTES.modify + postInfo.user_id, postInfo, rootGetters.config)
@@ -80,7 +80,6 @@ const postStore = {
 
     // Comment
     createComment({ commit, rootGetters }, commentData) {
-      console.log(commentData)
       axios.post(SERVER.URL + SERVER.ROUTES.comment, commentData, rootGetters.config)
         .then(
           setTimeout(() => {
@@ -99,7 +98,10 @@ const postStore = {
         })
     },
     updateComment({ rootGetters }, commentData) {
-      axios.post(SERVER.URL + SERVER.ROUTES.comment + `/`, commentData, rootGetters.config)
+      console.log('server 요청 전', rootGetters)
+      axios.put(SERVER.URL + SERVER.ROUTES.comment + '/' + commentData.comment_id, commentData, rootGetters.config)
+      .then((res) => {console.log(res)})
+      .catch((err) => {console.log(err)})
     },
     deleteComment() {     // 삭제 로직 개발 필요
     },

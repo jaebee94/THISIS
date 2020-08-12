@@ -27,8 +27,6 @@ import PostDetail from '../components/feed/PostDetail.vue'
 import ChangeProfile from '../components/feed/ChangeProfile.vue'
 //import { component } from 'vue/types/umd'
 
-import Feed_KANG from '../components/feed/Feed_kang.vue'
-
 
 import DiseaseTest from '../views/main/DiseaseTest.vue'
 import NewsTest from '../views/main/NewsTest.vue'
@@ -51,11 +49,6 @@ const routes = [
         path: 'feed',
         name: 'Feed',
         component: Feed
-      },
-      {
-        path: 'feed_kang',
-        name: 'FeedKang',
-        component: Feed_KANG
       },
       {
         path: 'detail',
