@@ -162,7 +162,6 @@ import comment from '../feed/Comment.vue';
 import news from '../feed/News.vue';
 
 import {Carousel, Slide} from 'vue-carousel';
-
 import cookies from 'vue-cookies'
 
 const headers= {
@@ -318,6 +317,7 @@ export default {
                     user_id: this.loginData.user_id,
                     posts_id: element.posts_id,
                   },
+                  headers: { accessToken:  cookies.get('access-token') }
                 })
                 .then((res) => {
                   if (res.data > 0) element.scrap = true;

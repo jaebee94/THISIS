@@ -91,4 +91,13 @@ public class Post {
 		this.imgsrc = imgsrc;
 	}
 
+	@Override
+	public String toString() {
+		return "Post [posts_id=" + posts_id + ", user_id=" + user_id + ", posts_title=" + posts_title + ", posts_main="
+				+ posts_main + ", post_date=" + post_date + ", category=" + category + ", diseasecode=" + diseasecode
+				+ ", imgsrc=" + imgsrc + "]";
+	}
+	
+	
+
 }

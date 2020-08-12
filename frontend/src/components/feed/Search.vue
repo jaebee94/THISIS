@@ -122,6 +122,9 @@ export default {
     items: function () {
       console.log(this.items)
       this.checkout(this.items);
+    },
+    diseases:function(){
+      this.checkout(this.items);
     }
   },
   created(){
@@ -219,6 +222,12 @@ export default {
       this.selectedDisease.name = disease.sickNm;
       this.findDisease(disease.sickNm)
     },
+    // create(item){
+    //   this.createDisease(item);
+    // },
+    // delete(item){
+    //   this.createDisease(item);
+    // },
     async findDisease(disease){
       this.searchedItems = [];
       this.selectedDisease.description=""
