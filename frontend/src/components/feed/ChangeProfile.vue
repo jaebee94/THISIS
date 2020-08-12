@@ -15,7 +15,8 @@
       <div v-show="profileTab == 0">
         <div class="profile-photo">
           <div class="profile-modify-image">
-            <img v-show="imgsrc != ''" :src="imgsrc" />
+            <img :src="imgsrc">
+            <!-- <img :src="profileData.userInfo.userimage" /> -->
           </div>
           <div class="profile-image-button">
             <button @click="onClickImageUpload">프로필 사진 변경</button>
@@ -246,6 +247,7 @@ export default {
       var formData = new FormData();
       formData.append("upload_file", file);
       this.changeInfo.formData = formData;
+      console.log("changeInfo : ", this.changeInfo);
       this.imgsrc = URL.createObjectURL(file);
     },
   },
@@ -263,13 +265,20 @@ export default {
 }
 
 .profile-modify-image {
+  width: 100%;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-top: 15px;
   margin-bottom: 15px;
 }
 
 .profile-modify-image img {
+  position: relative;
   width: 150px;
   height: 150px;
+  object-fit: cover;
   border-radius: 70%;
 }
 
@@ -335,7 +344,6 @@ export default {
 }
 
 .tabs {
-  margin-top: 5%;
   width: 100%;
   height: 70%;
 }
@@ -347,18 +355,19 @@ export default {
   height: 40px;
   vertical-align: middle;
   background-color: rgb(247, 247, 247);
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  border-radius: 0;
+  border-bottom: 3px rgb(247, 247, 247) solid;
   transition-duration: 300ms;
 }
 
 .tab img {
-  margin-top: 5px;
-  height: 30px;
+  margin-top: 8px;
+  height: 60%;
 }
 
 .tab.active {
-  background-color: rgb(0, 171, 132);
+  border-bottom: 3px rgb(0, 171, 132) solid;
+  background-color: rgb(247, 247, 247);
 }
 
 .button-wrap {

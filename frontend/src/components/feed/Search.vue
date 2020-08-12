@@ -31,7 +31,7 @@
         v-bind:class="{active: currentTab === index}"
         @click="currentTab = index"
       >
-        <h3>{{tab}}</h3>
+        <a>{{tab}}</a>
       </div>
     </div>
 
@@ -292,16 +292,19 @@ export default {
   width: 50%;
   height: 40px;
   vertical-align: middle;
+  border-radius: 0;
   background-color: rgb(247, 247, 247);
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  border-bottom: 3px rgb(247, 247, 247) solid;
 }
-.tab h3 {
-  margin-top: 10px;
+.tab a {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 2;
   height: 20px;
 }
 .tab.active {
-  background-color: rgb(0, 171, 132);
+  background-color: rgb(247, 247, 247);
+  border-bottom: 3px rgb(0, 171, 132) solid;
 }
 .disease-wrap {
   position: fixed;
@@ -437,12 +440,18 @@ ul {
   height: 80%;
   width: 60px;
   margin-right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .search-img img {
   margin: 10% 10% auto;
   height: 80%;
+  width: 80%;
   border-radius: 70%;
+  object-fit: cover;
+  /* background-size: cover; */
 }
 
 .search-item {
