@@ -45,7 +45,9 @@ public class EmailController {
         UserInfo userinfo = userInfoService.findUserInfoByEmail(email);
         String USERNAME = userinfo.getUsername();
         String EMAIL = email;
-        String PASSWORD = userinfo.getPassword();
+        int min = 100000000;
+        int max = 999999999;
+        String PASSWORD = Integer.toString(min + (int)(Math.random() * ((max - min))));
              
         try {
             MimeMessage msg = mailSender.createMimeMessage();
@@ -53,7 +55,10 @@ public class EmailController {
             messageHelper.setSubject(USERNAME+"님 비밀번호 찾기 메일입니다.");
             messageHelper.setText("비밀번호는 "+PASSWORD+" 입니다.");
             messageHelper.setFrom("ru940203@naver.com");
+            userinfo.setPassword(PASSWORD);
+            userInfoService.updatePassword(userinfo);
             messageHelper.setTo(EMAIL);
+            
             msg.setRecipients(MimeMessage.RecipientType.TO , InternetAddress.parse(EMAIL));
             mailSender.send(msg);
             

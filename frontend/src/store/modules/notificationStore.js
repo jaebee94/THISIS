@@ -27,6 +27,7 @@ const notificationStore = {
     fetchNotification({ rootGetters, commit }, id) {
       axios.get(SERVER.URL + SERVER.ROUTES.notification + id, rootGetters.config.headers)
         .then(res => {
+          console.log("notification", res.data)
           commit('SET_NOTIFICATION', res.data)
         })
         .catch(err => console.log(err))

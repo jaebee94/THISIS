@@ -39,7 +39,7 @@ const followStore = {
     },
     // 내가 클릭해서 요청 보냈던거 취소하는 작업
     deleteFollowing({ rootGetters }, params) {
-      axios.delete(SERVER.URL + SERVER.ROUTES.following, { data: params }, rootGetters.config.headers)
+      axios.delete(SERVER.URL + SERVER.ROUTES.following, { data: params , headers : rootGetters.config.headers })
         .then((res) => {
           console.log(res);
           console.log(params);
