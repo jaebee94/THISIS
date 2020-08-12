@@ -42,6 +42,7 @@ import com.web.curation.service.FollowService;
 import com.web.curation.service.HealthService;
 import com.web.curation.service.JwtService;
 import com.web.curation.service.PostService;
+import com.web.curation.service.SubscribeService;
 import com.web.curation.service.UserInfoService;
 
 import io.swagger.annotations.ApiOperation;
@@ -74,6 +75,9 @@ public class UserInfoController {
 	@Autowired
 	private AuthService authService;
 
+	@Autowired
+	private SubscribeService subscribeService;
+	
 	@ApiOperation(value = "모든 회원 정보를 반환한다.", response = List.class)
 	@GetMapping
 	public ResponseEntity<List<UserInfo>> selectUser() throws Exception {
@@ -183,6 +187,7 @@ public class UserInfoController {
 					result.nickname = userinfo.getNickname();
 					result.role = userinfo.getRole();
 					result.disabled = userinfo.getDisabled();
+					result.subscribeCount = subscribeService.selectSubscribeByUserid(Integer.toString(userinfo.getUser_id())).size();
 					// obj.addProperty("userinfo", obj.toString());
 					// result.object = obj.toString();
 					response = new ResponseEntity<>(result, HttpStatus.OK);

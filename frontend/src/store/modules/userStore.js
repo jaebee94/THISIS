@@ -45,7 +45,12 @@ const userStore = {
           console.log(res)
           commit('SET_TOKEN', res.data.accessToken)
           commit('SET_LOGIN_DATA', res.data)
-          router.push({ name: 'Feed' })
+          if(res.data.subscribeCount > 0){
+            router.push({ name: 'Feed' })
+          }else{
+            router.push({name: 'Tutorial'})
+          }
+          
         })
         .catch(() => {
           alert("로그인에 실패하였습니다.")

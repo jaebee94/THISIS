@@ -15,4 +15,5 @@ public class UserResponse {
 	public String nickname;
 	public String role;
 	public int disabled;
+	public int subscribeCount;  
 }
