@@ -15,7 +15,7 @@ const userStore = {
   },
 
   mutations: {
-    SET_TOKEN(token) {
+    SET_TOKEN(rootState,state,token) {
       cookies.set('access-token', token)
     },
     SET_LOGIN_DATA(state, loginData) {
@@ -99,7 +99,7 @@ const userStore = {
       }
       console.log(userId)
       console.log("1",rootGetters.config)
-      await axios.get(SERVER.URL + SERVER.ROUTES.user + userId, rootGetters.config)
+      await axios.get(SERVER.URL + SERVER.ROUTES.user + userId, {headers: { accessToken:  cookies.get('access-token') }})
         .then(res => {
           console.log('유저인포 요청완료')
           commit('SET_USER_INFO', res.data)
@@ -108,7 +108,7 @@ const userStore = {
         })
         .catch(err => console.log(err))
         console.log("2",rootGetters.config)
-      await axios.get(SERVER.URL + SERVER.ROUTES.profile + userId, rootGetters.config)
+      await axios.get(SERVER.URL + SERVER.ROUTES.profile + userId, {headers: { accessToken:  cookies.get('access-token') }})
         .then(res => {
           console.log('프로필인포 요청 완료')
           commit('SET_PROFILE_INFO', res.data)

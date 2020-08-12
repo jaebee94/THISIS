@@ -228,7 +228,7 @@ export default {
     ]),
 
     infiniteHandlerQnA ($state) {
-      let params = {
+      var params = {
         params: {
           num: this.qnaPage,
         },
@@ -266,7 +266,7 @@ export default {
 
    // Infinite Scrolling
     infiniteHandler($state) {
-      let params = {
+      var params = {
         params: {
           num: this.page,
         },
