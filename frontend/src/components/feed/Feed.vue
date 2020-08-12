@@ -163,6 +163,12 @@ import news from '../feed/News.vue';
 
 import {Carousel, Slide} from 'vue-carousel';
 
+import cookies from 'vue-cookies'
+
+const headers= {
+  'accessToken': cookies.get('access-token')
+}
+
 export default {
   name: "Feed",
   components:{
@@ -230,7 +236,9 @@ export default {
         params: {
           num: this.qnaPage,
         },
+        headers
       };
+      
       let url = SERVER.URL + SERVER.ROUTES.qnas;
       console.log('url', url)
       //통신부분
@@ -277,6 +285,7 @@ export default {
         params: {
           num: this.page,
         },
+        headers
       };
       let url = SERVER.URL;
 
@@ -292,7 +301,8 @@ export default {
       else if(this.profile_data.tab == 1){ //스크랩 보여주기
         url += SERVER.ROUTES.scrap + "/" + this.profile_data.user_id;
       } 
-      console.log(params);
+      console.log("params", params);
+      console.log("url", url);
       //통신부분
       axios.get(url, params).then(({ data }) => {
           if (data.length) {

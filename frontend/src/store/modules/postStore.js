@@ -34,7 +34,6 @@ const postStore = {
       if (uploadData.formData == null) {
         let headers = rootGetters.config.headers
         headers['Accept'] = 'application/json'
-        headers['Content-Type'] = 'multipart/form-data'
         console.log('headers', headers)
         axios.post(SERVER.URL + SERVER.ROUTES.posts, uploadData.postData, rootGetters.config)
           .then(() => {
@@ -70,12 +69,22 @@ const postStore = {
         })
         .catch(err => console.log(err))
     },
-    deletePost({ rootGetters }, posts_id) {
-      axios.delete(SERVER.URL + SERVER.ROUTES.post + posts_id ,rootGetters.config)
-      .then(() => {
-        alert('게시글이 삭제되었습니다.')
-      })
-      .catch(err => console.log(err))
+    deletePost({ rootGetters }, postInfo) {
+      if(postInfo.user_id != postInfo.postInfo.userinfo.user_id) {
+        alert("너꺼 아니잖아");
+        return;
+      } else {
+        var con = confirm("진짜 지울꺼야?");
+        if(con){ 
+          axios.delete(SERVER.URL + SERVER.ROUTES.post + postInfo.postInfo.posts_id ,rootGetters.config)
+          .then(() => {
+            alert('게시글이 삭제되었습니다.')
+          })
+          .catch(err => console.log(err))
+        }
+        else alert("안 지웠어")
+      }
+      
     },
 
     // Comment
