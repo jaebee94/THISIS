@@ -40,7 +40,11 @@ export default {
     modify:'/articles/',
 
     disease: '/disease/user',
-    subscribe: '/subscribe'
+    subscribe: '/subscribe',
 
+    // admin
+    reportedPosts: '/admin/post',
+    reportedUsers: '/admin/user',
+    
   }
 }

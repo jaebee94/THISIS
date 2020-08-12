@@ -7,6 +7,7 @@ import userStore from './modules/userStore.js'
 import followStore from './modules/followStore.js'
 import notificationStore from './modules/notificationStore.js'
 import diseaseStore from './modules/diseaseStore.js'
+import adminStore from './modules/adminStore.js'
 
 import cookies from 'vue-cookies'
 import axios from 'axios'
@@ -54,7 +55,8 @@ export default new Vuex.Store({
     userStore: userStore,
     followStore: followStore,
     notificationStore: notificationStore,
-    diseaseStore : diseaseStore,
+    diseaseStore: diseaseStore,
+    adminStore: adminStore,
   },
 
   plugins: [
