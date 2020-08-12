@@ -166,9 +166,6 @@ import news from '../feed/News.vue';
 import {Carousel, Slide} from 'vue-carousel';
 import cookies from 'vue-cookies'
 
-const headers= {
-  'accessToken': cookies.get('access-token')
-}
 
 export default {
   name: "Feed",
@@ -235,7 +232,7 @@ export default {
         params: {
           num: this.qnaPage,
         },
-        headers
+         headers: { accessToken:  cookies.get('access-token') }
       };
       
       let url = SERVER.URL + SERVER.ROUTES.qnas;
@@ -273,7 +270,7 @@ export default {
         params: {
           num: this.page,
         },
-        headers
+        headers: { accessToken:  cookies.get('access-token') }
       };
       let url = SERVER.URL;
       console.log("In Profile, profile_data is", this.profile_data);
@@ -296,7 +293,6 @@ export default {
       axios.get(url, params).then(({ data }) => {
           if (data.length) {
             this.page += 1;
-           
             data.forEach((element) => {
               element.health = false;
               element.scrap = false;
