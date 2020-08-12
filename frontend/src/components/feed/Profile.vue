@@ -284,10 +284,23 @@ export default {
   float: left;
   width: 50%;
 }
+
+.profile-image {
+  width: 60%;
+  height: 60%;
+  margin-left: 20%;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .profile-image img {
   border: rgb(0, 171, 132) 3px solid;
   border-radius: 70%;
-  width: 60%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .profile-name a {
   font-size: 20px;
@@ -328,8 +341,8 @@ export default {
   width: 100%;
   background-color: rgb(200, 200, 200);
   color: white;
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 500;
   height: 30px;
   border-radius: 5px;
   border:none;
@@ -352,15 +365,16 @@ export default {
   height: 40px;
   vertical-align: middle;
   background-color: rgb(247, 247, 247);
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  border-bottom: 3px rgb(247, 247, 247) solid;
+  border-radius: 0;
 }
 .tab img {
   margin-top: 10px;
   height: 20px;
 }
 .tab.active {
-  background-color: rgb(0, 171, 132);
+  background-color: rgb(247, 247, 247);
+  border-bottom: 3px rgb(0, 171, 132) solid;
 }
 
 /* 피드 관련 */
@@ -426,10 +440,10 @@ export default {
   padding: 10px 5px;
 }
 
-.profile-image {
+/* .profile-image {
   background-color: white;
   border-radius: 70%;
-}
+} */
 
 .feed-footer {
   width: 100%;
