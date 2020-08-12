@@ -51,7 +51,7 @@ const diseaseStore = {
         deleteDisease({ rootGetters, dispatch }, diseasecode) {
             axios.delete(SERVER.URL + SERVER.ROUTES.subscribe,
                 {
-                    params: {
+                    data:{
                         diseasecode: diseasecode
                     }
                 }
