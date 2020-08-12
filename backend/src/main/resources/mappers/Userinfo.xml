@@ -20,9 +20,9 @@
 	<!-- 회원정보 등록 -->
 	<insert id="insertUserInfo" parameterType="UserInfo">
 		insert into UserInfo(
-			username, nickname, email, password, introduction 
+			username, nickname, email, password, introduction, userimage
 		) values (
-			#{username},#{nickname},#{email},#{password},#{introduction}
+			#{username},#{nickname},#{email},#{password},#{introduction},#{userimage}
 		)
 	</insert>
 	
@@ -92,6 +92,13 @@
 	<update id="updateImage" parameterType="UserInfo">
 		update	UserInfo
 		   set	userimage = #{userimage}
+		 where 	user_id = #{user_id}
+	</update>
+	
+	<!-- 회원정보 수정 -->
+	<update id="updatePassword" parameterType="UserInfo">
+		update	UserInfo
+		   set	password = #{password}
 		 where 	user_id = #{user_id}
 	</update>
 	

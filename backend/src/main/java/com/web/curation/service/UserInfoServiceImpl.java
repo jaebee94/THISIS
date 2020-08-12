@@ -9,11 +9,11 @@ import com.web.curation.dao.UserInfoDAO;
 import com.web.curation.model.UserInfo;
 
 @Service
-public class UserInfoServiceImpl implements UserInfoService{
+public class UserInfoServiceImpl implements UserInfoService {
 
 	@Autowired
 	private UserInfoDAO userInfoDao;
-	
+
 	@Override
 	public List<UserInfo> selectUserInfo() {
 		return userInfoDao.selectUserInfo();
@@ -74,7 +74,9 @@ public class UserInfoServiceImpl implements UserInfoService{
 		return userInfoDao.updateImage(userinfo);
 	}
 
-	
-	
+	@Override
+	public int updatePassword(UserInfo userinfo) {
+		return userInfoDao.updatePassword(userinfo);
+	}
 
 }
