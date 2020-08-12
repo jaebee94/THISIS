@@ -130,6 +130,7 @@ public class PostController {
 	@ApiOperation(value = "유저에 해당하는 모든 게시판를 반환한다.", response = List.class)
 	@GetMapping("{user_id}")
 	public ResponseEntity<List<Post>> selectPost(@PathVariable int user_id) throws Exception {
+		System.out.println("user_id :" +user_id);
 		return new ResponseEntity<List<Post>>(postservice.selectPostInfo(user_id), HttpStatus.OK);
 	}
 	
@@ -230,7 +231,7 @@ public class PostController {
 			user_id = auth.getUser_id();
 		}
 		post.setUser_id(user_id);
-
+		System.out.println("user_id :" +user_id);
 		if (postservice.createPost(post) == 1) {
 			return new ResponseEntity<String>("success", HttpStatus.OK);
 		}
@@ -250,7 +251,7 @@ public class PostController {
 			user_id = auth.getUser_id();
 		}
 		postRequest.post.setUser_id(user_id);
-		
+		System.out.println("user_id :" +user_id);
 		//질병 태그가 DB에 존재하는지 확인 후 없으면 디비에 넣기!!
 		if(postRequest.post.getDiseasecode() != null && postRequest.diseasename != null) {
 			if(diseaseService.selectDiseaseByDiseasecode(postRequest.post.getDiseasecode()) == null) {
@@ -290,6 +291,7 @@ public class PostController {
 	@ApiOperation(value = "게시글 삭제", response = String.class)
 	@DeleteMapping("{posts_id}")
 	public ResponseEntity<String> deleteUserInfo(@PathVariable int posts_id) {
+		
 		if (postservice.deletePost(posts_id) == 1) {
 			return new ResponseEntity<String>("success", HttpStatus.OK);
 		}

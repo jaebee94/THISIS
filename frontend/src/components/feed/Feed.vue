@@ -162,6 +162,7 @@ import comment from '../feed/Comment.vue';
 import news from '../feed/News.vue';
 
 import {Carousel, Slide} from 'vue-carousel';
+import cookies from 'vue-cookies'
 
 export default {
   name: "Feed",
@@ -230,6 +231,7 @@ export default {
         params: {
           num: this.qnaPage,
         },
+        headers: { accessToken:  cookies.get('access-token') }
       };
       let url = SERVER.URL + SERVER.ROUTES.qnas;
       console.log('url', url)
@@ -277,6 +279,7 @@ export default {
         params: {
           num: this.page,
         },
+        headers: { accessToken:  cookies.get('access-token') }
       };
       let url = SERVER.URL;
 
@@ -308,6 +311,7 @@ export default {
                     user_id: this.loginData.user_id,
                     posts_id: element.posts_id,
                   },
+                  headers: { accessToken:  cookies.get('access-token') }
                 })
                 .then((res) => {
                   if (res.data > 0) element.scrap = true;
