@@ -10,7 +10,7 @@
       </div> -->
       <div class="post-content">
        <carousel class="carousel wrap" :per-page="1" v-bind:pagination-enabled="true">
-        <slide v-for="item in searchedItems" v-bind:key="item.title" class="myslide">
+        <slide v-for="item in searchedItems" v-bind:key="item.index" class="myslide">
           <div><strong>{{item.title}}</strong></div>
           <div><img v-show="item.thumbnail != null" :src="item.thumbnail"></div>
           <div><a>{{item.description}}</a></div>
@@ -43,22 +43,18 @@
     <div id="search-main">
       <div v-show="currentTab == 0">
         <div class="search" v-for="item in this.items" v-bind:key="item.sickCd" :value="item.sickCd + ':' + item.sickNm">
-          <div class="search-item" @click = "selectDisease(item)">
-             <div class="search-text2">{{item.sickNm}}</div> 
+          <div class="search-item" >
+             <div class="search-text2" @click = "selectDisease(item)">{{item.sickNm}}</div> 
              <button v-if = checkFollow(item) @click="deleteDisease(item.sickCd)"  > 팔로우 취소</button>
              <button v-else  @click="addDisease({ diseasecode : item.sickCd,  diseasename : item.sickNm})">팔로우</button>
           </div>         
         </div>
       </div>
       <div v-show="currentTab == 1">
-        <div class="search" v-for="user in this.users" v-bind:key="user.nickname">
-          <div
-            class="search-item"
-            v-if="user.nickname.includes(keyword) || user.username.includes(keyword) || user.introduction.includes(keyword)"
-            @click="goProfile(user.user_id)"
-          >
+        <div class="search" v-for="user in this.users" v-bind:key="user.user_id">
+          <div class="search-item" v-if="user.nickname.includes(keyword) || user.username.includes(keyword) || user.introduction.includes(keyword)" @click="goProfile(user.user_id)">
             <div class="search-img">
-              <img src="../../assets/user.png" style="height:50px" />
+              <img :src="user.userimage" style="height:50px" />
             </div>
             <div class="search-text2">
               <div class="search-nickname">
@@ -66,19 +62,14 @@
                   <strong v-if="keyword.includes(char)">{{ char }}</strong>
                   <span v-if="!keyword.includes(char)">{{ char }}</span>
                 </span>
-                <span>-</span>
+                <span> - </span>
                 <span v-for="char in user.username" :key="char">
                   <strong v-if="keyword.includes(char)">{{ char }}</strong>
                   <span v-if="!keyword.includes(char)">{{ char }}</span>
                 </span>
               </div>
-              <div
-                class="search-Introduction"
-                v-if="user.introduction != null"
-              >{{user.introduction}}</div>
-              <div class="search-Introduction" v-if="user.introduction == null">
-                <br />
-              </div>
+              <div class="search-Introduction" v-if="user.introduction != null">{{user.introduction}}</div>
+              <div class="search-Introduction" v-if="user.introduction == null"><br></div>
             </div>
           </div>
         </div>
@@ -130,7 +121,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions("profileStore", ["goProfile"]),
+    ...mapActions("userStore", ["goProfile"]),
      ...mapActions("diseaseStore", ["getFolloingwDisease","addDisease","deleteDisease"]), //add와 딜리트 할때마다 내부에서 disease업데이트함
     getSearchList(keyword) {
       if (this.currentTab == 0) {
@@ -370,9 +361,33 @@ export default {
   transition-duration: 300ms;
 }
 
+/* .search-user-panel:hover {
+  background-color: red;
+} */
+
+.search-user-panel {
+  background-color: orange;
+}
+
+.search-item-user {
+  width: 70%;
+  height: 20px;
+  background-color: orange;
+}
+
 .search-item:hover {
   background-color: rgb(0, 171, 132);
   color: white;
+}
+
+.search-item-user {
+  width: 90%;
+  height: 20%;
+}
+
+.search-item-user:hover {
+  background-color: rgb(0, 171, 132);
+  color: red;
 }
 
 .search-panel input:focus {
@@ -396,6 +411,7 @@ ul {
 .search-img img {
   margin: 10% 10% auto;
   height: 80%;
+  border-radius: 70%;
 }
 
 .search-item {

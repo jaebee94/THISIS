@@ -92,6 +92,7 @@ const userStore = {
         userId = state.loginData.user_id
         console.log('userId == null')
       }
+      console.log(userId)
       await axios.get(SERVER.URL + SERVER.ROUTES.user + userId, rootGetters.config)
         .then(res => {
           console.log('유저인포 요청완료')

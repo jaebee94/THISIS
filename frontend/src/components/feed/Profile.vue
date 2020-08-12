@@ -134,6 +134,9 @@ export default {
       'loginData',
       'profileData'
     ]),
+    // ...mapState('profileStore', [
+    //   'profileData'
+    // ]),
     // ...mapState('profileStore', ['profileData']),
     ...mapState('followStore', ['followee_list']),
     ...mapState('postStore', ['comments']),
