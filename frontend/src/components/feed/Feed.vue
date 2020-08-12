@@ -287,7 +287,7 @@ export default {
         headers
       };
       let url = SERVER.URL;
-
+      console.log("In Profile, profile_data is", this.profile_data);
       if(this.profile_data== undefined || this.profile_data.tab == 0) {
         url += SERVER.ROUTES.posts
         params.params.user_id= -1 //-1일 경우 전체 게시물
@@ -299,6 +299,7 @@ export default {
       }
       else if(this.profile_data.tab == 1){ //스크랩 보여주기
         url += SERVER.ROUTES.scrap + "/" + this.profile_data.user_id;
+        console.log("남의 꺼에서 url : ", url);
       } 
       console.log("params", params);
       console.log("url", url);
@@ -455,8 +456,7 @@ export default {
 }
 
 .tab {
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
+  border-radius: 0;
   border-bottom: 3px rgb(247, 247, 247) solid;
 }
 

@@ -77,7 +77,7 @@ const userStore = {
         let config = { headers: {} }  
         config.headers = rootGetters.config.headers
         config.headers['Accept'] = 'application/json'
-        config.headers['Content-Type'] = 'multipart/form-data'
+        // config.headers['Content-Type'] = 'multipart/form-data'
         axios.post(SERVER.URL + SERVER.ROUTES.uploadProfile, changeInfo.formData, config)
         .then(async () => {
           console.log('사진 변경 완료')

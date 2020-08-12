@@ -46,6 +46,7 @@ import { mapState, mapActions } from "vuex";
 export default {
   created() {
     this.getNoti(this.loginData.user_id);
+    console.log("메인에서 로그인", this.loginData)
   },
   data() {
     return {
@@ -57,7 +58,7 @@ export default {
         upload: require("../../assets/images/icon/icon_upload.png"),
         notify: require("../../assets/images/icon/icon_bell_unselect.png"),
         // //profile: require('../../assets/images/icon/icon_upload.png')
-        // profile: require('../../assets/sample.jpg')
+        // profile: require('../../assets/sample.jpg'),
       },
     };
   },

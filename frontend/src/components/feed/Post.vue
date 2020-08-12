@@ -201,6 +201,18 @@ export default {
 .article-header tr td:nth-child(4) {
   width : 10px;
 }
+
+.article-header tr td:first-child {
+  width: 45px;
+  height: 45px;
+}
+
+.article-header .profile-image {
+  width : 30px;
+  height: 30px;
+  object-fit: cover;
+}
+
 .dropdown {
   position: relative;
   display: inline-block;
@@ -214,7 +226,7 @@ export default {
 
 .dropdown-content {
   position: absolute;
-  right: 0;
+  right: 5px;
   background-color: rgb(247, 247, 247);
   outline: none;
   min-width: 160px;
