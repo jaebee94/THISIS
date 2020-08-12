@@ -218,6 +218,7 @@ export default {
     },
   },
   created() {
+     this.$refs.infiniteLoading.stateChanger.reset();
     this.$store.dispatch("getCheckScrap");
     console.log('logindata',this.loginData)
   },

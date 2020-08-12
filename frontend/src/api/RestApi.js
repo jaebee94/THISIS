@@ -16,6 +16,7 @@ export default {
     search : '/account/search',
 
     // posts: '/articles',
+    post : '/articles/',
     posts: '/articles/new',
     upload: '/articles/upload',
     scrap: '/scrap',

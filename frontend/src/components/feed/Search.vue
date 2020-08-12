@@ -35,9 +35,9 @@
       <div v-show="currentTab == 0">
         <div class="search" v-for="item in this.items" v-bind:key="item.sickCd" :value="item.sickCd + ':' + item.sickNm">
           <div class="search-item" >
-             <div class="search-text2" @click = "selectDisease(item)">{{item.sickNm}}</div> 
-             <button v-if = "check" @click="deleteDisease(item.sickCd)"  > 팔로우 취소</button>
-             <button v-else  @click="createDisease({diseasename : item.sickNm,diseasecode : item.sickCd})">팔로우</button>
+             <div class="search-text2" @click="selectDisease(item)" >{{item.sickNm}}</div> 
+             <button v-if="item.check"  @click="deleteDisease(item.sickCd)"  > 팔로우 취소</button>
+             <button v-else @click="createDisease({diseasename : item.sickNm,diseasecode : item.sickCd})">팔로우</button>
           </div>         
         </div>
       </div>
@@ -114,6 +114,13 @@ export default {
         this.getUsers(this.keyword);
       }
     },
+    items: function () {
+      console.log(this.items)
+      this.checkout(this.items);
+    }
+  },
+  created(){
+    this.$store.dispatch("diseaseStore/getFollowingDisease");
   },
   methods: {
     ...mapActions("profileStore", ["goProfile"]),
@@ -185,17 +192,21 @@ export default {
           console.log(err);
         });
     },
+    checkout(items) {
+      items.forEach((item) => {
+        this.checkFollow(item);
+      })
+    },
     checkFollow(item){ //내가 갖고있는 질병 팔로우목록중 해당 아이템이 포함되어있나.
-    
+      console.log(this.diseases)
       this.diseases.forEach((disease) => {
         if(disease.diseasecode==item.sickCd) {
           this.check = true
+          item.check = true;
           console.log(item.sickCd)
-          return true;
         }
       });
       this.check = false
-      return false;
     },
     selectDisease(disease){
       this.$parent.$parent.isHidden = true;

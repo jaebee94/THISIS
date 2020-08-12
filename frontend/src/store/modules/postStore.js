@@ -70,8 +70,12 @@ const postStore = {
         })
         .catch(err => console.log(err))
     },
-    deletePost() {
-
+    deletePost({ rootGetters }, posts_id) {
+      axios.delete(SERVER.URL + SERVER.ROUTES.post + posts_id ,rootGetters.config)
+      .then(() => {
+        alert('게시글이 삭제되었습니다.')
+      })
+      .catch(err => console.log(err))
     },
 
     // Comment

@@ -1,7 +1,7 @@
 <template>
   <div class="feed">
     <div class="feed-header">
-      <table>
+      <table class="post-header">
         <tr>
           <td>
             <img
@@ -17,19 +17,29 @@
             >{{ postInfo.userinfo.nickname }}</a>
           </td>
           <td>
-            <a class="time">{{ timeForToday(postInfo.post.post_date)  }}</a>
+            <a class="time">{{ timeForToday(postInfo.post.post_date) }}</a>
+          </td>
+          <td>
+            <div class="dropdown">
+            <img class="dropmenu" src="../../assets/images/icon/icon_3dots.png" />
+            <div class="dropdown-content">
+              <a href="#" @click="deletePost(postInfo.post.posts_id)">삭제</a>
+            </div>
+            </div>
           </td>
         </tr>
       </table>
     </div>
     <div class="feed-main">
-      <img v-show="postInfo.post.imgsrc != null" :src="postInfo.post.imgsrc">
-      <strong @click="goProfile(postInfo.post.user_id)">{{postInfo.userinfo.nickname}}</strong> 
+      <img v-show="postInfo.post.imgsrc != null" :src="postInfo.post.imgsrc" />
+      <strong @click="goProfile(postInfo.post.user_id)">{{postInfo.userinfo.nickname}}</strong>
       {{postInfo.post.posts_main }}
       <div>
-        <a v-show="postInfo.post.health_count != 0"><strong>{{postInfo.post.health_count}}명</strong>이 건강해요를 눌렀습니다</a>
+        <a v-show="postInfo.post.health_count != 0">
+          <strong>{{postInfo.post.health_count}}명</strong>이 건강해요를 눌렀습니다
+        </a>
         <a v-show="postInfo.post.health_count == 0">먼저 건강해요를 눌러보세요</a>
-        </div>
+      </div>
     </div>
     <div class="feed-footer">
       <table>
@@ -41,8 +51,10 @@
             <!-- <span class="health-count">{{ postInfo.post.health_count }}</span> -->
           </td>
           <td>
-            <img @click="changeSelectPost(postInfo,'comment')" 
-            src="../../assets/images/icon/icon_talk.png" />
+            <img
+              @click="changeSelectPost(postInfo,'comment')"
+              src="../../assets/images/icon/icon_talk.png"
+            />
           </td>
           <td>
             <img
@@ -58,12 +70,11 @@
           </td>
           <td>
             <img
-             @click="changeSelectPost(postInfo,'modify')" 
+              @click="changeSelectPost(postInfo,'modify')"
               v-if="loginData.user_id == postInfo.post.user_id"
               src="../../assets/images/icon/icon_edit_unselect.png"
             />
           </td>
-          
         </tr>
       </table>
     </div>
@@ -71,11 +82,11 @@
 </template>
 
 <script>
-import { mapActions,mapState } from "vuex";
+import { mapActions, mapState } from "vuex";
 export default {
   name: "Post",
   computed: {
-    ...mapState('userStore', ["loginData"]),
+    ...mapState("userStore", ["loginData"]),
   },
   props: {
     postInfo: {
@@ -91,37 +102,35 @@ export default {
         posts_id: null,
         user_id: null,
       },
-      selectedPost:{},
+      selectedPost: {},
     };
   },
 
   methods: {
-    ...mapActions('profileStore', [
-      'goProfile',
-      ]),
-    ...mapActions('postStore', [
+    ...mapActions("profileStore", ["goProfile"]),
+    ...mapActions("postStore", [
       "fetchComments",
-      'health',
+      "health",
       "scrap",
-      "deleteScrap"
-      ]),
-    changeSelectPost(post, sort){
-     this.selectedPost = post;
-     let info = {
-      postInfo: this.selectedPost,
-      isHidden : true,
-      isModifyHidden : false,
-      isPostHidden: false,
+      "deleteScrap",
+      "deletePost"
+    ]),
+    changeSelectPost(post, sort) {
+      this.selectedPost = post;
+      let info = {
+        postInfo: this.selectedPost,
+        isHidden: true,
+        isModifyHidden: false,
+        isPostHidden: false,
       };
 
-      if(sort === 'modify') {
+      if (sort === "modify") {
         info.isModifyHidden = true;
+      } else if (sort === "comment") {
+        info.isPostHidden = true;
+        this.fetchComments(post.posts_id);
       }
-      else if(sort ==='comment') {
-          info.isPostHidden = true; 
-          this.fetchComments(post.posts_id);
-      }
-      this.$emit('send-modify', info)
+      this.$emit("send-modify", info);
     },
     clickHealth(post) {
       if (post.health == true) {
@@ -139,8 +148,8 @@ export default {
     },
     clickScrap(post) {
       let params = {
-        posts_id : post.posts_id,
-        user_id : this.loginData.user_id,
+        posts_id: post.posts_id,
+        user_id: this.loginData.user_id,
       };
 
       if (post.scrap == true) {
@@ -155,27 +164,61 @@ export default {
     timeForToday(time) {
       const today = new Date();
       const timeValue = new Date(time);
-      const betweenTime = Math.floor((today.getTime() - timeValue.getTime()) / 1000 / 60);
-      if (betweenTime < 1) return '방금전';
+      const betweenTime = Math.floor(
+        (today.getTime() - timeValue.getTime()) / 1000 / 60
+      );
+      if (betweenTime < 1) return "방금전";
       if (betweenTime < 60) {
-          return `${betweenTime}분전`;
+        return `${betweenTime}분전`;
       }
       const betweenTimeHour = Math.floor(betweenTime / 60);
       if (betweenTimeHour < 24) {
-          return `${betweenTimeHour}시간전`;
+        return `${betweenTimeHour}시간전`;
       }
       const betweenTimeDay = Math.floor(betweenTime / 60 / 24);
       if (betweenTimeDay < 365) {
-          return `${betweenTimeDay}일전`;
+        return `${betweenTimeDay}일전`;
       }
       return `${Math.floor(betweenTimeDay / 365)}년전`;
-    }
+    },
   },
-  created(){
-    console.log(this.postInfo)
-  }
+  created() {
+    console.log(this.postInfo);
+  },
 };
 </script>
 
 <style>
+.post-header tr td:nth-child(4) {
+  width : 20%;
+}
+.dropmenu {
+  width:20%;
+  float: right;
+}
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {background-color: #ddd;}
+
+.dropdown:hover .dropdown-content {display: block;}
+
 </style>

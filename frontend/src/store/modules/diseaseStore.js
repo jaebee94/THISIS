@@ -23,8 +23,10 @@ const diseaseStore = {
         getFollowingDisease({ rootGetters, commit }) {
             axios.get(SERVER.URL + SERVER.ROUTES.disease, rootGetters.config)
                 .then(res => {
+                    console.log(res)
                     commit('SET_DISEASE', res.data)
                 })
+                .catch(err => console.log(err))
         },
         createDisease({rootGetters,dispatch} ,params){ //질병 구독
             console.log(params)
