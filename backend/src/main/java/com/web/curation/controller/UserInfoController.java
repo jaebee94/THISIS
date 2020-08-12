@@ -181,6 +181,8 @@ public class UserInfoController {
 					result.introduction = userinfo.getIntroduction();
 					result.email = userinfo.getEmail();
 					result.nickname = userinfo.getNickname();
+					result.role = userinfo.getRole();
+					result.disabled = userinfo.getDisabled();
 					// obj.addProperty("userinfo", obj.toString());
 					// result.object = obj.toString();
 					response = new ResponseEntity<>(result, HttpStatus.OK);
