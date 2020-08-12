@@ -7,7 +7,7 @@
             <img
               class="profile-image"
               @click="goProfile(postInfo.post.user_id)"
-              src="../../assets/images/icon/icon_default_image.png"
+              :src="postInfo.userinfo.userimage"
             />
           </td>
           <td>
@@ -96,9 +96,10 @@ export default {
   },
 
   methods: {
-    ...mapActions('profileStore', [
-      'goProfile',
-      ]),
+    // ...mapActions('profileStore', [
+    //   'goProfile',
+    //   ]),
+    ...mapActions('userStore', ["goProfile"]),
     ...mapActions('postStore', [
       "fetchComments",
       'health',
@@ -173,7 +174,6 @@ export default {
     }
   },
   created(){
-    console.log(this.postInfo)
   }
 };
 </script>

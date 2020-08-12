@@ -315,13 +315,11 @@ export default {
                 .catch((err) => console.log(err));
               element.post.health_count = element.healths.length;
               element.healths.forEach((ele) => {
-                console.log(ele)
                 if (ele.user_id == this.loginData.user_id) {
                   element.health = true;
                 }
               });
             });
-            console.log("data",data)
             this.posts.push(...data);
             $state.loaded();
           } else {

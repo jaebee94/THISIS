@@ -35,21 +35,22 @@ const profileStore = {
 
   actions: {
     async goProfile({ state, commit, rootGetters }, userId) {
-      console.log(rootGetters.config)
+      console.log(userId)
       if (userId == null) {
         userId = state.loginData.user_id
       }
-      await axios.get(SERVER.URL + SERVER.ROUTES.user + userId,rootGetters.config)
+      await axios.get(SERVER.URL + SERVER.ROUTES.user + userId, rootGetters.config)
         .then(res => {
-          commit('SET_USER_INFO', res.data)
+          console.log('userinfo', res.data)
+          
+          setTimeout(() => commit('SET_USER_INFO', res.data), 10000)
         })
         .catch(err => console.log(err))
-      await axios.get(SERVER.URL + SERVER.ROUTES.profile + userId,rootGetters.config)
+      await axios.get(SERVER.URL + SERVER.ROUTES.profile + userId, rootGetters.config)
         .then(res => {
           commit('SET_PROFILE_INFO', res.data)
         })
-      
-      router.push({ name: 'Profile' })
+        router.push({ name: 'Profile' })
     },
 
   }
