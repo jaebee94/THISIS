@@ -34,7 +34,7 @@ const postStore = {
       if (uploadData.formData == null) {
         let headers = rootGetters.config.headers
         headers['Accept'] = 'application/json'
-        headers['Content-Type'] = 'multipart/form-data'
+        //headers['Content-Type'] = 'multipart/form-data'
         console.log('headers', headers)
         axios.post(SERVER.URL + SERVER.ROUTES.posts, uploadData.postData, rootGetters.config)
           .then(() => {
@@ -124,12 +124,11 @@ const postStore = {
     // Scrap
     scrap({rootGetters},params) {
       axios.post(SERVER.URL + SERVER.ROUTES.scrap, {
-        posts_id: params.posts_id,
-        user_id: params.user_id
+        posts_id: params.posts_id
       }, rootGetters.config)
     },
     deleteScrap({ rootGetters }, params){
-      axios.delete(SERVER.URL + SERVER.ROUTES.scrap+`/${params.posts_id}/${params.user_id}`,rootGetters.config)
+      axios.delete(SERVER.URL + SERVER.ROUTES.scrap+`/${params.posts_id}`,rootGetters.config)
       .then(res => {
         console.log("result", res);
       }).catch(err => console.log(err))

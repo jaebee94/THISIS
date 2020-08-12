@@ -28,10 +28,10 @@ const diseaseStore = {
                 })
                 .catch(err => console.log(err))
         },
-        createDisease({rootGetters,dispatch} ,params){ //질병 구독
+        async createDisease({rootGetters,dispatch} ,params){ //질병 구독
             console.log(params)
             console.log(rootGetters.config)
-            axios.post(SERVER.URL + SERVER.ROUTES.subscribe,params ,rootGetters.config)
+            await axios.post(SERVER.URL + SERVER.ROUTES.subscribe,params ,rootGetters.config)
             .then((res) => {
                 console.log(res);
                 dispatch('getFollowingDisease')
