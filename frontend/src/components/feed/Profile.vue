@@ -151,30 +151,14 @@ export default {
       'getUserScraps'
     ]),
     ...mapActions('followStore', [
+      'createFollowing',
       'deleteFollowing',
+      'deleteFollow',
       'getFollowee',
     ]),
     ...mapActions('notificationStore', [
       'createNotification',
     ]),
-
-    showModify(postInfo) {
-      this.postInfo = postInfo;
-      this.$parent.$parent.isHidden = true;
-      this.isModifyHidden = true;
-    },
-    modifyPostClick(post_id) {
-      this.posts.forEach(function (element) {
-        if (element.post_id == post_id) {
-          element = this.mPost;
-        }
-      });
-      this.closeModify();
-    },
-    closeModify() {
-      this.$parent.$parent.isHidden = false;
-      this.isModifyHidden = false;
-    },
     follow() {
       let vueInstance = this;
       this.followSend = true;
@@ -211,7 +195,7 @@ export default {
       params["followee_id"] = this.profileData.userInfo.user_id;
       params["approval"] = 0;
 
-      this.$store.dispatch("createNotification", params);
+      this.$store.dispatch("followStore/createFollowing", params);
     },
     followCancel() {
       let vueInstance = this;
@@ -246,61 +230,15 @@ export default {
       params["follower_id"] = this.loginData.user_id;
       params["followee_id"] = this.profileData.userInfo.user_id;
       params["approval"] = 1;
-      this.$store.dispatch("deleteNotification", params);
+      this.$store.dispatch("followStore/deleteFollowing", params);
     },
-    followingCancel() {
+    followingCancel() { //팔로우 끊기
       this.isFollowing = false;
       let params = {
-        follower : this.loginData.user_id,
-        followee : this.profileData.userInfo.user_id
+        follower : this.loginData.user_id, //본인
+        followee : this.profileData.userInfo.user_id //상대방
       };
-      this.$store.dispatch("deleteFollowing", params);
-    },
-    clickHealth(post) {
-      if (post.health == true) {
-        post.health = false;
-        post.health_count -= 1;
-      } else {
-        post.health = true;
-        post.health_count += 1;
-      }
-      this.healthData.posts_id = post.posts_id;
-      this.healthData.user_id = this.loginData.user_id;
-      //this.healthData.user_id = this.loginData.user_id; // user_id
-      this.health(this.healthData);
-    },
-    clickScrap(post) {
-      if (post.scrap == true) {
-        post.scrap = false;
-        this.$store.dispatch("deleteScrap", post.posts_id);
-      } else {
-        post.scrap = true;
-        this.$store.dispatch("scrap", post.posts_id);
-      }
-    },
-    showPost(postInfo) {
-      this.postInfo = postInfo;
-      this.$parent.$parent.isHidden = true;
-      this.isPostHidden = true;
-      // this.commentData.posts_id = post.posts_id;
-      // this.fetchHealths(post.posts_id);
-      this.fetchComments(postInfo.posts_id);
-      this.commentData.posts_id = postInfo.posts_id;
-      this.commentData.user_nickname = this.loginData.nickname;
-    },
-    clearCommentData() {
-      setTimeout(() => {
-        this.commentData = {};
-      }, 300);
-    },
-    closePost() {
-      this.$parent.$parent.isHidden = false;
-      this.isPostHidden = false;
-    },
-    updatePostAndClose(postInfo) {
-      this.updatePost(postInfo);
-      this.$parent.$parent.isHidden = false;
-      this.isModifyHidden = false;
+      this.$store.dispatch("followStore/deleteFollow", params);
     },
   },
   created() {
