@@ -134,9 +134,6 @@ export default {
       'loginData',
       'profileData'
     ]),
-    // ...mapState('profileStore', [
-    //   'profileData'
-    // ]),
     // ...mapState('profileStore', ['profileData']),
     ...mapState('followStore', ['followee_list']),
     ...mapState('postStore', ['comments']),
@@ -154,9 +151,11 @@ export default {
       'getUserScraps'
     ]),
     ...mapActions('followStore', [
-      'createFollowing',
       'deleteFollowing',
       'getFollowee',
+    ]),
+    ...mapActions('notificationStore', [
+      'createNotification',
     ]),
 
     showModify(postInfo) {
@@ -212,7 +211,7 @@ export default {
       params["followee_id"] = this.profileData.userInfo.user_id;
       params["approval"] = 0;
 
-      this.$store.dispatch("createFollowing", params);
+      this.$store.dispatch("createNotification", params);
     },
     followCancel() {
       let vueInstance = this;
@@ -247,11 +246,15 @@ export default {
       params["follower_id"] = this.loginData.user_id;
       params["followee_id"] = this.profileData.userInfo.user_id;
       params["approval"] = 1;
-
-      this.$store.dispatch("deleteFollowing", params);
+      this.$store.dispatch("deleteNotification", params);
     },
     followingCancel() {
       this.isFollowing = false;
+      let params = {
+        follower : this.loginData.user_id,
+        followee : this.profileData.userInfo.user_id
+      };
+      this.$store.dispatch("deleteFollowing", params);
     },
     clickHealth(post) {
       if (post.health == true) {
