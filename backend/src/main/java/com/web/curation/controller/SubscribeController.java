@@ -104,7 +104,7 @@ public class SubscribeController {
 		Subscribe sub = new Subscribe();
 		sub.setDiseasecode(diseasecode);
 		sub.setUser_id(user_id);
-		
+		System.out.println(sub.toString());
 		
 		if(subscribeService.deleteSubscribe(sub) == 1) {
 			return new ResponseEntity<String>("success",HttpStatus.OK);
