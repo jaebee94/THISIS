@@ -66,7 +66,7 @@ const userStore = {
       router.push({ name: 'Login' })
     },
     async changeUserInfo({ rootGetters, dispatch }, changeInfo) {
-      axios.put(SERVER.URL + SERVER.ROUTES.updateProfile, changeInfo.userInfo, rootGetters.config)
+      await axios.put(SERVER.URL + SERVER.ROUTES.updateProfile, changeInfo.userInfo, rootGetters.config)
         .then(() => {
           console.log('소개 변경 완료')
           alert('변경이 완료되었습니다.')
@@ -77,8 +77,8 @@ const userStore = {
         let config = { headers: {} }  
         config.headers = rootGetters.config.headers
         config.headers['Accept'] = 'application/json'
-        config.headers['Content-Type'] = 'multipart/form-data'
-        axios.post(SERVER.URL + SERVER.ROUTES.uploadProfile, changeInfo.formData, config)
+        //config.headers['Content-Type'] = 'multipart/form-data'
+        await axios.post(SERVER.URL + SERVER.ROUTES.uploadProfile, changeInfo.formData, config)
         .then(async () => {
           console.log('사진 변경 완료')
           dispatch('userStore/goProfile', changeInfo.userInfo.user_id, { root: true })

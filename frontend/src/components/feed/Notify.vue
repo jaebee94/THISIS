@@ -95,14 +95,14 @@ export default {
         follower: noti.follower_id,
         followee: noti.followee_id
       };
-      this.$store.dispatch("putNotification", noti);
-      this.$store.dispatch("createFollow",params);
+      this.$store.dispatch("notificationStor/putNotification", noti);
+      this.$store.dispatch("followStore/createFollow",params);
       this.save(noti);
       this.deleteFromFirebase(noti);
     },
     rejectFollow(noti) {
       noti.approval = 2;
-      this.$store.dispatch("putNotification", noti);
+      this.$store.dispatch("notificationStor/putNotification", noti);
       this.save(noti);
       this.deleteFromFirebase(noti);
     },
