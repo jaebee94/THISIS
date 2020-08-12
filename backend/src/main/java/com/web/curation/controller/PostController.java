@@ -131,7 +131,7 @@ public class PostController {
 	@GetMapping("{user_id}")
 	public ResponseEntity<List<Post>> selectPost(@PathVariable int user_id) throws Exception {
 		System.out.println("user_id :" +user_id);
-		return new ResponseEntity<List<Post>>(postservice.selectPostInfo(user_id), HttpStatus.OK);
+		return new ResponseEntity<List<Post>>(postservice.selectPost(user_id), HttpStatus.OK);
 	}
 	
 	@ApiOperation(value = "user_id 인자에 해당하는 게시판 목록를 반환한다.", response = List.class)
@@ -140,7 +140,7 @@ public class PostController {
 		List<Post> Allpage = null;
 		if(user_id >= 1) {	//다른 사람이 작성한 피드
 			System.out.println("user_id :" +user_id);
-			Allpage = postservice.selectPostInfo(user_id);
+			Allpage = postservice.selectPost(user_id);
 		}else if(user_id == 0){	//내가 작성한 피드
 			// 자기 아이디 가져옴
 			String accessToken = (String) request.getAttribute("accessToken");
@@ -152,7 +152,7 @@ public class PostController {
 				user_id = 1;
 			}
 			System.out.println("user_id :" +user_id);
-			Allpage = postservice.selectPostInfo(user_id);
+			Allpage = postservice.selectPost(user_id);
 		}
 		else {	//나의 메인 피드
 			// 자기 아이디 가져옴
