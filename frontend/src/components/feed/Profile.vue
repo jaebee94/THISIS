@@ -27,6 +27,7 @@
             <td>{{ profileData.profileInfo.followeenum }}</td>
           </tr>
         </table>
+        <button id="logout-btn" @click="logout()">로그아웃</button>
       </div>
     </div>
     <div class="profile-modify">
@@ -80,6 +81,7 @@
 import { mapActions, mapState } from "vuex";
 import db from "../../firebaseInit";
 import firebase from "firebase";
+import router from '@/router'
 
 const increment = firebase.firestore.FieldValue.increment(1);
 const decrement = firebase.firestore.FieldValue.increment(-1);
@@ -302,6 +304,14 @@ export default {
       this.$parent.$parent.isHidden = false;
       this.isModifyHidden = false;
     },
+    logout() {
+      var result = confirm("로그아웃하시겠습니까?");
+      if(result) {
+        router.push({name: 'Logout'});
+      } else {
+        alert("그래요! 좀만 더 놀다가세요")
+      }
+    }
   },
   created() {
     // this.goProfile()
@@ -526,6 +536,22 @@ export default {
 .feed-footer table tr td img {
   margin: 2% 5%;
   height: 60%;
+}
+
+#logout-btn {
+  width: 100px;
+  height: 30px;
+  border: none;
+  background-color: rgb(220, 0, 27);
+  font-weight: 600;
+  border-radius: 5px;
+  outline: none;
+  color: white;
+  transition-duration: 300ms;
+}
+
+#logout-btn:focus {
+  background-color: rgb(189, 22, 44);
 }
 
 .health-count {

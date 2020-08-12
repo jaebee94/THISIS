@@ -16,8 +16,8 @@
             <button v-show="this.isSearched" @click="checkItem(nowItem)">추가</button>
         </div>
         <div class="tutorial-show-wrap">
-            <div v-for="cItem in this.checkedItems" v-bind:key="cItem">
-                <span >{{cItem[1]}}<img @click="deleteItem(cItem)" src="../../assets/images/icon/icon_mini_close.png"></span>
+            <div v-for="cItem in this.checkedItems" v-bind:key="cItem.diseasecode">
+                <span >{{cItem.diseasename}}<img @click="deleteItem(cItem)" src="../../assets/images/icon/icon_mini_close.png"></span>
             </div>
             
         </div>
@@ -107,7 +107,7 @@ export default {
             var flag = true;
             for(var i = 0; i < this.checkedItems.length; i++) {
                 var item = this.checkedItems[i];
-                if(item[0] == str[0]) flag = false;
+                if(item.diseasecode == str[0]) flag = false;
             }
             if(flag)
             this.checkedItems.push({diseasecode : str[0], diseasename : str[1]});
