@@ -124,10 +124,11 @@
         @send-modify="showModify"
       ></post>
       </div>
-      <!-- <infinite-loading @infinite="infiniteHandler"></infinite-loading> -->
+      <infinite-loading v-if="this.currentTab == 0" 
+          ref="infiniteLoadingPost" @infinite="infiniteHandler"></infinite-loading>
     </div>
 
-    <infinite-loading v-show="this.currentTab == 0" ref="infiniteLoadingPost" @infinite="infiniteHandler"></infinite-loading>
+    
 
 
 
@@ -140,9 +141,10 @@
       <qna v-for="qnaInfo in qnas" v-bind:key="qnaInfo.posts_id"
       v-bind:qnaInfo="qnaInfo" @send-modify-qna="showModifyQnA">
       </qna> 
-      <!-- <infinite-loading @infinite="infiniteHandlerQnA"></infinite-loading> -->
+        <infinite-loading v-if="this.currentTab == 1" 
+        ref="infiniteLoadingQnA" @infinite="infiniteHandlerQnA"></infinite-loading>
     </div>
-    <infinite-loading ref="infiniteLoadingQnA" @infinite="infiniteHandlerQnA"></infinite-loading>
+  
 
     <div v-show="currentTab == 2">
       <news></news>
@@ -217,8 +219,6 @@ export default {
       this.posts = []
       this.$refs.infiniteLoadingPost.stateChanger.reset();
       this.$refs.infiniteLoadingQnA.stateChanger.reset();
-      // this.infiniteHandler(this);
-      // this.infiniteHandlerQnA(this);
     }
   },
   methods: {
@@ -249,17 +249,6 @@ export default {
               element.health = false;
               element.scrap = false;
                console.log(element)
-              // axios
-              //   .get(SERVER.URL + SERVER.ROUTES.scrap, {
-              //     params: {
-              //       user_id: this.loginData.user_id,
-              //       posts_id: element.posts_id,
-              //     },
-              //   })
-              //   .then((res) => {
-              //     if (res.data > 0) element.scrap = true;
-              //   })
-              //   .catch((err) => console.log(err));
               element.post.health_count = element.healths.length;
               element.healths.forEach((ele) => {
                 console.log(ele)
@@ -428,7 +417,8 @@ export default {
     }
   },
   created() {
-     this.$refs.infiniteLoading.stateChanger.reset();
+     this.$refs.infiniteLoadingPost.stateChanger.reset();
+     this.$refs.infiniteLoadingQnA.stateChanger.reset();
     this.$store.dispatch("getCheckScrap");
   },
 };
