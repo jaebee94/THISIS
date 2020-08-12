@@ -185,6 +185,7 @@ public class UserInfoController {
 					result.introduction = userinfo.getIntroduction();
 					result.email = userinfo.getEmail();
 					result.nickname = userinfo.getNickname();
+					result.userimage = userinfo.getUserimage();
 					result.role = userinfo.getRole();
 					result.disabled = userinfo.getDisabled();
 					result.subscribeCount = subscribeService.selectSubscribeByUserid(Integer.toString(userinfo.getUser_id())).size();
