@@ -30,6 +30,7 @@ const diseaseStore = {
         },
         createDisease({rootGetters,dispatch} ,params){ //질병 구독
             console.log(params)
+            console.log(rootGetters.config)
             axios.post(SERVER.URL + SERVER.ROUTES.subscribe,params ,rootGetters.config)
             .then((res) => {
                 console.log(res);
@@ -54,8 +55,9 @@ const diseaseStore = {
                     data:{
                         diseasecode: diseasecode
                     }
+                    ,headers: rootGetters.config.headers
                 }
-                , rootGetters.config)
+                )
                 .then(res => {
                     console.log("result", res);
                     dispatch('getFollowingDisease') 
