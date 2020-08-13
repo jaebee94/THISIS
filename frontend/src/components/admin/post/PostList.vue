@@ -1,60 +1,43 @@
 <template>
-  <div class="post wrap">
-    <PostListItem
-      v-for="post in posts"
-      :key="post.posts_id"
-    ></PostListItem>
+  <div class="qna wrap">
+    <div class="qna-header">
+      <div class="qna-title">
+        <a>{{ post.postpolice.posts_title }}</a>
+      </div>
+      <div class="qna-tag">
+        <a>#{{ post.diseasename }}</a>
+      </div>
+    </div>
+    <div class="qna-footer">
+      <span>
+        <strong class="qna-writer">{{post.userinfo.nickname}}</strong>
+        <a class="qna-time">{{timeForToday(post.postpolice.post_date) }}</a>
+        <img @click="changeSelectpost(post, 'comment')" src="@/assets/images/icon/icon_talk.png" />
+        <a class="qna-reply">{{post.comments.length}}</a>
+      </span>
+    </div>
   </div>
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
-import PostListItem from './PostListItem'
+// import { mapActions, mapState } from "vuex";
+// import PostListItem from './PostListItem'
 
 export default {
   name: "PostList",
   components: {
-    PostListItem,
+    // PostListItem,
   },
   props: {
-    posts: Array
+    post: {
+      default: void 0,
+    },
   },
-  computed: {
-    ...mapState("userStore", ["loginData"]),
-  },
+  computed: {},
   data() {
-    return {
-      selectedQnA: {},
-    };
+    return {};
   },
   methods: {
-    ...mapActions("profileStore", ["goProfile"]),
-    ...mapActions("postStore", [
-      "fetchComments",
-      "health",
-      "scrap",
-      "deleteScrap",
-    ]),
-    changeSelectQnA(qna, sort) {
-      this.selectedQnA = qna;
-      console.log("QNA에서 찍는 로그", this.selectedQnA);
-      let info = {
-        qnaInfo: this.selectedQnA,
-        isHidden: true,
-        isModifyHidden: false,
-        isQnAHidden: false,
-      };
-      console.log("qna", qna);
-      if (sort == "comment") {
-        info.isQnAHidden = true;
-        this.fetchComments(qna.posts_id);
-        console.log("comment");
-      } else if (sort == "modify") {
-        info.isModifyHidden = true;
-        console.log("modify");
-      }
-      this.$emit("send-modify-qna", info);
-    },
     timeForToday(time) {
       const today = new Date();
       var timeValue = new Date(time);
@@ -78,13 +61,13 @@ export default {
     },
   },
   created() {
-    console.log(this.selectedQnA);
+    // console.log(this.selectedQnA);
   },
 };
 </script>
 
 <style scoped>
-.qna.wrap {
+.post.wrap {
   width: 100%;
   height: 80px;
   margin-bottom: 10px;
@@ -93,55 +76,55 @@ export default {
   border-bottom: 1px slategray solid;
 }
 
-.qna-header {
+.post-header {
   height: 60px;
 }
 
-.qna-title {
+.post-title {
   text-align: left;
 }
 
-.qna-title a {
+.post-title a {
   font-size: 18px;
   font-weight: 600;
   margin-left: 5%;
 }
 
-.qna-tag {
+.post-tag {
   text-align: left;
   color: slategray;
 }
 
-.qna-tag a {
+.post-tag a {
   margin-left: 5%;
 }
 
-.qna-header img {
+.post-header img {
   height: 20px;
   position: relative;
   top: -45px;
   left: 45%;
 }
 
-.qna-footer {
+.post-footer {
   font-size: 15px;
   text-align: left;
 }
 
-.qna-footer .qna-time {
+.post-footer .post-time {
   color: slategray;
 }
 
-.qna-footer strong,
+.post-footer strong,
 a {
   margin-left: 5%;
 }
 
-.qna-reply {
+.post-reply {
   margin-left: 3px;
 }
 
-.qna-footer span img {
+.post-footer span img {
   margin-left: 5%;
   height: 10px;
   z-index: 80;
