@@ -157,6 +157,7 @@ const postStore = {
         }).catch(err => console.log(err))
     },
     getUserScraps({ rootGetters, commit }, userId) {
+      console.log("rootGetters.config",rootGetters.config)
       axios.get(SERVER.URL + SERVER.ROUTES.scrap + "/" + userId, rootGetters.config)
         .then(res => {
           commit('SET_SCRAPS', res.data);

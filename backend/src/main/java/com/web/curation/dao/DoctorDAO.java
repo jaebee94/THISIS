@@ -23,4 +23,6 @@ public interface DoctorDAO {
 	public int updateDoctorImg(String img);
 
 	public int updateDoctorAuth(int user_id);
+	
+	public int updateDoctorAuthFail(int user_id);
 }

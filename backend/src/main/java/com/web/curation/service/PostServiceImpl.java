@@ -15,13 +15,7 @@ public class PostServiceImpl implements PostService {
 
 	@Autowired
 	private PostDAO PostDao;
-
-	@Override
-	public List<Post> selectPostInfo(int user_id) {
-		// TODO Auto-generated method stub
-		return PostDao.selectPost(user_id);
-	}
-
+	
 	@Override
 	public int createPost(Post post) {
 		return PostDao.createPost(post);
@@ -66,5 +60,15 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public List<Post> selectQnA() {
 		return PostDao.selectQnA();
+	}
+
+	@Override
+	public List<Post> selectPost(int user_id) {
+		return PostDao.selectPost(user_id);
+	}
+
+	@Override
+	public int hiddenupdate(int posts_id) {
+		return PostDao.hiddenupdate(posts_id);
 	}
 }

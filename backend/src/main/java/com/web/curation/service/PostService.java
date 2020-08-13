@@ -6,7 +6,7 @@ import com.web.curation.model.Post;
 import com.web.curation.model.Scrap;
 
 public interface PostService {
-	public List<Post> selectPostInfo(int user_id);
+	public List<Post> selectPost(int user_id);
 	public List<Post> selectAllPost();
 	public int createPost(Post post);
 	public int modifyPost(Post post);
@@ -16,4 +16,5 @@ public interface PostService {
 	public List<Post> selectMainFeed(int user_id);
 	public int selectAutoIncrement();
 	public List<Post> selectQnA();
+	public int hiddenupdate(int posts_id);
 }

@@ -13,6 +13,8 @@ public class UserResponse {
 	public String introduction;
 	public String email;
 	public String nickname;
+	public String userimage;
 	public String role;
 	public int disabled;
+	public int subscribeCount;  
 }
