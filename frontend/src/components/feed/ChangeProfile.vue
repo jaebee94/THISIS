@@ -253,6 +253,7 @@ export default {
       var formData = new FormData();
       formData.append("upload_file", file);
       console.log('formData', formData)
+      console.log("file",formData)
       this.changeInfo.formData = formData;
       console.log("changeInfo : ", this.changeInfo);
       this.imgsrc = URL.createObjectURL(file);
