@@ -30,7 +30,7 @@
 		resultType="Post">
 		select *
 		from posts
-		<if test="list != null">
+		<if test="list != null and list.size!=0">
 		where posts_id in
 		<foreach collection="list" item="item" open="(" close=")"
 			separator=",">
