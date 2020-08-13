@@ -5,6 +5,9 @@
     </div>
     <div class="tutorial-main-wrap"> 
         <div class="tutorial-input-wrap">
+            <div>
+                <a>3개 이상 구독을 눌러주세요!</a>
+            </div>
             <input list="disease-list" id="keyword" v-model="keyword" v-on:keyup.enter="getDisease(keyword)">
         </div>
         <div class="tutorial-select-wrap">
@@ -152,6 +155,11 @@ export default {
 
     .tutorial-input-wrap { 
         margin-bottom: 10px;
+    }
+
+    .tutorial-input-wrap div a {
+        color : white;
+        font-size: 12px;
     }
 
     .tutorial-select-wrap {
