@@ -30,6 +30,15 @@
 		from doctor
 		where doctorauth = "accept"
 	</select>
+	
+	<select id="selectMyDoctor" resultType="Doctor">
+		select *
+		from doctor
+		where user_id = #{user_id}
+		order by doctor.doctor_id desc
+		limit 1
+	</select>
+	
 
 	<select id="selectCheckDoctor" resultType="Doctor">
 		select *

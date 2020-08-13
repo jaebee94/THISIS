@@ -45,15 +45,19 @@ public class EmailController {
         UserInfo userinfo = userInfoService.findUserInfoByEmail(email);
         String USERNAME = userinfo.getUsername();
         String EMAIL = email;
-        int min = 100000000;
-        int max = 999999999;
-        String PASSWORD = Integer.toString(min + (int)(Math.random() * ((max - min))));
+        StringBuffer sb = new StringBuffer();
+        Random rn = new Random();
+        char[] charaters = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','0','1','2','3','4','5','6','7','8','9'};
+        for( int i = 0 ; i < 9 ; i++ ){
+            sb.append( charaters[ rn.nextInt( charaters.length ) ] );
+        }
+        String PASSWORD = sb.toString();
              
         try {
             MimeMessage msg = mailSender.createMimeMessage();
             MimeMessageHelper messageHelper = new MimeMessageHelper(msg, true, "UTF-8");
             messageHelper.setSubject(USERNAME+"님 비밀번호 찾기 메일입니다.");
-            messageHelper.setText("비밀번호는 "+PASSWORD+" 입니다.");
+            messageHelper.setText("임시 비밀번호는 "+PASSWORD+" 입니다.");
             messageHelper.setFrom("ru940203@naver.com");
             userinfo.setPassword(PASSWORD);
             userInfoService.updatePassword(userinfo);

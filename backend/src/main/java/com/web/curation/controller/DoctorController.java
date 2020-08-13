@@ -68,18 +68,6 @@ public class DoctorController {
 	@Autowired
 	private DoctorService doctorService;
 
-	@ApiOperation(value = "모든 의사를 반환한다.", response = List.class)
-	@GetMapping
-	public ResponseEntity<List<Doctor>> selectDoctor() throws Exception {
-		return new ResponseEntity<List<Doctor>>(doctorService.selectDoctor(), HttpStatus.OK);
-	}
-
-	@ApiOperation(value = "체크하지 않은 사람들을 반환한다.", response = List.class)
-	@GetMapping("check")
-	public ResponseEntity<List<Doctor>> selectCheckDoctor() throws Exception {
-		return new ResponseEntity<List<Doctor>>(doctorService.selectCheckDoctor(), HttpStatus.OK);
-	}
-
 	@ApiOperation(value = "의사 정보를 신청한다.", response = String.class)
 	@PostMapping("register")
 	public ResponseEntity<String> insertDoctor(@RequestParam("upload_file") MultipartFile uploadfile,
@@ -132,23 +120,18 @@ public class DoctorController {
 		}
 	}
 	
-	@ApiOperation(value = "의사 결정", response = String.class)
-	@PutMapping("{user_id}")
-	public ResponseEntity<String> updatedoctor(@PathVariable int user_id) {
-		if (doctorService.updateDoctorAuth(user_id) == 1) {
-			return new ResponseEntity<String>("success", HttpStatus.OK);
+	@ApiOperation(value = "내 신청 결과를 반환한다.", response = String.class)
+	@GetMapping("result")
+	public ResponseEntity<String> resultDoctor(HttpServletRequest request) throws Exception {
+		String accessToken = (String) request.getAttribute("accessToken");
+		Doctor doctor = new Doctor();
+		int user_id = 1;
+		if (accessToken != null) {
+			Auth auth = authService.findAuthByAccessToken(accessToken);
+			user_id = auth.getUser_id();
 		}
-		return new ResponseEntity<String>("fail", HttpStatus.NO_CONTENT);
+		doctor = doctorService.selectMyDoctor(user_id);
+		System.out.println(doctor.getUser_id());
+		return new ResponseEntity<String>(doctor.getDoctorauth(), HttpStatus.OK);
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }
