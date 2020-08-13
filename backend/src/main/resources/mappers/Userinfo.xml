@@ -104,4 +104,16 @@
 		 where 	user_id = #{user_id}
 	</update>
 	
+	<update id="updateDisable">
+		update	UserInfo
+		   set	disabled = 1
+		 where 	user_id = #{user_id}
+	</update>
+	
+	<update id="updateRole" >
+		update	UserInfo
+		   set	role = "doctor"
+		 where 	user_id = #{user_id}
+	</update>
+	
 </mapper>

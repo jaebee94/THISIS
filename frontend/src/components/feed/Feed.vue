@@ -44,7 +44,7 @@
       </div>
       <div class="qna-comment-write-wrap">
        <input v-model="commentData.comment_main" placeholder="내용을 입력하세요" />
-        <button @click="createComment(commentData), clearCommentData()">댓글</button>
+        <button @click="commentInfo(qnaInfo), createComment(commentData), clearCommentData()">댓글</button>
       </div>
       <div class="post-footer">
         <img @click="closeQnA()" src="../../assets/images/icon/icon_close.png" />
@@ -90,7 +90,7 @@
       </div>
       <div class="qna-comment-write-wrap">
         <input v-model="commentData.comment_main" placeholder="내용을 입력하세요" />
-        <button @click="createComment(commentData), clearCommentData()">댓글</button>
+        <button @click="commentInfo(postInfo), createComment(commentData), clearCommentData()">댓글</button>
       </div>
       <div class="post-footer">
         <img @click="closePost()" src="../../assets/images/icon/icon_close.png" />
@@ -124,10 +124,11 @@
         @send-modify="showModify"
       ></post>
       </div>
-      <!-- <infinite-loading @infinite="infiniteHandler"></infinite-loading> -->
+      <infinite-loading v-if="this.currentTab == 0" 
+          ref="infiniteLoadingPost" @infinite="infiniteHandler"></infinite-loading>
     </div>
 
-    <infinite-loading v-show="this.currentTab == 0" ref="infiniteLoadingPost" @infinite="infiniteHandler"></infinite-loading>
+    
 
 
 
@@ -140,9 +141,10 @@
       <qna v-for="qnaInfo in qnas" v-bind:key="qnaInfo.posts_id"
       v-bind:qnaInfo="qnaInfo" @send-modify-qna="showModifyQnA">
       </qna> 
-      <!-- <infinite-loading @infinite="infiniteHandlerQnA"></infinite-loading> -->
+        <infinite-loading v-if="this.currentTab == 1" 
+        ref="infiniteLoadingQnA" @infinite="infiniteHandlerQnA"></infinite-loading>
     </div>
-    <infinite-loading ref="infiniteLoadingQnA" @infinite="infiniteHandlerQnA"></infinite-loading>
+  
 
     <div v-show="currentTab == 2">
       <news></news>
@@ -164,9 +166,6 @@ import news from '../feed/News.vue';
 import {Carousel, Slide} from 'vue-carousel';
 import cookies from 'vue-cookies'
 
-const headers= {
-  'accessToken': cookies.get('access-token')
-}
 
 export default {
   name: "Feed",
@@ -208,6 +207,7 @@ export default {
   computed: {
     ...mapState('userStore', ['loginData']),
     ...mapState('postStore', ['comments', 'checkScrap']),
+    ...mapState('diseaseStore', ['diseases']),
   },
   watch: {
     profile_data : function () {
@@ -217,8 +217,6 @@ export default {
       this.posts = []
       this.$refs.infiniteLoadingPost.stateChanger.reset();
       this.$refs.infiniteLoadingQnA.stateChanger.reset();
-      // this.infiniteHandler(this);
-      // this.infiniteHandlerQnA(this);
     }
   },
   methods: {
@@ -229,13 +227,14 @@ export default {
       //'fetchHealths',
       'goCheckScrap',
     ]),
+    ...mapActions('diseaseStore', ['getFollowingDisease']),
 
     infiniteHandlerQnA ($state) {
-      let params = {
+      var params = {
         params: {
           num: this.qnaPage,
         },
-        headers
+         headers: { accessToken:  cookies.get('access-token') }
       };
       
       let url = SERVER.URL + SERVER.ROUTES.qnas;
@@ -249,17 +248,6 @@ export default {
               element.health = false;
               element.scrap = false;
                console.log(element)
-              // axios
-              //   .get(SERVER.URL + SERVER.ROUTES.scrap, {
-              //     params: {
-              //       user_id: this.loginData.user_id,
-              //       posts_id: element.posts_id,
-              //     },
-              //   })
-              //   .then((res) => {
-              //     if (res.data > 0) element.scrap = true;
-              //   })
-              //   .catch((err) => console.log(err));
               element.post.health_count = element.healths.length;
               element.healths.forEach((ele) => {
                 console.log(ele)
@@ -280,14 +268,14 @@ export default {
 
    // Infinite Scrolling
     infiniteHandler($state) {
-      let params = {
+      var params = {
         params: {
           num: this.page,
         },
-        headers
+        headers: { accessToken:  cookies.get('access-token') }
       };
       let url = SERVER.URL;
-
+      console.log("In Profile, profile_data is", this.profile_data);
       if(this.profile_data== undefined || this.profile_data.tab == 0) {
         url += SERVER.ROUTES.posts
         params.params.user_id= -1 //-1일 경우 전체 게시물
@@ -299,6 +287,7 @@ export default {
       }
       else if(this.profile_data.tab == 1){ //스크랩 보여주기
         url += SERVER.ROUTES.scrap + "/" + this.profile_data.user_id;
+        console.log("남의 꺼에서 url : ", url);
       } 
       console.log("params", params);
       console.log("url", url);
@@ -306,7 +295,6 @@ export default {
       axios.get(url, params).then(({ data }) => {
           if (data.length) {
             this.page += 1;
-           
             data.forEach((element) => {
               element.health = false;
               element.scrap = false;
@@ -424,11 +412,18 @@ export default {
           return `${betweenTimeDay}일전`;
       }
       return `${Math.floor(betweenTimeDay / 365)}년전`;
+    },
+    commentInfo(info) {
+      console.log(info);
+      this.commentData.posts_id = info.posts_id;
     }
   },
   created() {
-     this.$refs.infiniteLoading.stateChanger.reset();
+     this.$refs.infiniteLoadingPost.stateChanger.reset();
+     this.$refs.infiniteLoadingQnA.stateChanger.reset();
     this.$store.dispatch("getCheckScrap");
+    this.$store.dispatch("getFollowingDisease")
+    console.log("diseases", this.diseases)
   },
 };
 </script>
@@ -455,8 +450,7 @@ export default {
 }
 
 .tab {
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
+  border-radius: 0;
   border-bottom: 3px rgb(247, 247, 247) solid;
 }
 

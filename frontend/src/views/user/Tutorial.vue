@@ -5,7 +5,7 @@
     </div>
     <div class="tutorial-main-wrap"> 
         <div class="tutorial-input-wrap">
-            <input list="disease-list" id="keyword" v-model="keyword">
+            <input list="disease-list" id="keyword" v-model="keyword" v-on:keyup.enter="getDisease(keyword)">
         </div>
         <div class="tutorial-select-wrap">
             <a v-show="this.isSearched">추가 버튼을 누르시면 구독됩니다</a>
@@ -16,8 +16,8 @@
             <button v-show="this.isSearched" @click="checkItem(nowItem)">추가</button>
         </div>
         <div class="tutorial-show-wrap">
-            <div v-for="cItem in this.checkedItems" v-bind:key="cItem">
-                <span >{{cItem[1]}}<img @click="deleteItem(cItem)" src="../../assets/images/icon/icon_mini_close.png"></span>
+            <div v-for="cItem in this.checkedItems" v-bind:key="cItem.diseasecode">
+                <span >{{cItem.diseasename}}<img @click="deleteItem(cItem)" src="../../assets/images/icon/icon_mini_close.png"></span>
             </div>
             
         </div>
@@ -107,10 +107,10 @@ export default {
             var flag = true;
             for(var i = 0; i < this.checkedItems.length; i++) {
                 var item = this.checkedItems[i];
-                if(item[0] == str[0]) flag = false;
+                if(item.diseasecode == str[0]) flag = false;
             }
             if(flag)
-            this.checkedItems.push({diseasecode : str[0], diseasename : str[1]});
+                this.checkedItems.push({diseasecode : str[0], diseasename : str[1]});
         },
         deleteItem(item) {
             // x표를 눌러 선택한 질병을 삭제하는 내용
@@ -123,10 +123,7 @@ export default {
                 this.createDisease(chkItem); //db에 보내기
             });
             
-            // 여기서 들어갈 작업 : 
-            // 1. this.checkedItems(선택한 구독 질병들)를 POST로 서버 DB에 보내주기
-            // 2. 메인 페이지의 피드로 가게 하기
-            // this.$router.push("/main/feed")
+            this.$router.push("/main/feed")
         }
     }
 }

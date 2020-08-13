@@ -31,7 +31,7 @@
           </td>
           <td>
             <!-- <router-link to="/main/profile"> -->
-              <img @click="checkProfile()" :src="loginData.userimage" />
+              <img @click="checkProfile()" :src="this.loginData.userimage" />
             <!-- </router-link> -->
           </td>
         </tr>
@@ -46,6 +46,7 @@ import { mapState, mapActions } from "vuex";
 export default {
   created() {
     this.getNoti(this.loginData.user_id);
+    console.log("메인에서 로그인", this.loginData)
   },
   data() {
     return {
@@ -56,8 +57,6 @@ export default {
         search: require("../../assets/images/icon/icon_search_unselect.png"),
         upload: require("../../assets/images/icon/icon_upload.png"),
         notify: require("../../assets/images/icon/icon_bell_unselect.png"),
-        // //profile: require('../../assets/images/icon/icon_upload.png')
-        // profile: require('../../assets/sample.jpg')
       },
     };
   },

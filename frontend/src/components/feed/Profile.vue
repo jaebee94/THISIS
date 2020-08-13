@@ -27,6 +27,7 @@
             <td>{{ profileData.profileInfo.followeenum }}</td>
           </tr>
         </table>
+        <button id="logout-btn" @click="logout()">로그아웃</button>
       </div>
     </div>
     <div class="profile-modify">
@@ -80,6 +81,7 @@
 import { mapActions, mapState } from "vuex";
 import db from "../../firebaseInit";
 import firebase from "firebase";
+import router from '@/router'
 
 const increment = firebase.firestore.FieldValue.increment(1);
 const decrement = firebase.firestore.FieldValue.increment(-1);
@@ -151,30 +153,14 @@ export default {
       'getUserScraps'
     ]),
     ...mapActions('followStore', [
+      'createFollowing',
       'deleteFollowing',
+      'deleteFollow',
       'getFollowee',
     ]),
     ...mapActions('notificationStore', [
       'createNotification',
     ]),
-
-    showModify(postInfo) {
-      this.postInfo = postInfo;
-      this.$parent.$parent.isHidden = true;
-      this.isModifyHidden = true;
-    },
-    modifyPostClick(post_id) {
-      this.posts.forEach(function (element) {
-        if (element.post_id == post_id) {
-          element = this.mPost;
-        }
-      });
-      this.closeModify();
-    },
-    closeModify() {
-      this.$parent.$parent.isHidden = false;
-      this.isModifyHidden = false;
-    },
     follow() {
       let vueInstance = this;
       this.followSend = true;
@@ -211,7 +197,7 @@ export default {
       params["followee_id"] = this.profileData.userInfo.user_id;
       params["approval"] = 0;
 
-      this.$store.dispatch("createNotification", params);
+      this.$store.dispatch("followStore/createFollowing", params);
     },
     followCancel() {
       let vueInstance = this;
@@ -246,62 +232,24 @@ export default {
       params["follower_id"] = this.loginData.user_id;
       params["followee_id"] = this.profileData.userInfo.user_id;
       params["approval"] = 1;
-      this.$store.dispatch("deleteNotification", params);
+      this.$store.dispatch("followStore/deleteFollowing", params);
     },
-    followingCancel() {
+    followingCancel() { //팔로우 끊기
       this.isFollowing = false;
       let params = {
-        follower : this.loginData.user_id,
-        followee : this.profileData.userInfo.user_id
+        follower : this.loginData.user_id, //본인
+        followee : this.profileData.userInfo.user_id //상대방
       };
-      this.$store.dispatch("deleteFollowing", params);
+      this.$store.dispatch("followStore/deleteFollow", params);
     },
-    clickHealth(post) {
-      if (post.health == true) {
-        post.health = false;
-        post.health_count -= 1;
+    logout() {
+      var result = confirm("로그아웃하시겠습니까?");
+      if(result) {
+        router.push({name: 'Logout'});
       } else {
-        post.health = true;
-        post.health_count += 1;
+        alert("그래요! 좀만 더 놀다가세요")
       }
-      this.healthData.posts_id = post.posts_id;
-      this.healthData.user_id = this.loginData.user_id;
-      //this.healthData.user_id = this.loginData.user_id; // user_id
-      this.health(this.healthData);
-    },
-    clickScrap(post) {
-      if (post.scrap == true) {
-        post.scrap = false;
-        this.$store.dispatch("deleteScrap", post.posts_id);
-      } else {
-        post.scrap = true;
-        this.$store.dispatch("scrap", post.posts_id);
-      }
-    },
-    showPost(postInfo) {
-      this.postInfo = postInfo;
-      this.$parent.$parent.isHidden = true;
-      this.isPostHidden = true;
-      // this.commentData.posts_id = post.posts_id;
-      // this.fetchHealths(post.posts_id);
-      this.fetchComments(postInfo.posts_id);
-      this.commentData.posts_id = postInfo.posts_id;
-      this.commentData.user_nickname = this.loginData.nickname;
-    },
-    clearCommentData() {
-      setTimeout(() => {
-        this.commentData = {};
-      }, 300);
-    },
-    closePost() {
-      this.$parent.$parent.isHidden = false;
-      this.isPostHidden = false;
-    },
-    updatePostAndClose(postInfo) {
-      this.updatePost(postInfo);
-      this.$parent.$parent.isHidden = false;
-      this.isModifyHidden = false;
-    },
+    }
   },
   created() {
     // this.goProfile()
@@ -346,10 +294,23 @@ export default {
   float: left;
   width: 50%;
 }
+
+.profile-image {
+  width: 60%;
+  height: 60%;
+  margin-left: 20%;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .profile-image img {
   border: rgb(0, 171, 132) 3px solid;
   border-radius: 70%;
-  width: 60%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .profile-name a {
   font-size: 20px;
@@ -390,8 +351,8 @@ export default {
   width: 100%;
   background-color: rgb(200, 200, 200);
   color: white;
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 500;
   height: 30px;
   border-radius: 5px;
   border:none;
@@ -414,15 +375,16 @@ export default {
   height: 40px;
   vertical-align: middle;
   background-color: rgb(247, 247, 247);
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  border-bottom: 3px rgb(247, 247, 247) solid;
+  border-radius: 0;
 }
 .tab img {
   margin-top: 10px;
   height: 20px;
 }
 .tab.active {
-  background-color: rgb(0, 171, 132);
+  background-color: rgb(247, 247, 247);
+  border-bottom: 3px rgb(0, 171, 132) solid;
 }
 
 /* 피드 관련 */
@@ -488,10 +450,10 @@ export default {
   padding: 10px 5px;
 }
 
-.profile-image {
+/* .profile-image {
   background-color: white;
   border-radius: 70%;
-}
+} */
 
 .feed-footer {
   width: 100%;
@@ -512,6 +474,22 @@ export default {
 .feed-footer table tr td img {
   margin: 2% 5%;
   height: 60%;
+}
+
+#logout-btn {
+  width: 100px;
+  height: 30px;
+  border: none;
+  background-color: rgb(220, 0, 27);
+  font-weight: 600;
+  border-radius: 5px;
+  outline: none;
+  color: white;
+  transition-duration: 300ms;
+}
+
+#logout-btn:focus {
+  background-color: rgb(189, 22, 44);
 }
 
 .health-count {
