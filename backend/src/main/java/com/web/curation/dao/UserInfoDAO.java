@@ -5,10 +5,12 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.web.curation.model.UserInfo;
+import com.web.curation.model.UserPolice;
 
 @Mapper
 public interface UserInfoDAO {
 	public List<UserInfo> selectUserInfo();
+	public List<UserPolice> selectUserInfoPolice();
 	public UserInfo selectUserInfoByUserid(int user_id);
 	public int insertUserInfo(UserInfo userinfo);
 	public int updateUserInfo(UserInfo userinfo);
