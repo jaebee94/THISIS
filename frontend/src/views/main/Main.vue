@@ -155,12 +155,12 @@ export default {
   width: 20%;
 }
 .footer.table td img {
-  width: 30%;
+  width: 20px;
 }
 .footer.table td:nth-child(5) img {
   margin-top: 3px;
-  width: 30px;
-  height: 30px;
+  width: 25px;
+  height: 25px;
   border-radius: 70%;
 }
 

@@ -15,6 +15,7 @@
               class="name"
               @click="goProfile(postInfo.post.user_id)"
             >{{ postInfo.userinfo.nickname }}</a>
+          <a v-if="postInfo.post.category != 0">Q&A 게시물</a>
           </td>
           <td>
             <a class="time">{{ timeForToday(postInfo.post.post_date) }}</a>
@@ -32,9 +33,8 @@
     </div>
     <div class="feed-main">
       <img v-show="postInfo.post.imgsrc != null" :src="postInfo.post.imgsrc" />
-      <strong @click="goProfile(postInfo.post.user_id)">{{postInfo.userinfo.nickname}}</strong>
-      {{postInfo.post.posts_main }}
-      <div>
+      <div class="post-content" :class="{active : isActive}" @click="isActive = !isActive"><strong @click="goProfile(postInfo.post.user_id)">{{postInfo.userinfo.nickname}}</strong> {{postInfo.post.posts_main }}</div>
+      <div v-if="postInfo.post.category == 0">
         <a v-show="postInfo.post.health_count != 0">
           <strong>{{postInfo.post.health_count}}명</strong>이 건강해요를 눌렀습니다
         </a>
@@ -44,7 +44,7 @@
     <div class="feed-footer">
       <table>
         <tr>
-          <td>
+          <td v-if="postInfo.post.category == 0">
             <span v-if="postInfo.healths.user_id"></span>
             <img v-show="postInfo.health" :src="isHealth" @click="clickHealth(postInfo)" />
             <img v-show="!postInfo.health" :src="isNotHealth" @click="clickHealth(postInfo)" />
@@ -56,7 +56,7 @@
               src="../../assets/images/icon/icon_talk.png"
             />
           </td>
-          <td>
+          <td v-if="postInfo.post.category == 0">
             <img
               v-show="postInfo.scrap"
               @click="clickScrap(postInfo)"
@@ -104,6 +104,7 @@ export default {
       },
       selectedPost: {},
       isDelete: false,
+      isActive: false,
     };
   },
 
@@ -194,6 +195,12 @@ export default {
 <style>
 .article-header {
   height: 45px;
+}
+
+.article-header tr td:nth-child(2) a:nth-child(2) {
+  font-size: 10px;
+  margin-left: 10px;
+  color: slategray;
 }
 .article-header tr td:nth-child(3) {
   width : 20%;
