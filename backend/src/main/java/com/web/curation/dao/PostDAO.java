@@ -22,4 +22,5 @@ public interface PostDAO {
 	public int selectAutoIncrement();
 	public List<Post> selectQnA();
 	public int hiddenupdate(int posts_id);
+	public List<Post> selectQnAByMain(String keyword);
 }

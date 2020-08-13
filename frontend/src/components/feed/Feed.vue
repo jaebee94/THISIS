@@ -140,10 +140,20 @@
 
     <div v-show="currentTab == 1"> 
       <!-- <h1>Q&A게시판</h1> -->
-      <input placeholder="검색어를 입력하세요">
-      <button>검색</button>
+      <form v-on:submit.prevent="searchQna">
+        <select name="qnaoption" id="qnaoption" v-model="qnaoption">
+          <option value="all" selected> 전체보기 </option>
+          <option value="text"> 글내용 </option>
+          <option value="title"> 글제목 </option>
+          <option value="disease"> 질병명 </option>
+        </select>
+        <input v-model="qnakeyword" id="qnakeyword" placeholder="검색어를 입력하세요">
+        <button type="submit">검색</button>
+      </form>
+      <!--
       <input id="check-mine" type="checkbox">
       <label for="check-mine">내꺼 보기</label>
+      -->
       <qna v-for="qnaInfo in qnas" v-bind:key="qnaInfo.posts_id"
       v-bind:qnaInfo="qnaInfo" @send-modify-qna="showModifyQnA">
       </qna> 
@@ -196,6 +206,9 @@ export default {
       qnaPage: 0,
       qnas:[],
       qnaInfo: {},
+      qnakeyword: "",
+      qnaoption:"",
+      searchType:"nonsearch",
 
       currentTab: 0,
       tabs: [
@@ -237,7 +250,58 @@ export default {
     ]),
     ...mapActions('diseaseStore', ['getFollowingDisease']),
 
+    searchQna(){
+      this.$refs.infiniteLoadingQnA.stateChanger.reset();
+      this.qnaPage = 0;
+      this.qnas = [];
+      if(this.qnaoption!="all"){
+        this.searchType="search";
+      }
+      else{
+        this.searchType="nonsearch";
+        this.qnakeyword="";
+      }
+    },
+
     infiniteHandlerQnA ($state) {
+      if(this.searchType=="search"){//검색일 경우
+        if(this.qnaoption=="text"){
+           var params2 = {
+              params: {
+                num: this.qnaPage,
+                keyword: this.qnakeyword,
+              },
+              headers: { accessToken:  cookies.get('access-token') }
+            };
+            let url = SERVER.URL + SERVER.ROUTES.qnasmain;
+            //통신부분
+            axios.get(url, params2).then(({ data }) => {
+                if (data.length) {
+                  this.qnaPage += 1;
+                
+                  data.forEach((element) => {
+                    element.health = false;
+                    element.scrap = false;
+                    console.log(element)
+                    element.post.health_count = element.healths.length;
+                    element.healths.forEach((ele) => {
+                      console.log(ele)
+                      if (ele.user_id == this.loginData.user_id) {
+                        element.health = true;
+                      }
+                    });
+                  });
+                  console.log("data",data)
+                  this.qnas.push(...data);
+                  $state.loaded();
+                } else {
+                  $state.complete();
+                }
+              });
+        }//글내용 검색
+      }
+      else{ //검색이 아닐때
+
       var params = {
         params: {
           num: this.qnaPage,
@@ -271,7 +335,7 @@ export default {
             $state.complete();
           }
         });
-      
+        }//else
     },
 
    // Infinite Scrolling
@@ -433,6 +497,7 @@ export default {
     this.$store.dispatch("getCheckScrap");
     this.$store.dispatch("diseaseStore/getFollowingDisease");
     console.log("diseases", this.diseases)
+    this.searchType = "nonsearch";
   },
 };
 </script>
