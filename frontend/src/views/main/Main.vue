@@ -45,6 +45,7 @@ import db from "../../firebaseInit";
 import { mapState, mapActions } from "vuex";
 export default {
   created() {
+    document.body.className = "whitebody";
     this.getNoti(this.loginData.user_id);
     console.log("메인에서 로그인", this.loginData)
   },
@@ -154,12 +155,12 @@ export default {
   width: 20%;
 }
 .footer.table td img {
-  width: 30%;
+  width: 20px;
 }
 .footer.table td:nth-child(5) img {
   margin-top: 3px;
-  width: 30px;
-  height: 30px;
+  width: 25px;
+  height: 25px;
   border-radius: 70%;
 }
 

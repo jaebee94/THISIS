@@ -27,7 +27,7 @@
             <td>{{ profileData.profileInfo.followeenum }}</td>
           </tr>
         </table>
-        <button id="logout-btn" @click="logout()">로그아웃</button>
+        <button v-if="loginData.user_id == profileData.userInfo.user_id" id="logout-btn" @click="logout()">로그아웃</button>
       </div>
     </div>
     <div class="profile-modify">
