@@ -44,7 +44,7 @@
       </div>
       <div class="qna-comment-write-wrap">
        <input v-model="commentData.comment_main" placeholder="내용을 입력하세요" />
-        <button @click="createComment(commentData), clearCommentData()">댓글</button>
+        <button @click="commentInfo(qnaInfo), createComment(commentData), clearCommentData()">댓글</button>
       </div>
       <div class="post-footer">
         <img @click="closeQnA()" src="../../assets/images/icon/icon_close.png" />
@@ -90,7 +90,7 @@
       </div>
       <div class="qna-comment-write-wrap">
         <input v-model="commentData.comment_main" placeholder="내용을 입력하세요" />
-        <button @click="createComment(commentData), clearCommentData()">댓글</button>
+        <button @click="commentInfo(postInfo), createComment(commentData), clearCommentData()">댓글</button>
       </div>
       <div class="post-footer">
         <img @click="closePost()" src="../../assets/images/icon/icon_close.png" />
@@ -207,6 +207,7 @@ export default {
   computed: {
     ...mapState('userStore', ['loginData']),
     ...mapState('postStore', ['comments', 'checkScrap']),
+    ...mapState('diseaseStore', ['diseases']),
   },
   watch: {
     profile_data : function () {
@@ -226,6 +227,7 @@ export default {
       //'fetchHealths',
       'goCheckScrap',
     ]),
+    ...mapActions('diseaseStore', ['getFollowingDisease']),
 
     infiniteHandlerQnA ($state) {
       var params = {
@@ -410,12 +412,18 @@ export default {
           return `${betweenTimeDay}일전`;
       }
       return `${Math.floor(betweenTimeDay / 365)}년전`;
+    },
+    commentInfo(info) {
+      console.log(info);
+      this.commentData.posts_id = info.posts_id;
     }
   },
   created() {
      this.$refs.infiniteLoadingPost.stateChanger.reset();
      this.$refs.infiniteLoadingQnA.stateChanger.reset();
     this.$store.dispatch("getCheckScrap");
+    this.$store.dispatch("getFollowingDisease")
+    console.log("diseases", this.diseases)
   },
 };
 </script>
