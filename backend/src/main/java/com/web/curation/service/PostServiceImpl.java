@@ -77,4 +77,9 @@ public class PostServiceImpl implements PostService {
 	public List<Postpolice> selectAllPostpolice() {
 		return PostDao.selectAllPostpolice();
 	}
+
+	@Override
+	public List<Post> selectQnAByMain(String keyword) {
+		return PostDao.selectQnAByMain(keyword);
+	}
 }
