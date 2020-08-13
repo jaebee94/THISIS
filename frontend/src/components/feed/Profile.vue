@@ -41,7 +41,7 @@
       <!-- 1. 팔로우 요청도 안 보낸 상태(data의 followSend가 false일 경우 + isFollowing이 false일 경우) -->
       <button
         @click="follow()"
-        v-show="loginData.user_id != profileData.userInfo.user_id && !this.followee_list && !this.followSend"
+        v-show="loginData.user_id != profileData.userInfo.user_id && !this.followSend && !this.followee_list"
       >팔로우 요청</button>
       <!-- 2. 팔로우 요청을 보냈지만 승인을 받지 못한 상태(followSend가 true일 경우 + isFollowing이 false일 경우) -->
       <button
@@ -169,18 +169,18 @@ export default {
         request: increment,
       };
       instance[this.loginData.user_id] = false;
-      // 보내는 사람의 notification(알림) 1 증가
-      db.collection("notification")
-        .doc(String(this.loginData.user_id))
-        .update({
-          notification: increment,
-        })
-        .then(function () {
-          vueInstance.$parent.getNoti(vueInstance.loginData.user_id);
-        })
-        .catch(function (error) {
-          console.error("Error setting document: ", error);
-        });
+      // 보내는 사람의 notification(알림) 1 증가 -> 그냥 승낙받았을 때만 1증가
+      // db.collection("notification")
+      //   .doc(String(this.loginData.user_id))
+      //   .update({
+      //     notification: increment,
+      //   })
+      //   .then(function () {
+      //     vueInstance.$parent.getNoti(vueInstance.loginData.user_id);
+      //   })
+      //   .catch(function (error) {
+      //     console.error("Error setting document: ", error);
+      //   });
       // 받는 사람의 request(요청) 1 증가
       db.collection("notification")
         .doc(String(this.profileData.userInfo.user_id))
@@ -207,17 +207,17 @@ export default {
       };
       instance[this.loginData.user_id] = firebase.firestore.FieldValue.delete();
       // 보내는 사람의 notification(알림) 1 감소
-      db.collection("notification")
-        .doc(String(this.loginData.user_id))
-        .update({
-          notification: decrement,
-        })
-        .then(function () {
-          vueInstance.$parent.getNoti(vueInstance.loginData.user_id);
-        })
-        .catch(function (error) {
-          console.error("Error setting document: ", error);
-        });
+      // db.collection("notification")
+      //   .doc(String(this.loginData.user_id))
+      //   .update({
+      //     notification: decrement,
+      //   })
+      //   .then(function () {
+      //     vueInstance.$parent.getNoti(vueInstance.loginData.user_id);
+      //   })
+      //   .catch(function (error) {
+      //     console.error("Error setting document: ", error);
+      //   });
       // 받는 사람의 request(요청) 1 감소
       db.collection("notification")
         .doc(String(vueInstance.profileData.userInfo.user_id))
@@ -236,6 +236,7 @@ export default {
     },
     followingCancel() { //팔로우 끊기
       this.isFollowing = false;
+      this.followee_list = false;
       let params = {
         follower : this.loginData.user_id, //본인
         followee : this.profileData.userInfo.user_id //상대방

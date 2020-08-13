@@ -125,7 +125,6 @@ export default {
             this.checkedItems.forEach(chkItem => {
                 this.createDisease(chkItem); //db에 보내기
             });
-            
             this.$router.push("/main/feed")
         }
     }

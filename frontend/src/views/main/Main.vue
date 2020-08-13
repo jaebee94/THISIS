@@ -112,7 +112,7 @@ export default {
       this.selectPage.home = require("../../assets/images/icon/icon_home_unselect.png");
       this.selectPage.search = require("../../assets/images/icon/icon_search_unselect.png");
       this.selectPage.notify = require("../../assets/images/icon/icon_bell_select.png");
-      this.getNoti(this.loginData.user_id);
+      this.noti = 0;
     },
     checkProfile() {
       this.selectPage.home = require("../../assets/images/icon/icon_home_unselect.png");
