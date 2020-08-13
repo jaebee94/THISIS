@@ -16,20 +16,20 @@
       </div>
       <div class="notify-panel">
         <div v-show="currentTab == 0">
-          <div v-for="(noti, index) in this.notification.notification" v-bind:key="noti.id">
+          <div v-for="(noti, index) in this.notification" v-bind:key="noti.id">
             <div class="notifications" :class="{new : index < noti_count}">
               <div :class="{new : index < noti_count}">
                 <table>
-                  <td v-if="noti.approval === 0">{{noti.followee_id}}님에게 팔로우 요청하셨습니다.</td>
-                  <td v-if="noti.approval === 1">{{noti.followee_id}}님이 {{noti.follower_id}}님을 팔로우 승인하셨습니다.</td>
-                  <td v-if="noti.approval === 2">{{noti.followee_id}}님이 팔로우 요청을 거절하셨습니다.</td>
+                  <td v-if="noti.approval === 0">{{noti.userInfo.nickname}}님에게 팔로우 요청하셨습니다.</td>
+                  <td v-if="noti.approval === 1">{{noti.userInfo.nickname}}님이 팔로우 요청을 승인하셨습니다.</td>
+                  <td v-if="noti.approval === 2">{{noti.userInfo.nickname}}님이 팔로우 요청을 거절하셨습니다.</td>
                 </table>
               </div>
             </div>
           </div>
         </div>
         <div v-show="currentTab == 1">
-          <div  v-for="(noti, index) in this.notification.requests" v-bind:key="noti.id">
+          <div  v-for="(noti, index) in this.requests" v-bind:key="noti.id">
           <div
             class="notifications" :class="{new : index < req_count} "
             v-if="noti.approval === 0"
@@ -37,7 +37,7 @@
             <div class="notification" :class="{new : index < req_count} " >
               <table>
                 <tr >
-                <td >{{noti.follower_id}}님의 팔로우 요청</td>
+                <td >{{noti.userInfo.nickname}}님의 팔로우 요청</td>
                 <td>
                   <button @click="accessFollow(noti)">승낙</button>
                 </td>
@@ -178,7 +178,7 @@ export default {
     },
   },
   created() {
-    window.addEventListener('beforeunload', this.clickNoti)
+    window.addEventListener('beforeunload', this.clickNoti(0))
     const noti = db.collection("notification").doc(String(this.loginData.user_id));
     let vueInstance = this;
     noti
