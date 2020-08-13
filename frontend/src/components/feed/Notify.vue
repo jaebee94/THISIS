@@ -20,9 +20,9 @@
             <div class="notifications" :class="{new : index < noti_count}">
               <div :class="{new : index < noti_count}">
                 <table>
-                  <td v-if="noti.approval === 0">{{noti.userInfo.nickname}}님에게 팔로우 요청하셨습니다.</td>
-                  <td v-if="noti.approval === 1">{{noti.userInfo.nickname}}님이 팔로우 요청을 승인하셨습니다.</td>
-                  <td v-if="noti.approval === 2">{{noti.userInfo.nickname}}님이 팔로우 요청을 거절하셨습니다.</td>
+                  <td v-if="noti.notification.approval === 0">{{noti.userInfo.nickname}}님에게 팔로우 요청하셨습니다.</td>
+                  <td v-if="noti.notification.approval === 1">{{noti.userInfo.nickname}}님이 팔로우 요청을 승인하셨습니다.</td>
+                  <td v-if="noti.notification.approval === 2">{{noti.userInfo.nickname}}님이 팔로우 요청을 거절하셨습니다.</td>
                 </table>
               </div>
             </div>
@@ -65,7 +65,7 @@ const increment = firebase.firestore.FieldValue.increment(1);
 //const decrement = firebase.firestore.FieldValue.increment(-1);
 export default {
   computed: {
-    ...mapState('notificationStore', ['notification']),
+    ...mapState('notificationStore', ['notification','requests']),
     ...mapState('userStore', ['loginData', 'profileData']),
     // ...mapState('profileStore', ['profileData'])
   },
