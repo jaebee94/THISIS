@@ -89,4 +89,10 @@ public class UserInfoServiceImpl implements UserInfoService {
 		return userInfoDao.updateRole(user_id);
 	}
 
+	@Override
+	public String selectSaltByUserId(int user_id) {
+		return userInfoDao.selectSaltByUserId(user_id);
+	}
+	
+
 }

@@ -116,4 +116,11 @@
 		 where 	user_id = #{user_id}
 	</update>
 	
+	<!-- 암호화 -->
+	<select id="selectSaltByUserId" resultType="String">	
+		select salt
+		from UserInfo
+		where user_id = #{user_id}
+	</select>
+	
 </mapper>

@@ -120,7 +120,6 @@ public class UserInfoController {
 	public ResponseEntity<String> updateUserInfo(@RequestBody UserInfo userinfo, HttpServletRequest request) {
 
 		String accessToken = (String) request.getAttribute("accessToken");
-
 		UserInfo userinfo2;
 		if (accessToken != null) {
 			Auth auth = authService.findAuthByAccessToken(accessToken);
@@ -136,7 +135,9 @@ public class UserInfoController {
 			userinfo2.setNickname(userinfo.getNickname());
 		}
 		if (userinfo.getPassword() != null) {
-			userinfo2.setPassword(userinfo.getPassword());
+			String password = userinfo.getPassword();	//입력받은 비밀번호
+			String salt = userInfoService.selectSaltByUserId(userinfo2.getUser_id());	//내 user_id
+			userinfo2.setPassword(SHA256Util.getEncrypt(password, salt));
 		}
 
 		if (userInfoService.updateUserInfo(userinfo2) == 1) {
