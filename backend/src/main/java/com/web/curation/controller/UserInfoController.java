@@ -2,7 +2,6 @@ package com.web.curation.controller;
 
 import java.io.Console;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -43,6 +42,7 @@ import com.web.curation.service.HealthService;
 import com.web.curation.service.JwtService;
 import com.web.curation.service.PostService;
 import com.web.curation.service.UserInfoService;
+import com.web.curation.utils.SHA256Util;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -90,13 +90,18 @@ public class UserInfoController {
 	@PostMapping("signup")
 	public ResponseEntity<BasicResponse> insertUserInfo(@RequestBody UserInfo userinfo) {
 		userinfo.setIntroduction("한줄 소개를 작성해 주세요");
-		userinfo.setUserimage("http://i3a301.p.ssafy.io/images/profile/default.jpg");
+		String salt = SHA256Util.generateSalt();
+		userinfo.setSalt(salt);
+		
+		String password = userinfo.getPassword();
+		password = SHA256Util.getEncrypt(password, salt);
+		userinfo.setPassword(password);
+		
 		if (userInfoService.insertUserInfo(userinfo) == 1) {
 			BasicResponse result = new BasicResponse();
 			result.status = true;
 			result.data = "success";
 			result.object = String.valueOf(userInfoService.getUserId(userinfo.getEmail()));
-
 			return new ResponseEntity<>(result, HttpStatus.OK);
 		}
 		BasicResponse result = new BasicResponse();
@@ -148,7 +153,7 @@ public class UserInfoController {
 		} else { // accessToken없을때는 user_id 1인 유저로 들어감
 			userinfo = userInfoService.selectUserInfoByUserid(1);
 		}
-
+		
 		if (userInfoService.deleteUserInfo(userinfo.getUser_id()) == 1) {
 			return new ResponseEntity<String>("success", HttpStatus.OK);
 		}
@@ -162,9 +167,12 @@ public class UserInfoController {
 		ResponseEntity response = null;
 
 		if (userOpt2.isPresent()) { // 이메일 존재
+			UserInfo userinfo2 = userOpt2.get();
+			password = SHA256Util.getEncrypt(password, userinfo2.getSalt());
+			System.out.println(password);
 			Optional<UserInfo> userOpt = Optional
 					.ofNullable(userInfoService.findUserByEmailAndPassword(email, password));
-
+			
 			if (userOpt.isPresent()) { // 비밀번호까지 다 맞음
 				final UserResponse result = new UserResponse();
 				result.status = true;
@@ -181,8 +189,6 @@ public class UserInfoController {
 					result.introduction = userinfo.getIntroduction();
 					result.email = userinfo.getEmail();
 					result.nickname = userinfo.getNickname();
-					result.role = userinfo.getRole();
-					result.disabled = userinfo.getDisabled();
 					// obj.addProperty("userinfo", obj.toString());
 					// result.object = obj.toString();
 					response = new ResponseEntity<>(result, HttpStatus.OK);
@@ -356,12 +362,12 @@ public class UserInfoController {
 				fos.write(buffer, 0, readCount);
 			}
 			String path = access_path + filename;
-
-			if (userinfo.getUserimage() != path) {
+			
+			if(userinfo.getUserimage()!=path) {
 				userinfo.setUserimage(path);
 				userInfoService.updateImage(userinfo);
 			}
-
+			
 			return path;
 
 		} catch (Exception ex) {
