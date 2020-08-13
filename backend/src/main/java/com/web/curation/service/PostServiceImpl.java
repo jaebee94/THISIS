@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.web.curation.dao.PostDAO;
 import com.web.curation.model.Post;
+import com.web.curation.model.Postpolice;
 import com.web.curation.model.Scrap;
 
 @Service
@@ -70,5 +71,10 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public int hiddenupdate(int posts_id) {
 		return PostDao.hiddenupdate(posts_id);
+	}
+
+	@Override
+	public List<Postpolice> selectAllPostpolice() {
+		return PostDao.selectAllPostpolice();
 	}
 }
