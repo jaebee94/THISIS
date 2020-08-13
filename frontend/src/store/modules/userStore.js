@@ -15,7 +15,7 @@ const userStore = {
   },
 
   mutations: {
-    SET_TOKEN(rootState,state,token) {
+    SET_TOKEN(state,token) {
       cookies.set('access-token', token)
     },
     SET_LOGIN_DATA(state, loginData) {
