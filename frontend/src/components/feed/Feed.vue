@@ -97,7 +97,7 @@
       <div class="qna-comment-write-wrap">
         <input v-model="commentData.comment_main" placeholder="내용을 입력하세요" />
         <button @click="commentInfo(postInfo), createComment(commentData), clearCommentData()">댓글</button>
-      </div>
+      </div> 
       <div class="post-footer">
         <img @click="closePost()" src="../../assets/images/icon/icon_close.png" />
       </div>
@@ -134,10 +134,7 @@
           ref="infiniteLoadingPost" @infinite="infiniteHandler"></infinite-loading>
     </div>
 
-    
-
-
-
+  
     <div v-show="currentTab == 1"> 
       <!-- <h1>Q&A게시판</h1> -->
       <form v-on:submit.prevent="searchQna">

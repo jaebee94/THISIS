@@ -48,7 +48,8 @@ export default {
         "fetchComments",
         'health',
         "scrap",
-        "deleteScrap"
+        "deleteScrap",
+        "setPost"
         ]),
         changeSelectQnA(qna, sort) {
             this.selectedQnA = qna;
@@ -65,7 +66,9 @@ export default {
                 this.fetchComments(qna.posts_id);
                 console.log('comment')
             } else if (sort == 'modify') {
-                info.isModifyHidden = true;
+                //info.isModifyHidden = true;
+                this.setPost(qna)
+                this.$router.push({name: 'Upload'});
                 console.log('modify')
             }
             this.$emit('send-modify-qna', info);

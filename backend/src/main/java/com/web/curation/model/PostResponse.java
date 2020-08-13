@@ -4,6 +4,7 @@ import java.util.List;
 
 public class PostResponse {
 	public int posts_id;
+	public String diseasecode;
 	public String diseasename;
 	public Post post;
 	public UserInfo userinfo;

@@ -73,7 +73,7 @@ export default {
   methods: {
     // ...mapActions('profileStore', ['goProfile']),
     ...mapActions('userStore', ['goProfile']),
-    ...mapActions('postStore', ['getUserScraps']),
+    ...mapActions('postStore', ['setPost','getUserScraps']),
 
     getNoti(id) {
       const noti = db.collection("notification").doc(String(id));
@@ -106,6 +106,7 @@ export default {
       this.selectPage.home = require("../../assets/images/icon/icon_home_unselect.png");
       this.selectPage.search = require("../../assets/images/icon/icon_search_unselect.png");
       this.selectPage.notify = require("../../assets/images/icon/icon_bell_unselect.png");
+      this.setPost(null);
       this.getNoti(this.loginData.user_id);
     },
     checkNotify() {
