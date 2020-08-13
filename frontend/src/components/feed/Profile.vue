@@ -169,7 +169,7 @@ export default {
         request: increment,
       };
       instance[this.loginData.user_id] = false;
-      // 보내는 사람의 notification(알림) 1 증가
+      // 보내는 사람의 notification(알림) 1 증가 -> 그냥 승낙받았을 때만 1증가
       db.collection("notification")
         .doc(String(this.loginData.user_id))
         .update({
