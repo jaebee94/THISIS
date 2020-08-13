@@ -124,10 +124,11 @@
         @send-modify="showModify"
       ></post>
       </div>
-      <!-- <infinite-loading @infinite="infiniteHandler"></infinite-loading> -->
+      <infinite-loading v-if="this.currentTab == 0" 
+          ref="infiniteLoadingPost" @infinite="infiniteHandler"></infinite-loading>
     </div>
 
-    <infinite-loading v-show="this.currentTab == 0" ref="infiniteLoadingPost" @infinite="infiniteHandler"></infinite-loading>
+    
 
 
 
@@ -140,9 +141,10 @@
       <qna v-for="qnaInfo in qnas" v-bind:key="qnaInfo.posts_id"
       v-bind:qnaInfo="qnaInfo" @send-modify-qna="showModifyQnA">
       </qna> 
-      <!-- <infinite-loading @infinite="infiniteHandlerQnA"></infinite-loading> -->
+        <infinite-loading v-if="this.currentTab == 1" 
+        ref="infiniteLoadingQnA" @infinite="infiniteHandlerQnA"></infinite-loading>
     </div>
-    <infinite-loading ref="infiniteLoadingQnA" @infinite="infiniteHandlerQnA"></infinite-loading>
+  
 
     <div v-show="currentTab == 2">
       <news></news>
@@ -163,6 +165,7 @@ import news from '../feed/News.vue';
 
 import {Carousel, Slide} from 'vue-carousel';
 import cookies from 'vue-cookies'
+
 
 export default {
   name: "Feed",
@@ -213,8 +216,6 @@ export default {
       this.posts = []
       this.$refs.infiniteLoadingPost.stateChanger.reset();
       this.$refs.infiniteLoadingQnA.stateChanger.reset();
-      // this.infiniteHandler(this);
-      // this.infiniteHandlerQnA(this);
     }
   },
   methods: {
@@ -227,12 +228,13 @@ export default {
     ]),
 
     infiniteHandlerQnA ($state) {
-      let params = {
+      var params = {
         params: {
           num: this.qnaPage,
         },
-        headers: { accessToken:  cookies.get('access-token') }
+         headers: { accessToken:  cookies.get('access-token') }
       };
+      
       let url = SERVER.URL + SERVER.ROUTES.qnas;
       console.log('url', url)
       //통신부분
@@ -244,17 +246,6 @@ export default {
               element.health = false;
               element.scrap = false;
                console.log(element)
-              // axios
-              //   .get(SERVER.URL + SERVER.ROUTES.scrap, {
-              //     params: {
-              //       user_id: this.loginData.user_id,
-              //       posts_id: element.posts_id,
-              //     },
-              //   })
-              //   .then((res) => {
-              //     if (res.data > 0) element.scrap = true;
-              //   })
-              //   .catch((err) => console.log(err));
               element.post.health_count = element.healths.length;
               element.healths.forEach((ele) => {
                 console.log(ele)
@@ -275,14 +266,14 @@ export default {
 
    // Infinite Scrolling
     infiniteHandler($state) {
-      let params = {
+      var params = {
         params: {
           num: this.page,
         },
         headers: { accessToken:  cookies.get('access-token') }
       };
       let url = SERVER.URL;
-
+      console.log("In Profile, profile_data is", this.profile_data);
       if(this.profile_data== undefined || this.profile_data.tab == 0) {
         url += SERVER.ROUTES.posts
         params.params.user_id= -1 //-1일 경우 전체 게시물
@@ -294,13 +285,14 @@ export default {
       }
       else if(this.profile_data.tab == 1){ //스크랩 보여주기
         url += SERVER.ROUTES.scrap + "/" + this.profile_data.user_id;
+        console.log("남의 꺼에서 url : ", url);
       } 
-      console.log(params);
+      console.log("params", params);
+      console.log("url", url);
       //통신부분
       axios.get(url, params).then(({ data }) => {
           if (data.length) {
             this.page += 1;
-           
             data.forEach((element) => {
               element.health = false;
               element.scrap = false;
@@ -421,7 +413,8 @@ export default {
     }
   },
   created() {
-     this.$refs.infiniteLoading.stateChanger.reset();
+     this.$refs.infiniteLoadingPost.stateChanger.reset();
+     this.$refs.infiniteLoadingQnA.stateChanger.reset();
     this.$store.dispatch("getCheckScrap");
   },
 };
@@ -449,8 +442,7 @@ export default {
 }
 
 .tab {
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
+  border-radius: 0;
   border-bottom: 3px rgb(247, 247, 247) solid;
 }
 
@@ -779,6 +771,8 @@ div.feed {
 .modify-footer img {
   height: 80%;
 }
+
+
 
 /* ----- qna 내용 자세히 보기 모달창 코드 -----  */
 .post {

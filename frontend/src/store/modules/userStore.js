@@ -15,7 +15,7 @@ const userStore = {
   },
 
   mutations: {
-    SET_TOKEN(state, token) {
+    SET_TOKEN(rootState,state,token) {
       cookies.set('access-token', token)
     },
     SET_LOGIN_DATA(state, loginData) {
@@ -42,10 +42,15 @@ const userStore = {
         }
       })
         .then(res => {
-          console.log(res)
+          console.log("로그인",res)
           commit('SET_TOKEN', res.data.accessToken)
           commit('SET_LOGIN_DATA', res.data)
-          router.push({ name: 'Feed' })
+          if(res.data.subscribeCount > 0){
+            router.push({ name: 'Feed' })
+          }else{
+            router.push({name: 'Tutorial'})
+          }
+          
         })
         .catch(() => {
           alert("로그인에 실패하였습니다.")
@@ -66,7 +71,7 @@ const userStore = {
       router.push({ name: 'Login' })
     },
     async changeUserInfo({ rootGetters, dispatch }, changeInfo) {
-      axios.put(SERVER.URL + SERVER.ROUTES.updateProfile, changeInfo.userInfo, rootGetters.config)
+      await axios.put(SERVER.URL + SERVER.ROUTES.updateProfile, changeInfo.userInfo, rootGetters.config)
         .then(() => {
           console.log('소개 변경 완료')
           alert('변경이 완료되었습니다.')
@@ -77,8 +82,8 @@ const userStore = {
         let config = { headers: {} }  
         config.headers = rootGetters.config.headers
         config.headers['Accept'] = 'application/json'
-        config.headers['Content-Type'] = 'multipart/form-data'
-        axios.post(SERVER.URL + SERVER.ROUTES.uploadProfile, changeInfo.formData, config)
+        //config.headers['Content-Type'] = 'multipart/form-data'
+        await axios.post(SERVER.URL + SERVER.ROUTES.uploadProfile, changeInfo.formData, config)
         .then(async () => {
           console.log('사진 변경 완료')
           dispatch('userStore/goProfile', changeInfo.userInfo.user_id, { root: true })
@@ -92,7 +97,9 @@ const userStore = {
         userId = state.loginData.user_id
         console.log('userId == null')
       }
-      await axios.get(SERVER.URL + SERVER.ROUTES.user + userId, rootGetters.config)
+      console.log(userId)
+      console.log("1",rootGetters.config)
+      await axios.get(SERVER.URL + SERVER.ROUTES.user + userId, {headers: { accessToken:  cookies.get('access-token') }})
         .then(res => {
           console.log('유저인포 요청완료')
           commit('SET_USER_INFO', res.data)
@@ -100,17 +107,12 @@ const userStore = {
           // setTimeout(() => commit('SET_USER_INFO', res.data), 10000)
         })
         .catch(err => console.log(err))
-      axios.get(SERVER.URL + SERVER.ROUTES.profile + userId, rootGetters.config)
+        console.log("2",rootGetters.config)
+      await axios.get(SERVER.URL + SERVER.ROUTES.profile + userId, {headers: { accessToken:  cookies.get('access-token') }})
         .then(res => {
           console.log('프로필인포 요청 완료')
           commit('SET_PROFILE_INFO', res.data)
-        })
-        .then(() => {
-          console.log('라우터 푸시 프로필')
           router.push({ name: 'Profile' })
-        })
-        .then(() => {
-          router.go()
         })
       // console.log('라우터 푸시 프로필')
       // router.push({ name: 'Profile' }) 

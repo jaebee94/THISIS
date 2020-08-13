@@ -50,14 +50,14 @@ const diseaseStore = {
 
         // },
         deleteDisease({ rootGetters, dispatch }, diseasecode) {
+            console.log(rootGetters.config)
             axios.delete(SERVER.URL + SERVER.ROUTES.subscribe,
                 {
                     data:{
                         diseasecode: diseasecode
                     }
-                    ,headers: rootGetters.config.headers
-                }
-                )
+                    , headers: rootGetters.config.headers
+                })
                 .then(res => {
                     console.log("result", res);
                     dispatch('getFollowingDisease') 

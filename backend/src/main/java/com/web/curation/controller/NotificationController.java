@@ -45,11 +45,8 @@ public class NotificationController {
 	@ApiOperation(value = "팔로우를 요청했을 때 레코드를 저장한다.", response = String.class)
 	@PostMapping()
 		public ResponseEntity<String> insertNotification(@RequestBody Notification noti) throws Exception {
-//			Notification noti = new Notification();
 //			noti.setFollowee_id(followee_id);
 //			noti.setFollower_id(follower_id);
-//			noti.setNewtofollowee(0);
-//			noti.setNewtofollower(0);
 //			noti.setApproval(0);//0이면 아직 안함, 1이면 승낙, 2는 거절
 			if(notificationService.insertNotification(noti) == 1) {
 				return new ResponseEntity<String>("success",HttpStatus.OK);
@@ -60,12 +57,6 @@ public class NotificationController {
 	@ApiOperation(value = "팔로우를 요청 취소했을 때 레코드를 삭제한다.", response = String.class)
 	@DeleteMapping()
 		public ResponseEntity<String> deleteNotification(@RequestBody Notification noti) throws Exception {
-//			Notification noti = new Notification();
-//			noti.setFollowee_id(followee_id);
-//			noti.setFollower_id(follower_id);
-//			noti.setNewtofollowee(0);
-//			noti.setNewtofollower(0);
-//			noti.setApproval(0);//0이면 아직 안함, 1이면 승낙, 2는 거절
 			System.out.println("11"); 
 			System.out.println(noti.toString());
 		
@@ -95,7 +86,8 @@ public class NotificationController {
 	@ApiOperation(value = "해당 user_id가 followee인 레코드 목록 조회.", response = List.class)
 	@GetMapping("/followee/{user_id}")
 		public ResponseEntity<List<Notification>> GetListByFollowee(@PathVariable int user_id) { 
-			return new ResponseEntity<List<Notification>>(notificationService.GetListByFollowee(user_id), HttpStatus.OK);
+		
+		return new ResponseEntity<List<Notification>>(notificationService.GetListByFollowee(user_id), HttpStatus.OK);
 	}
 	
 

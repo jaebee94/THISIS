@@ -5,8 +5,17 @@
       <div>
         <h2>{{this.selectedDisease.name}}</h2>
       </div>
-      <div class="post-content">
+      <!-- <div class="post-content">
         <textarea v-model="selectedDisease.description"></textarea>
+      </div> -->
+      <div class="post-content">
+       <carousel class="carousel wrap" :per-page="1" v-bind:pagination-enabled="true">
+        <slide v-for="item in searchedItems" v-bind:key="item.index" class="myslide">
+          <div><strong>{{item.title}}</strong></div>
+          <div><img v-show="item.thumbnail != null" :src="item.thumbnail"></div>
+          <div><a>{{item.description}}</a></div>
+        </slide>
+      </carousel>
       </div>
       <div class="modify-footer">
         <img @click="close()" src="../../assets/images/icon/icon_close.png" />
@@ -22,7 +31,7 @@
         v-bind:class="{active: currentTab === index}"
         @click="currentTab = index"
       >
-        <h3>{{tab}}</h3>
+        <a>{{tab}}</a>
       </div>
     </div>
 
@@ -42,14 +51,10 @@
         </div>
       </div>
       <div v-show="currentTab == 1">
-        <div class="search" v-for="user in this.users" v-bind:key="user.nickname">
-          <div
-            class="search-item"
-            v-if="user.nickname.includes(keyword) || user.username.includes(keyword) || user.introduction.includes(keyword)"
-            @click="goProfile(user.user_id)"
-          >
+        <div class="search" v-for="user in this.users" v-bind:key="user.user_id">
+          <div class="search-item" v-if="user.nickname.includes(keyword) || user.username.includes(keyword) || user.introduction.includes(keyword)" @click="goProfile(user.user_id)">
             <div class="search-img">
-              <img src="../../assets/user.png" style="height:50px" />
+              <img :src="user.userimage" style="height:50px" />
             </div>
             <div class="search-text2">
               <div class="search-nickname">
@@ -57,19 +62,14 @@
                   <strong v-if="keyword.includes(char)">{{ char }}</strong>
                   <span v-if="!keyword.includes(char)">{{ char }}</span>
                 </span>
-                <span>-</span>
+                <span> - </span>
                 <span v-for="char in user.username" :key="char">
                   <strong v-if="keyword.includes(char)">{{ char }}</strong>
                   <span v-if="!keyword.includes(char)">{{ char }}</span>
                 </span>
               </div>
-              <div
-                class="search-Introduction"
-                v-if="user.introduction != null"
-              >{{user.introduction}}</div>
-              <div class="search-Introduction" v-if="user.introduction == null">
-                <br />
-              </div>
+              <div class="search-Introduction" v-if="user.introduction != null">{{user.introduction}}</div>
+              <div class="search-Introduction" v-if="user.introduction == null"><br></div>
             </div>
           </div>
         </div>
@@ -83,9 +83,13 @@ import { mapActions,mapState } from "vuex";
 import axios from "axios";
 import SERVER from "@/api/RestApi.js";
 import cookies from "vue-cookies";
+import {Carousel, Slide} from 'vue-carousel';
 const proxyurl = "https://cors-anywhere.herokuapp.com/";
 export default {
   name: "Search",
+  components:{
+    Carousel, Slide
+  },
   computed: {
     ...mapState('diseaseStore', ['diseases']),
   },
@@ -103,6 +107,7 @@ export default {
         name : "",
         description: "",
       },
+      searchedItems: [],
       isDiseaseHidden : true
     };
   },
@@ -126,8 +131,8 @@ export default {
     this.$store.dispatch("diseaseStore/getFollowingDisease");
   },
   methods: {
-    ...mapActions("profileStore", ["goProfile"]),
-     ...mapActions("diseaseStore", ["getFollowingDisease","createDisease","deleteDisease"]), //add와 딜리트 할때마다 내부에서 disease업데이트함
+    ...mapActions("userStore", ["goProfile"]),
+     ...mapActions("diseaseStore", ["getFolloingwDisease","createDisease","deleteDisease"]), //add와 딜리트 할때마다 내부에서 disease업데이트함
     getSearchList(keyword) {
       if (this.currentTab == 0) {
         this.getDisease(keyword);
@@ -224,10 +229,11 @@ export default {
     //   this.createDisease(item);
     // },
     async findDisease(disease){
+      this.searchedItems = [];
       this.selectedDisease.description=""
       var params = {
           query: disease,
-          display: 100,
+          display: 10,
           start: 1,
       }
       await axios.request({
@@ -244,18 +250,24 @@ export default {
               item.description = String(item.description).replace(/<br\/>/ig, "\n");
               item.description = String(item.description).replace(/&quot;/ig, "");
               item.description = String(item.description).replace(/<(\/)?([a-zA-Z]*)(\s[a-zA-Z]*=[^>]*)?(\s)*(\/)?>/ig, "");
-              this.selectedDisease.description += item.description+"\n";
+
+              item.title = String(item.title).replace(/<br\/>/ig, "\n");
+              item.title = String(item.title).replace(/&quot;/ig, "");
+              item.title = String(item.title).replace(/<(\/)?([a-zA-Z]*)(\s[a-zA-Z]*=[^>]*)?(\s)*(\/)?>/ig, "");
+              this.searchedItems.push(item);
+              // this.selectedDisease.description += item.description+"\n";
               // item.title = String(item.title).replace(/<br\/>/ig, "\n");
               // item.title = String(item.title).replace(/&quot;/ig, "");
               // item.title = String(item.title).replace(/<(\/)?([a-zA-Z]*)(\s[a-zA-Z]*=[^>]*)?(\s)*(\/)?>/ig, "");
           });
           //this.selectedDisease.description = res.data.items;
 
-          console.log(res);
+          // console.log(res);
       })
       .catch((err) => {
           console.error(err);
       })
+      console.log(this.searchedItems)
     },
     
     close(){
@@ -280,16 +292,19 @@ export default {
   width: 50%;
   height: 40px;
   vertical-align: middle;
+  border-radius: 0;
   background-color: rgb(247, 247, 247);
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  border-bottom: 3px rgb(247, 247, 247) solid;
 }
-.tab h3 {
-  margin-top: 10px;
+.tab a {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 2;
   height: 20px;
 }
 .tab.active {
-  background-color: rgb(0, 171, 132);
+  background-color: rgb(247, 247, 247);
+  border-bottom: 3px rgb(0, 171, 132) solid;
 }
 .disease-wrap {
   position: fixed;
@@ -299,9 +314,35 @@ export default {
   height: 70%;
   background-color: white;
   border-radius: 5px;
-  margin : auto 0;
+  margin : auto 4%;
 }
-.post-content textarea {
+
+.post-content {
+  width: 100%;
+}
+
+.post-content .carousel.wrap {
+  width: 100%;
+  height: 80%;
+}
+
+.post-content img {
+  max-height: 70%;
+  max-width: 80%;
+}
+
+.myslide strong{
+  font-weight: 600;
+}
+
+
+
+.myslide div:nth-child(3) {
+  padding-left: 10%;
+  padding-right: 10%;
+}
+
+/* .post-content textarea {
   padding: 5px 5px;
   font-size: 20px;
   margin-top: 10px;
@@ -314,7 +355,7 @@ export default {
 .post-content textarea:focus {
   outline: none;
   border: rgb(0, 171, 132) 3px solid;
-}
+} */
 .modify-footer {
   position: absolute;
   width: 100%;
@@ -325,6 +366,11 @@ export default {
 .modify-footer img {
   height: 80%;
 }
+
+.search:last-child {
+  margin-bottom: 100px;
+}
+
 .search-panel input {
   background-image: url("../../assets/images/icon/icon_search_unselect.png");
   background-size: 20px;
@@ -349,9 +395,33 @@ export default {
   transition-duration: 300ms;
 }
 
+/* .search-user-panel:hover {
+  background-color: red;
+} */
+
+.search-user-panel {
+  background-color: orange;
+}
+
+.search-item-user {
+  width: 70%;
+  height: 20px;
+  background-color: orange;
+}
+
 .search-item:hover {
   background-color: rgb(0, 171, 132);
   color: white;
+}
+
+.search-item-user {
+  width: 90%;
+  height: 20%;
+}
+
+.search-item-user:hover {
+  background-color: rgb(0, 171, 132);
+  color: red;
 }
 
 .search-panel input:focus {
@@ -370,11 +440,18 @@ ul {
   height: 80%;
   width: 60px;
   margin-right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .search-img img {
   margin: 10% 10% auto;
   height: 80%;
+  width: 80%;
+  border-radius: 70%;
+  object-fit: cover;
+  /* background-size: cover; */
 }
 
 .search-item {

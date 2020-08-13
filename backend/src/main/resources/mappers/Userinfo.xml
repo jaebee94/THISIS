@@ -6,13 +6,13 @@
 
 	<!-- 회원정보 전체 조회 -->
 	<select id="selectUserInfo" resultType="UserInfo">	
-		select user_id, username, nickname, email, password, introduction, userimage
+		select user_id, username, nickname, email, password, introduction, userimage, role, disabled
 		from UserInfo
 	</select>
 	
 	<!-- 회원정보 상세 조회 -->
 	<select id="selectUserInfoByUserid" resultType="UserInfo">	
-		select user_id, username, nickname, email, password, introduction, userimage
+		select user_id, username, nickname, email, password, introduction, userimage, role, disabled
 		from UserInfo
 		where user_id = #{user_id}
 	</select>
@@ -20,9 +20,9 @@
 	<!-- 회원정보 등록 -->
 	<insert id="insertUserInfo" parameterType="UserInfo">
 		insert into UserInfo(
-			username, nickname, email, password, introduction 
+			username, nickname, email, password, introduction, userimage
 		) values (
-			#{username},#{nickname},#{email},#{password},#{introduction}
+			#{username},#{nickname},#{email},#{password},#{introduction},#{userimage}
 		)
 	</insert>
 	
@@ -34,7 +34,9 @@
 		   		email = #{email},
 		   		password= #{password},
 		   		introduction = #{introduction},
-		   		userimage = #{userimage}
+		   		userimage = #{userimage},
+		   		role = #{role},
+		   		disabled = #{disabled}
 		 where 	user_id = #{user_id}
 	</update>
 
@@ -47,14 +49,14 @@
 	
 	<!-- 이메일에 해당하는 회원정보 조회  -->
 	<select id="findUserInfoByEmail" resultType="UserInfo">
-		select user_id, username, nickname, email, password, introduction, userimage
+		select user_id, username, nickname, email, password, introduction, userimage, role, disabled
 		from UserInfo
 		where email = #{email}
 	</select>
 	
 	<!-- 이메일과 비밀번호에 해당하는 회원정보 조회  -->
 	<select id="findUserByEmailAndPassword" resultType="UserInfo">
-		select user_id, username, nickname, email, password, introduction, userimage
+		select user_id, username, nickname, email, password, introduction, userimage, role, disabled
 		from UserInfo
 		where email = #{email}
 		and password = #{password}
@@ -62,14 +64,14 @@
 	
 	<!-- 닉네임에 해당하는 회원정보 조회  -->
 	<select id="findUserInfoByNickname" resultType="UserInfo">
-		select user_id, username, nickname, email, password, introduction, userimage
+		select user_id, username, nickname, email, password, introduction, userimage, role, disabled
 		from UserInfo
 		where nickname = #{nickname}
 	</select>
 	
 	<!-- 회원정보 조회 -->
 	<select id="selectUserInfoSearch" resultType="UserInfo">	
-		select user_id, username, nickname, email, password, introduction, userimage
+		select user_id, username, nickname, email, password, introduction, userimage, role, disabled
 		from UserInfo
 		where username LIKE concat('%',#{nickname}, '%')
 	</select>
@@ -92,6 +94,25 @@
 	<update id="updateImage" parameterType="UserInfo">
 		update	UserInfo
 		   set	userimage = #{userimage}
+		 where 	user_id = #{user_id}
+	</update>
+	
+	<!-- 회원정보 수정 -->
+	<update id="updatePassword" parameterType="UserInfo">
+		update	UserInfo
+		   set	password = #{password}
+		 where 	user_id = #{user_id}
+	</update>
+	
+	<update id="updateDisable">
+		update	UserInfo
+		   set	disabled = 1
+		 where 	user_id = #{user_id}
+	</update>
+	
+	<update id="updateRole" >
+		update	UserInfo
+		   set	role = "doctor"
 		 where 	user_id = #{user_id}
 	</update>
 	

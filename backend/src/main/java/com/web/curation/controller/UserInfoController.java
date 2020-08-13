@@ -2,6 +2,7 @@ package com.web.curation.controller;
 
 import java.io.Console;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -41,6 +42,7 @@ import com.web.curation.service.FollowService;
 import com.web.curation.service.HealthService;
 import com.web.curation.service.JwtService;
 import com.web.curation.service.PostService;
+import com.web.curation.service.SubscribeService;
 import com.web.curation.service.UserInfoService;
 
 import io.swagger.annotations.ApiOperation;
@@ -73,6 +75,9 @@ public class UserInfoController {
 	@Autowired
 	private AuthService authService;
 
+	@Autowired
+	private SubscribeService subscribeService;
+	
 	@ApiOperation(value = "모든 회원 정보를 반환한다.", response = List.class)
 	@GetMapping
 	public ResponseEntity<List<UserInfo>> selectUser() throws Exception {
@@ -89,11 +94,13 @@ public class UserInfoController {
 	@PostMapping("signup")
 	public ResponseEntity<BasicResponse> insertUserInfo(@RequestBody UserInfo userinfo) {
 		userinfo.setIntroduction("한줄 소개를 작성해 주세요");
+		userinfo.setUserimage("http://i3a301.p.ssafy.io/images/profile/default.jpg");
 		if (userInfoService.insertUserInfo(userinfo) == 1) {
 			BasicResponse result = new BasicResponse();
 			result.status = true;
 			result.data = "success";
 			result.object = String.valueOf(userInfoService.getUserId(userinfo.getEmail()));
+
 			return new ResponseEntity<>(result, HttpStatus.OK);
 		}
 		BasicResponse result = new BasicResponse();
@@ -145,7 +152,7 @@ public class UserInfoController {
 		} else { // accessToken없을때는 user_id 1인 유저로 들어감
 			userinfo = userInfoService.selectUserInfoByUserid(1);
 		}
-		
+
 		if (userInfoService.deleteUserInfo(userinfo.getUser_id()) == 1) {
 			return new ResponseEntity<String>("success", HttpStatus.OK);
 		}
@@ -178,6 +185,10 @@ public class UserInfoController {
 					result.introduction = userinfo.getIntroduction();
 					result.email = userinfo.getEmail();
 					result.nickname = userinfo.getNickname();
+					result.userimage = userinfo.getUserimage();
+					result.role = userinfo.getRole();
+					result.disabled = userinfo.getDisabled();
+					result.subscribeCount = subscribeService.selectSubscribeByUserid(Integer.toString(userinfo.getUser_id())).size();
 					// obj.addProperty("userinfo", obj.toString());
 					// result.object = obj.toString();
 					response = new ResponseEntity<>(result, HttpStatus.OK);
@@ -290,7 +301,7 @@ public class UserInfoController {
 
 		System.out.println("follower : " + follower);
 
-		List<Post> userpost = postservice.selectPostInfo(user_id);
+		List<Post> userpost = postservice.selectPost(user_id);
 		int healthnum = 0;
 		for (int i = 0; i < userpost.size(); i++) {
 			healthnum += healthservice.selectHealth(userpost.get(i).getPosts_id());
@@ -351,12 +362,12 @@ public class UserInfoController {
 				fos.write(buffer, 0, readCount);
 			}
 			String path = access_path + filename;
-			
-			if(userinfo.getUserimage()!=path) {
+
+			if (userinfo.getUserimage() != path) {
 				userinfo.setUserimage(path);
 				userInfoService.updateImage(userinfo);
 			}
-			
+
 			return path;
 
 		} catch (Exception ex) {
