@@ -89,6 +89,7 @@ const postStore = {
 
     // Comment
     createComment({ commit, rootGetters }, commentData) {
+      console.log("createComment - commentData", commentData)
       axios.post(SERVER.URL + SERVER.ROUTES.comment, commentData, rootGetters.config)
         .then(
           setTimeout(() => {
@@ -100,9 +101,10 @@ const postStore = {
         )
     },
     fetchComments({ commit }, posts_id) {
+      console.log('여기가 문제?')
       axios.get(SERVER.URL + SERVER.ROUTES.comment + '/' + posts_id)
         .then(res => {
-          console.log(res.data)
+          console.log('fetchComments', res.data)
           commit('SET_COMMENTS', res.data)
         })
     },
