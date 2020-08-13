@@ -15,39 +15,45 @@
     </div>
 
     <div v-if="this.isQnAHidden" class="post" ref="qna">
-      <div class="qna-header">
-        <div class="title"> 
-          <a>{{qnaInfo.post.posts_title}}</a>
+      <div class="qna-wrapper">
+        <div class="qna-header">
+          <div class="title"> 
+            <a>{{qnaInfo.post.posts_title}}</a>
+          </div>
+          <div class="nickname">
+            <a>{{qnaInfo.userinfo.nickname}}</a>
+          </div>
+          <div class="time">
+            <a>{{ timeForToday(qnaInfo.post.post_date) }}</a>
+          </div>
         </div>
-        <div class="nickname">
-          <a>{{qnaInfo.userinfo.nickname}}</a>
+        <div v-if="qnaInfo.post.imgsrc != null" class="qna-photo-wrap">
+          <img :src="qnaInfo.post.imgsrc">
         </div>
-        <div class="time">
-          <a>{{ timeForToday(qnaInfo.post.post_date) }}</a>
+        <div class="qna-main-content-wrap">
+          <div class="qna-tag-wrap">
+            <div>
+              <span v-if="qnaInfo.diseasename != ''" class="disease-tag">#{{qnaInfo.diseasename}}</span>
+            </div>
+            <div class="qna-custom-tag-wrap">
+              <a class="custom-tag" v-for="tag in qnaInfo.tags" v-bind:key="tag.tagid">#{{tag.tagname}}</a>
+            </div>
+          </div>
+          <div class="qna-content-wrap" :class="{active: isActive}" @click="isActive = !isActive">
+            {{qnaInfo.post.posts_main}}
+          </div>
         </div>
-      </div>
-      <div v-if="qnaInfo.post.imgsrc != null" class="qna-photo-wrap">
-        <img :src="qnaInfo.post.imgsrc">
-      </div>
-      <div class="qna-tag-wrap">
-        <div>
-          <span class="disease-tag">#{{qnaInfo.diseasename}}</span>
+        <div :class="{'wide' : qnaInfo.post.imgsrc == null}" class="qna-comment-wrap">
+          <comment v-for="comment in comments" v-bind:key="comment.comment_id"
+          v-bind:comment = "comment"></comment>
         </div>
-        <a class="custom-tag" v-for="tag in qnaInfo.tags" v-bind:key="tag.tagid">#{{tag.tagname}}</a>
-      </div>
-      <div class="qna-content-wrap">
-        {{qnaInfo.post.posts_main}}
-      </div>
-      <div :class="{'wide' : qnaInfo.post.imgsrc == null}" class="qna-comment-wrap">
-        <comment v-for="comment in comments" v-bind:key="comment.comment_id"
-         v-bind:comment = "comment"></comment>
-      </div>
-      <div class="qna-comment-write-wrap">
-       <input v-model="commentData.comment_main" placeholder="내용을 입력하세요" />
-        <button @click="createComment(commentData), clearCommentData()">댓글</button>
-      </div>
-      <div class="post-footer">
-        <img @click="closeQnA()" src="../../assets/images/icon/icon_close.png" />
+        <div class="qna-comment-write-wrap">
+        <input v-model="commentData.comment_main" placeholder="내용을 입력하세요" />
+          <button @click="commentInfo(qnaInfo), createComment(commentData), clearCommentData()">댓글</button>
+        </div>
+        <div class="post-footer">
+          <img @click="closeQnA()" src="../../assets/images/icon/icon_close.png" />
+        </div>
       </div>
     </div>
 
@@ -90,7 +96,7 @@
       </div>
       <div class="qna-comment-write-wrap">
         <input v-model="commentData.comment_main" placeholder="내용을 입력하세요" />
-        <button @click="createComment(commentData), clearCommentData()">댓글</button>
+        <button @click="commentInfo(postInfo), createComment(commentData), clearCommentData()">댓글</button>
       </div>
       <div class="post-footer">
         <img @click="closePost()" src="../../assets/images/icon/icon_close.png" />
@@ -197,6 +203,8 @@ export default {
         require("../../assets/images/icon/icon_qna.png"),
         require("../../assets/images/icon/icon_news.png"),
       ],
+
+      isActive: false,
     };
   },
   props: {
@@ -207,6 +215,7 @@ export default {
   computed: {
     ...mapState('userStore', ['loginData']),
     ...mapState('postStore', ['comments', 'checkScrap']),
+    ...mapState('diseaseStore', ['diseases']),
   },
   watch: {
     profile_data : function () {
@@ -226,6 +235,7 @@ export default {
       //'fetchHealths',
       'goCheckScrap',
     ]),
+    ...mapActions('diseaseStore', ['getFollowingDisease']),
 
     infiniteHandlerQnA ($state) {
       var params = {
@@ -388,6 +398,7 @@ export default {
       this.$parent.$parent.isHidden = false;
       this.$parent.$parent.$parent.isHidden = false;
       this.isQnAHidden = false;
+      this.isActive = false;
       /*------ 피드 스크롤 unlock ------*/
       document.body.className = "";
       /*------ 피드 스크롤 unlock ------*/
@@ -410,12 +421,18 @@ export default {
           return `${betweenTimeDay}일전`;
       }
       return `${Math.floor(betweenTimeDay / 365)}년전`;
+    },
+    commentInfo(info) {
+      console.log(info);
+      this.commentData.posts_id = info.posts_id;
     }
   },
   created() {
      this.$refs.infiniteLoadingPost.stateChanger.reset();
      this.$refs.infiniteLoadingQnA.stateChanger.reset();
     this.$store.dispatch("getCheckScrap");
+    this.$store.dispatch("diseaseStore/getFollowingDisease");
+    console.log("diseases", this.diseases)
   },
 };
 </script>
@@ -561,6 +578,7 @@ div.feed {
   border-radius: 5px;
 }
 
+
 .post-header {
   display: flex;
   background-color: rgb(247, 247, 247);
@@ -643,8 +661,9 @@ div.feed {
 }
 
 .post-main {
-  height: 100%;
-  overflow: auto;
+  /* height: 100%; */
+  height: 300px;
+  overflow-y: auto;
   padding: 10px 10px;
   text-align: left;
 }
@@ -779,6 +798,11 @@ div.feed {
   margin-left: 4%;
 }
 
+.post .qna-wrapper {
+  height: 100%;
+  overflow : auto;
+}
+
 .qna-header {
   text-align: left;
   padding-left: 5%;
@@ -801,11 +825,21 @@ div.feed {
 
 .qna-photo-wrap {
   width: 90%;
+  /* height: 40%; */
   margin-left: 5%;
 }
 
 .qna-photo-wrap img {
   width: 100%;
+  height: 95%;
+  object-fit: cover;
+}
+
+.qna-main-content-wrap {
+  width: 90%;
+  margin-left: 5%;
+  /* height: 80px; */
+  /* overflow: auto; */
 }
 
 .qna-tag-wrap {
@@ -826,25 +860,57 @@ div.feed {
   padding: 3px 8px;
 }
 
+.qna-custom-tag-wrap {
+  width: 100%;
+} 
+
 .qna-tag-wrap .custom-tag {
   color: rgb(0, 171, 132);
+  font-size: 12px;
   margin-left: 5px;
 }
 
 .qna-content-wrap {
-  width: 90%;
-  margin-left: 5%;
+  max-height: 100px;
+  text-align: left;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  word-wrap: break-word;
+  text-overflow: ellipsis;
+  -webkit-transition: all .3s linear 0s;
+  transition: all .3s linear 0s;
+}
+
+.qna-content-wrap.active {
+  display: inline-block;
+  max-height: 1000px;
+  overflow: auto;
+  white-space: normal;
+  word-wrap: unset;
+  text-overflow: unset;
+  -webkit-transition: all .3s linear 0s;
+  transition: all .3s linear 0s;
 }
 
 .qna-comment-wrap {
   width: 100%;
-  height: 200px;
-  overflow: auto;
+  /* height: 200px;
+  overflow: auto; */
+  margin-bottom: 50px;
+  margin-top: 10px;
+  border-top: 1px slategray solid;
 }
 
+.comment-module-wrap:last-child {
+  margin-bottom: 50px;
+}
+/* 
 .qna-comment-wrap.wide {
   height: 400px;
-}
+  margin-bottom: 50px;
+} */
 
 .qna-comment-write-wrap {
   position: absolute;

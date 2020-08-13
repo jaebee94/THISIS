@@ -15,8 +15,7 @@
       <div v-show="profileTab == 0">
         <div class="profile-photo">
           <div class="profile-modify-image">
-            <img :src="imgsrc">
-            <!-- <img :src="profileData.userInfo.userimage" /> -->
+            <img :src="imgsrc + ''" />
           </div>
           <div class="profile-image-button">
             <button @click="onClickImageUpload">프로필 사진 변경</button>
@@ -69,6 +68,11 @@
             :class="{disabled: !isSubmitPassword}"
           >비밀번호 변경</button>
         </div>
+        <div class="signout-wrap">
+          <button @click="signOut()">
+            회원탈퇴
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -99,10 +103,11 @@ export default {
     // this.changeInfo.user_id = this.loginData.user_id;
     // this.changeInfo.username = this.loginData.username;
     // this.changeInfo.userInfo = this.loginData
-    console.log(this.profileData)
+    console.log("프로필 데이터" ,this.profileData)
     this.email = this.profileData.userInfo.email;
     this.nickname = this.profileData.userInfo.nickname;
     this.introduction = this.profileData.userInfo.introduction;
+    this.imgsrc = this.profileData.userInfo.userimage;
   },
 
   computed: {
@@ -128,6 +133,7 @@ export default {
           email: "",
           nickname: "",
           introduction: "",
+          userimage: "",
         },
       },
       confirm: {
@@ -148,8 +154,8 @@ export default {
         require("../../assets/images/icon/icon_info.png"),
         require("../../assets/images/icon/icon_key.png"),
       ],
-
-      imgsrc: require("../../assets/images/icon/icon_default_image.png"),
+      
+      imgsrc: ''
     };
   },
 
@@ -246,10 +252,20 @@ export default {
       const file = e.target.files[0];
       var formData = new FormData();
       formData.append("upload_file", file);
+      console.log('formData', formData)
+      console.log("file",formData)
       this.changeInfo.formData = formData;
       console.log("changeInfo : ", this.changeInfo);
       this.imgsrc = URL.createObjectURL(file);
     },
+    signOut() {
+      var res = confirm("정말로 탈퇴하시겠습니까?");
+      if(res) {
+        alert("개새끼...");
+      } else {
+        alert("그래요 잘 생각했어요")
+      }
+    }
   },
 };
 </script>
@@ -384,4 +400,22 @@ export default {
   font-weight: 600;
   border-radius: 5px;
 }
+
+.signout-wrap {
+  position: absolute;
+  width: 100%;
+  bottom: 50px;
+}
+
+.signout-wrap button {
+  width: 90%;
+  height: 40px;
+  border: none;
+  background-color: rgb(220, 0, 27);
+  color: white;
+  font-size: 20px;
+  font-weight: 600;
+  border-radius: 5px;
+}
+
 </style>

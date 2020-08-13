@@ -1,5 +1,6 @@
 package com.web.curation.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,9 +25,16 @@ import com.web.curation.model.Doctor;
 import com.web.curation.model.Follow;
 import com.web.curation.model.Police;
 import com.web.curation.model.PoliceJoin;
+import com.web.curation.model.Post;
+import com.web.curation.model.PostResponse;
+import com.web.curation.model.Postpolice;
+import com.web.curation.model.PostpoliceResponse;
 import com.web.curation.model.RequestDoctor;
 import com.web.curation.model.UserInfo;
+import com.web.curation.model.UserPolice;
 import com.web.curation.service.AuthService;
+import com.web.curation.service.CommentService;
+import com.web.curation.service.DiseaseService;
 import com.web.curation.service.DoctorService;
 import com.web.curation.service.PoliceService;
 import com.web.curation.service.PostService;
@@ -42,6 +50,9 @@ public class AdminController {
 	private UserInfoService userInfoService;
 
 	@Autowired
+	private DiseaseService diseaseService;
+
+	@Autowired
 	private AuthService authService;
 
 	@Autowired
@@ -53,7 +64,65 @@ public class AdminController {
 	@Autowired
 	private PostService postservice;
 
+	@Autowired
+	private CommentService commentsService;
+
 	// post
+	@ApiOperation(value = "신고 많이 받은 순으로 게시글 반환", response = List.class)
+	@GetMapping("post")
+	public ResponseEntity<List<PostpoliceResponse>> selectAllPostpolice(@RequestParam int num,
+			HttpServletRequest request) throws Exception {
+		if (check(request) == 1) {
+			List<Postpolice> Allpage = postservice.selectAllPostpolice();
+			List<Postpolice> page = null;
+			List<PostpoliceResponse> response = new ArrayList<>();
+			if (Allpage.size() / 10 > num && num * 10 + 10 <= Allpage.size()) {
+				page = Allpage.subList(num * 10, num * 10 + 10);
+				// 페이지 돌면서 response에 다시 저장
+				for (int i = 0; i < page.size(); i++) {
+					PostpoliceResponse temp = new PostpoliceResponse();
+					temp.posts_id = page.get(i).getPosts_id();
+					temp.postpolice = page.get(i);
+					try {
+						temp.diseasename = diseaseService.selectDiseaseByDiseasecode(temp.postpolice.getDiseasecode())
+								.getDiseasename();
+					} catch (NullPointerException e) {
+						temp.diseasename = "";
+					}
+					int user_id = temp.postpolice.getUser_id();
+					temp.userinfo = userInfoService.selectUserInfoByUserid(user_id);
+					temp.userinfo.setPassword(null);
+					temp.comments = commentsService.selectComment(temp.posts_id);
+					response.add(temp);
+				}
+				return new ResponseEntity<List<PostpoliceResponse>>(response, HttpStatus.OK);
+			} else if (Allpage.size() / 10 < num) {
+				return new ResponseEntity<List<PostpoliceResponse>>(response, HttpStatus.NO_CONTENT);
+			} else {
+				page = Allpage.subList(num * 10, Allpage.size());
+				for (int i = 0; i < page.size(); i++) {
+					PostpoliceResponse temp = new PostpoliceResponse();
+					temp.posts_id = page.get(i).getPosts_id();
+					temp.postpolice = page.get(i);
+					try {
+						temp.diseasename = diseaseService.selectDiseaseByDiseasecode(temp.postpolice.getDiseasecode())
+								.getDiseasename();
+					} catch (NullPointerException e) {
+						temp.diseasename = "";
+					}
+					int user_id = temp.postpolice.getUser_id();
+					temp.userinfo = userInfoService.selectUserInfoByUserid(user_id);
+					temp.userinfo.setPassword(null);
+					temp.comments = commentsService.selectComment(temp.posts_id);
+					response.add(temp);
+				}
+				return new ResponseEntity<List<PostpoliceResponse>>(response, HttpStatus.OK);
+			}
+		} else {
+			return new ResponseEntity<List<PostpoliceResponse>>(HttpStatus.UNAUTHORIZED);
+		}
+	}
+
 	@ApiOperation(value = "게시글 숨김", response = String.class)
 	@PostMapping("post/{posts_id}")
 	public ResponseEntity<String> HiddenPost(@PathVariable int posts_id, HttpServletRequest request) {
@@ -63,7 +132,7 @@ public class AdminController {
 			}
 			return new ResponseEntity<String>("fail", HttpStatus.NO_CONTENT);
 		}
-		return new ResponseEntity<String>("not admin", HttpStatus.UNAUTHORIZED);
+		return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
 	}
 
 	@ApiOperation(value = "게시글 삭제", response = String.class)
@@ -75,10 +144,31 @@ public class AdminController {
 			}
 			return new ResponseEntity<String>("fail", HttpStatus.NO_CONTENT);
 		}
-		return new ResponseEntity<String>("not admin", HttpStatus.UNAUTHORIZED);
+		return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
 	}
 
 	// user
+	@ApiOperation(value = "신고 많이 받은 순으로 유저 반환", response = List.class)
+	@GetMapping("user")
+	public ResponseEntity<List<UserPolice>> selectAllUserpolice(@RequestParam int num, HttpServletRequest request)
+			throws Exception {
+		if (check(request) == 1) {
+			List<UserPolice> Allpage = userInfoService.selectUserInfoPolice();
+			List<UserPolice> page = null;
+			if (Allpage.size() / 10 > num && num * 10 + 10 <= Allpage.size()) {
+				page = Allpage.subList(num * 10, num * 10 + 10);
+				return new ResponseEntity<List<UserPolice>>(page, HttpStatus.OK);
+			} else if (Allpage.size() / 10 < num) {
+				return new ResponseEntity<List<UserPolice>>(page, HttpStatus.NO_CONTENT);
+			} else {
+				page = Allpage.subList(num * 10, Allpage.size());
+				return new ResponseEntity<List<UserPolice>>(page, HttpStatus.OK);
+			}
+		} else {
+			return new ResponseEntity<List<UserPolice>>(HttpStatus.UNAUTHORIZED);
+		}
+	}
+
 	@ApiOperation(value = "계정 사용정지", response = BasicResponse.class)
 	@PostMapping("user/disable")
 	public ResponseEntity<String> disbaledaccount(@RequestParam int user_id, HttpServletRequest request)
@@ -87,10 +177,10 @@ public class AdminController {
 			if (userInfoService.updateDisable(user_id) == 1) {
 				return new ResponseEntity<String>("success", HttpStatus.OK);
 			} else {
-				return new ResponseEntity<String>("fail", HttpStatus.NO_CONTENT);
+				return new ResponseEntity<String>(HttpStatus.NO_CONTENT);
 			}
 		} else {
-			return new ResponseEntity<String>("not admin", HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
 		}
 	}
 
@@ -101,62 +191,58 @@ public class AdminController {
 		if (check(request) == 1) {
 			return new ResponseEntity<Integer>(policeservice.selectPolice(posts_id), HttpStatus.OK);
 		} else {
-			return new ResponseEntity<Integer>(-1, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<Integer>(HttpStatus.UNAUTHORIZED);
 		}
 	}
 
-	@ApiOperation(value = "유저에 신고한 신고한다 수를 반환한다.", response = Integer.class)
+	@ApiOperation(value = "유저가 신고받은 수를 반환한다.", response = Integer.class)
 	@GetMapping("police/user/{user_id}")
 	public ResponseEntity<Integer> selectuserpolice(@PathVariable int user_id, HttpServletRequest request)
 			throws Exception {
 		if (check(request) == 1) {
 			return new ResponseEntity<Integer>(policeservice.selectUserPolice(user_id), HttpStatus.OK);
 		}
-		return new ResponseEntity<Integer>(-1, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<Integer>(HttpStatus.UNAUTHORIZED);
 	}
 
 	@ApiOperation(value = "게시글에 해당하는 모든 신고한다를 반환한다.", response = List.class)
 	@GetMapping("police/{posts_id}")
 	public ResponseEntity<List<Police>> selectPolice(@PathVariable int posts_id, HttpServletRequest request)
 			throws Exception {
-		List<Police> NULL = null;
 		if (check(request) == 1) {
 			return new ResponseEntity<List<Police>>(policeservice.selectpostPolice(posts_id), HttpStatus.OK);
 		}
-		return new ResponseEntity<List<Police>>(NULL, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<List<Police>>(HttpStatus.UNAUTHORIZED);
 	}
 
 	@ApiOperation(value = "유저에 해당하는 모든 신고 자료를 반환한다.", response = List.class)
 	@GetMapping("police/users/{user_id}")
 	public ResponseEntity<List<PoliceJoin>> selectuserPolice(@PathVariable int user_id, HttpServletRequest request)
 			throws Exception {
-		List<PoliceJoin> NULL = null;
 		if (check(request) == 1) {
 			return new ResponseEntity<List<PoliceJoin>>(policeservice.selectMyPolice(user_id), HttpStatus.OK);
 		}
-		return new ResponseEntity<List<PoliceJoin>>(NULL, HttpStatus.UNAUTHORIZED);
+		return new ResponseEntity<List<PoliceJoin>>(HttpStatus.UNAUTHORIZED);
 	}
 
 	// doctor-auth
 	@ApiOperation(value = "모든 의사를 반환한다.", response = List.class)
 	@GetMapping("doctor-auth")
 	public ResponseEntity<List<Doctor>> selectDoctor(HttpServletRequest request) throws Exception {
-		List<Doctor> NULL = null;
 		if (check(request) == 1) {
 			return new ResponseEntity<List<Doctor>>(doctorService.selectDoctor(), HttpStatus.OK);
 		} else {
-			return new ResponseEntity<List<Doctor>>(NULL, HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<List<Doctor>>(HttpStatus.UNAUTHORIZED);
 		}
 	}
 
 	@ApiOperation(value = "체크하지 않은 사람들을 반환한다.", response = List.class)
 	@GetMapping("doctor-auth/check")
 	public ResponseEntity<List<Doctor>> selectCheckDoctor(HttpServletRequest request) throws Exception {
-		List<Doctor> NULL = null;
 		if (check(request) == 1) {
 			return new ResponseEntity<List<Doctor>>(doctorService.selectCheckDoctor(), HttpStatus.OK);
 		} else {
-			return new ResponseEntity<List<Doctor>>(NULL, HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<List<Doctor>>(HttpStatus.UNAUTHORIZED);
 		}
 	}
 
@@ -181,7 +267,7 @@ public class AdminController {
 			} else
 				return new ResponseEntity<String>("fail", HttpStatus.NO_CONTENT);
 		} else
-			return new ResponseEntity<String>("not admin", HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
 	}
 
 	private int check(HttpServletRequest request) {

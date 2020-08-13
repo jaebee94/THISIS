@@ -1,19 +1,27 @@
 <template>
   <div class="qna wrap">
     <div class="qna-header">
-        <div class="qna-title">
-            <a>{{qnaInfo.post.posts_title}}</a>
+        <table style="width: 100%;">
+            <tr >
+                <td>
+                    <div class="qna-title">
+                        <a>{{qnaInfo.post.posts_title}}</a>
+                    </div>
+                </td>
+                <td>
+                    <img v-if="loginData.user_id == qnaInfo.userinfo.user_id" @click="changeSelectQnA(qnaInfo, 'modify')" src="../../assets/images/icon/icon_edit_unselect.png">
+                </td>
+            </tr>
+        </table>
+        <div  class="qna-tag" @click="changeSelectQnA(qnaInfo, 'comment')">
+            <a v-if="qnaInfo.diseasename != ''">#{{qnaInfo.diseasename}}</a>
         </div>
-        <div class="qna-tag">
-            <a>#{{qnaInfo.diseasename}}</a>
-        </div>
-        <img v-if="loginData.user_id == qnaInfo.userinfo.user_id" @click="changeSelectQnA(qnaInfo, 'modify')"  src="../../assets/images/icon/icon_edit_unselect.png">
     </div>
-    <div class="qna-footer">
+    <div class="qna-footer" @click="changeSelectQnA(qnaInfo, 'comment')">
         <span>
             <strong class="qna-writer">{{qnaInfo.userinfo.nickname}}</strong>
             <a class="qna-time">{{timeForToday(qnaInfo.post.post_date) }}</a>
-            <img @click="changeSelectQnA(qnaInfo, 'comment')" src="../../assets/images/icon/icon_talk.png">
+            <img  src="../../assets/images/icon/icon_talk.png">
             <a class="qna-reply">{{qnaInfo.comments.length}}</a>
         </span>
     </div>
@@ -97,7 +105,7 @@ export default {
     .qna.wrap {
         width: 100%;
         height: 80px;
-        margin-bottom: 10px;
+        padding-bottom: 10px;
         background-color: white;
         /* border-top: 2px slategray solid; */
         border-bottom: 1px slategray solid;
@@ -105,6 +113,19 @@ export default {
 
     .qna-header {
         height: 60px;
+        width: 100%;
+    }
+
+    .qna-header table {
+        width: 100%;
+    }
+
+    .qna-header table tr td:nth-child(1) {
+        width: 90%;
+    }
+
+    .qna-header table tr td:nth-child(2) {
+        width: 10%;
     }
 
     .qna-title {
@@ -127,10 +148,13 @@ export default {
     }
 
     .qna-header img {
-        height: 20px;
+        /* height: 20px;
         position: relative;
         top: -45px;
-        left: 45%;
+        left: 45%; */
+        width: 15px;
+        height: 15px;
+        right: 0;
     }
 
     .qna-footer {
@@ -140,6 +164,11 @@ export default {
 
     .qna-footer .qna-time {
         color: slategray;
+        font-size: 10px;
+    }
+
+    .qna-footer strong {
+        font-size: 13px;
     }
 
     .qna-footer strong, a {
@@ -147,11 +176,10 @@ export default {
     }
 
     .qna-reply {
+        font-size: 12px;
+        font-weight: 600;
         margin-left: 3px;
     }
-
-
-
     .qna-footer span img {
         margin-left: 5%;
         height: 10px;

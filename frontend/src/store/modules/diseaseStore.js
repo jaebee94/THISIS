@@ -1,4 +1,4 @@
-
+import cookies from 'vue-cookies'
 import axios from "axios";
 import SERVER from "@/api/RestApi.js";
 const diseaseStore = {
@@ -31,7 +31,7 @@ const diseaseStore = {
         async createDisease({rootGetters,dispatch} ,params){ //질병 구독
             console.log(params)
             console.log(rootGetters.config)
-            await axios.post(SERVER.URL + SERVER.ROUTES.subscribe,params ,rootGetters.config)
+            await axios.post(SERVER.URL + SERVER.ROUTES.subscribe,params ,{headers: { accessToken:  cookies.get('access-token') }})
             .then((res) => {
                 console.log(res);
                 dispatch('getFollowingDisease')

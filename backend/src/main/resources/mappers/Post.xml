@@ -11,6 +11,13 @@
 		post_date desc
 	</select>
 
+	<select id="selectAllPostpolice" resultType="Postpolice">
+		select p.*, (select
+		count(*) from police where posts_id = p.posts_id) as count
+		from posts p
+		order by count desc
+	</select>
+
 	<select id="selectPost" resultType="Post">
 		select*
 		from posts
@@ -23,11 +30,13 @@
 		resultType="Post">
 		select *
 		from posts
+		<if test="list != null and list.size!=0">
 		where posts_id in
 		<foreach collection="list" item="item" open="(" close=")"
 			separator=",">
 			#{item.posts_id}
 		</foreach>
+		</if>
 		order by post_date desc
 	</select>
 
@@ -40,7 +49,8 @@
 
 	<insert id="createPost">
 		insert into posts(
-		user_id, posts_title, posts_main, category, diseasecode, imgsrc
+		user_id, posts_title, posts_main,
+		category, diseasecode, imgsrc
 		) values (
 		#{user_id},#{posts_title},#{posts_main},#{category},#{diseasecode},
 		#{imgsrc}
@@ -54,7 +64,8 @@
 
 	<update id="modifyPost">
 		update posts
-		set posts_title=#{posts_title}, posts_main = #{posts_main}
+		set posts_title=#{posts_title},
+		posts_main = #{posts_main}
 		where posts_id
 		= #{posts_id}
 	</update>

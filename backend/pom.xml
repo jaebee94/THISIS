@@ -144,6 +144,12 @@
 		    <artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
 		
+		<!-- lucy xss -->
+		<dependency>
+			<groupId>com.navercorp.lucy</groupId>
+		    <artifactId>lucy-xss-servlet</artifactId>
+		    <version>2.0.0</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
