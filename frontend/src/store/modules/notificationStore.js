@@ -5,10 +5,8 @@ const notificationStore = {
   namespaced: true,
 
   state: {
-    notification: {
-      notification: {},
-      requests: {}
-    },
+    notification: {},
+    requests: {}
   },
 
   getters: {
@@ -16,10 +14,10 @@ const notificationStore = {
 
   mutations: {
     SET_NOTIFICATION(state, notification) {
-      state.notification.notification = notification
+      state.notification = notification
     },
     SET_REQUESTS(state, requests) {
-      state.notification.requests = requests
+      state.requests = requests
     },
   },
 
