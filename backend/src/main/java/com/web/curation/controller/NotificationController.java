@@ -100,7 +100,7 @@ public class NotificationController {
 	@ApiOperation(value = "해당 user_id가 followee인 레코드 목록 조회.", response = List.class)
 	@GetMapping("/followee/{user_id}")
 		public ResponseEntity<List<NotificationResponse>> GetListByFollowee(@PathVariable int user_id) { 
-		List<Notification> list = notificationService.GetListByFollower(user_id);
+		List<Notification> list = notificationService.GetListByFollowee(user_id);
 		List<NotificationResponse> notificationResponses = new ArrayList<NotificationResponse>();
 		for(Notification noti : list) {
 			NotificationResponse notificationResponse = new NotificationResponse();
