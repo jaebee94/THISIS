@@ -38,6 +38,6 @@
 	<select id="selectTagByPostsId" resultType="Tag">
 		select *
 		from tag
-		where tag.tagid in (select tagid from tag_relation where posts_id=#{posts_id})
+		where tag.tagid in (select tag_id from tag_relation where posts_id=#{posts_id})
 	</select>
 </mapper>

@@ -277,6 +277,7 @@ export default {
   created() {
     console.log(this.post);
     if (this.post != null) {
+      
       this.uploadData.postData.post = this.post.post;
       this.posts_title = this.post.post.posts_title;
       this.imgsrc = this.post.post.imgsrc;
@@ -285,6 +286,7 @@ export default {
         this.checkQnA();
       }
       this.checkItem(this.post.post.diseasecode + ":" + this.post.diseasename);
+      this.tags = []
       this.post.tags.forEach((tag) => {
         this.tags.push(tag.tagname);
       });
