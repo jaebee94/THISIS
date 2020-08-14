@@ -4,18 +4,27 @@
       <title>THISIS</title>
     </head>
     <div v-if="this.isHidden" ref="layer" class="layer"></div>
+    <loading v-if="!isLoaded"></loading>
     <router-view/>
   </div>
 </template>
 
 <script>
+import loading from './components/loading/Loading.vue';
 
 export default {
   el: '#app',
+  components: {
+    loading
+  },
   data () {
     return {
-      isHidden: false
+      isHidden: false,
+      isLoaded: false,
     }
+  },
+  mounted () {
+    this.isLoaded = true;
   }
 }
 </script>

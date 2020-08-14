@@ -35,6 +35,8 @@ export default {
     },
     methods: {
         async findNews() {
+            console.log(this.$parent.$parent.$parent)
+            this.$parent.$parent.$parent.isLoaded = false;
             console.log(this.keyword);
             var params = {
                 query: this.keyword,
@@ -82,9 +84,11 @@ export default {
                 });
                 this.items = res.data.items;
                 console.log(res);
+                this.$parent.$parent.$parent.isLoaded = true;
             })
             .catch((err) => {
                 console.error(err);
+                this.$parent.$parent.$parent.isLoaded = true;
             })
         },
         readNews(link) {

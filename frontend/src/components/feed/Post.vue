@@ -1,5 +1,6 @@
 <template>
   <div class="feed">
+    <div v-if="isDelete" @click="isDelete = !isDelete" class="black-layer"></div>
     <div class="feed-header">
       <table class = "article-header">
         <tr>
@@ -25,7 +26,9 @@
               <img class="dropmenu" @click="isDelete = !isDelete" src="../../assets/images/icon/icon_3dots.png" />
             </div>
             <div v-show="isDelete" class="dropdown-content">
-              <a href="#" @click="deletePost({postInfo:postInfo,user_id:loginData.user_id})">삭제</a>
+              <a href="#" v-if="loginData.user_id == postInfo.post.user_id" @click="showModal(postInfo)">수정</a>
+              <a href="#" v-if="loginData.user_id == postInfo.post.user_id" @click="showModal(postInfo)">삭제</a>
+              <a href="#" v-if="loginData.user_id != postInfo.post.user_id"  @click="showModal(postInfo)">신고</a>
             </div>
           </td>
         </tr>
@@ -38,7 +41,12 @@
         <a v-show="postInfo.post.health_count != 0">
           <strong>{{postInfo.post.health_count}}명</strong>이 건강해요를 눌렀습니다
         </a>
-        <a v-show="postInfo.post.health_count == 0">먼저 건강해요를 눌러보세요</a>
+        <a v-show="postInfo.post.health_count == 0">먼저 건강해요를 눌러보세요 </a>
+        
+        <!-- <a v-show="postInfo.comments.length > 0">
+          <strong> {{postInfo.comments.length}}개</strong>의 댓글이 있습니다
+        </a>
+        <a v-show="postInfo.comments.length == 0"> 먼저 댓글을 달아보세요</a> -->
       </div>
     </div>
     <div class="feed-footer">
@@ -55,6 +63,7 @@
               @click="changeSelectPost(postInfo,'comment')"
               src="../../assets/images/icon/icon_talk.png"
             />
+            <a>{{postInfo.comments.length}}</a>
           </td>
           <td v-if="postInfo.post.category == 0">
             <img
@@ -83,6 +92,9 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
+import SERVER from "@/api/RestApi.js";
+import axios from 'axios';
+import cookies from "vue-cookies";
 export default {
   name: "Post",
   computed: {
@@ -184,6 +196,31 @@ export default {
           return `${betweenTimeDay}일전`;
       }
       return `${Math.floor(betweenTimeDay / 365)}년전`;
+    },
+    showModal(postInfo){
+      this.isDelete = false;
+      console.log(postInfo.userinfo.user_id)
+      if(postInfo.userinfo.user_id == this.loginData.user_id) this.deletePost({postInfo:postInfo,user_id: this.loginData.user_id});
+      else {
+        var reason = prompt("신고 내용은요?");
+        let params = {
+          posts_id: postInfo.post.posts_id,
+          reason: reason,
+          user_id: this.loginData.user_id
+        }
+        axios.post(SERVER.URL + '/police', params, { headers: { accessToken : cookies.get('access-token')}})
+        .then((res) => {
+          console.log(res);
+          // 신고 성공
+          alert('게시물을 신고했습니다')
+        })
+        .catch((err) => {
+          console.log(err);
+          // 신고 실패
+          alert('게시물 신고에 실패했습니다')
+        })
+
+      }
     }
   },
   created() {
@@ -231,6 +268,17 @@ export default {
   float: right;
 }
 
+.black-layer {
+  position: fixed;
+  /* background-color: black;
+  opacity: 0.1; */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 54;
+}
+
 .dropdown-content {
   position: absolute;
   right: 5px;
@@ -258,4 +306,9 @@ export default {
 
 .dropdown:hover .dropdown-content {display: block;}
 
+
+.feed-footer table tr td:nth-child(2) a {
+  font-size: 10px;
+  font-weight: 600;
+}
 </style>

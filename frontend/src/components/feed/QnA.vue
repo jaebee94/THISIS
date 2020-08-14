@@ -14,7 +14,7 @@
             </tr>
         </table>
         <div  class="qna-tag" @click="changeSelectQnA(qnaInfo, 'comment')">
-            <a v-if="qnaInfo.diseasename != ''">#{{qnaInfo.diseasename}}</a>
+            <a v-if="qnaInfo.diseasename != null">#{{qnaInfo.diseasename}}</a>
         </div>
     </div>
     <div class="qna-footer" @click="changeSelectQnA(qnaInfo, 'comment')">

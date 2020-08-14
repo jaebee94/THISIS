@@ -83,7 +83,7 @@
         <slide class="myslide" >
           <div class="post-main">
             <strong>{{postInfo.post.posts_title}}</strong> <br>
-            <a class="post-disease-tag">#{{postInfo.diseasename}}</a><br>
+            <a v-if="postInfo.diseasename != null" class="post-disease-tag">#{{postInfo.diseasename}}</a><br>
             <a class="post-custom-tag" v-for="tag in postInfo.tags" v-bind:key="tag.tagid">#{{tag.tagname}} </a> <br>
             {{ postInfo.post.posts_main }}
           </div>
@@ -211,6 +211,12 @@ export default {
     profile_data: {
       default: void 0,
     },
+  },
+  beforeCreate() {
+    this.$parent.$parent.isLoaded = false;
+  },
+  mounted() {
+    this.$parent.$parent.isLoaded = true;
   },
   computed: {
     ...mapState('userStore', ['loginData']),

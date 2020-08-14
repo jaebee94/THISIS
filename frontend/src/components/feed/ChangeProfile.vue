@@ -68,11 +68,21 @@
             :class="{disabled: !isSubmitPassword}"
           >비밀번호 변경</button>
         </div>
-        <div class="signout-wrap">
+        <div class="important-auth-wrap">
+          <div class="doctor-auth-wrap">
+            <img src="../../assets/images/icon/icon_doctor.png">
+            <div><a>의료진 인증하기</a></div>
+          </div>
+          <div class="signout-wrap">
+            <img src="../../assets/images/icon/icon_signout.png">
+            <div><a>THISIS 떠나기</a></div>
+          </div>
+        </div>
+        <!-- <div class="signout-wrap">
           <button @click="signOut()">
             회원탈퇴
           </button>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
@@ -401,21 +411,62 @@ export default {
   border-radius: 5px;
 }
 
-.signout-wrap {
-  position: absolute;
+.important-auth-wrap {
   width: 100%;
-  bottom: 50px;
+  height: 120px;
+  margin-top: 10%;
+  display: flex;
+  font-size: 13px;
+  font-weight: 600;
 }
 
-.signout-wrap button {
-  width: 90%;
-  height: 40px;
+.important-auth-wrap .doctor-auth-wrap img {
+  /* width: 50%; */
+  height: 80px;
+}
+
+.important-auth-wrap .signout-wrap img {
+  height: 70px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.important-auth-wrap .doctor-auth-wrap {
+  width: 40%;
+  height: 100%;
+  margin-left: 5%;
+  padding-top: 5%;
   border: none;
-  background-color: rgb(220, 0, 27);
-  color: white;
-  font-size: 20px;
-  font-weight: 600;
-  border-radius: 5px;
+  border-radius: 15px;
+  outline: none;
+  color: rgb(0, 171, 132);
+  background-color: rgb(247, 247, 247);
+  transition-duration: 300ms;
+  /* color: white;
+  background-color: rgb(79, 158, 129); */
+}
+
+.important-auth-wrap .doctor-auth-wrap:hover {
+  background-color: rgb(200, 200, 200);
+}
+
+.important-auth-wrap .signout-wrap {
+  width: 40%;
+  height: 100%;
+  margin-left: 10%;
+  padding-top: 5%;
+  border: none;
+  border-radius: 15px;
+  outline: none;
+  color: rgb(220, 0, 27);
+  background-color: rgb(247, 247, 247);
+  transition-duration: 300ms;
+  /* color: white;
+  background-color: rgb(220, 0, 27); */
+}
+
+.important-auth-wrap .signout-wrap:hover {
+  background-color: rgb(200, 200, 200);
 }
 
 </style>
