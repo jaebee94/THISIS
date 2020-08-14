@@ -1,5 +1,6 @@
 package com.web.curation.controller;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -32,7 +33,7 @@ import com.web.curation.model.Post;
 import com.web.curation.model.PostRequest;
 import com.web.curation.model.PostResponse;
 import com.web.curation.model.Tag;
-import com.web.curation.model.Tag_relation;
+import com.web.curation.model.TagRelation;
 import com.web.curation.model.UserInfo;
 import com.web.curation.service.AuthService;
 import com.web.curation.service.CommentService;
@@ -94,7 +95,7 @@ public class PostController {
 				tagService.createTag(tags.get(i));
 			}
 			Tag now = tagService.selectTagByTagname(tags.get(i));
-			tagRelationService.createTagRelation(new Tag_relation(now.getTagid(), posts_id));
+			tagRelationService.createTagRelation(new TagRelation(now.getTagid(), posts_id));
 		}
 	}
 	public List<PostResponse> reSaveResponse(List<Post> page) {
@@ -105,10 +106,11 @@ public class PostController {
 			temp.posts_id = page.get(i).getPosts_id();
 			temp.post = page.get(i);
 			try {
-				temp.diseasecode = temp.post.getDiseasecode();
-			} catch (NullPointerException e) {
-				temp.diseasecode = "";
+				temp.diseasename = diseaseService.selectDiseaseByDiseasecode(temp.post.getDiseasecode()).getDiseasename();
+			}catch(NullPointerException e) {
+				temp.diseasename = "";
 			}
+
 			int user_id = temp.post.getUser_id();
 			temp.userinfo = userinfoService.selectUserInfoByUserid(user_id);
 			temp.userinfo.setPassword(null);
@@ -266,6 +268,26 @@ public class PostController {
 		return new ResponseEntity<String>("fail", HttpStatus.NO_CONTENT);
 	}
 
+	@ApiOperation(value = "포스트의 지난 파일 삭제 및 갱신")
+	@DeleteMapping("upload")
+	public ResponseEntity<String> deleteFile(@RequestParam("delete_file") String deletefile, HttpServletRequest request) {
+		try {
+			String root_path = "C:\\Users\\multicampus\\git\\s03p13a301\\backend\\src\\main\\resources\\upload\\";
+			String real_path = "/home/ubuntu/s03p13a301/backend/src/main/resources/upload/";
+			
+			String deletefileName = deletefile.substring(40); //앞에 경로 부분 자르고 파일명만 access_path 바꿀시 다시 재정립 필요
+			File checkFile = new File(real_path + deletefileName);
+			if (checkFile.exists()) {
+				System.out.println("deletefile : "+ real_path + deletefile);
+				checkFile.delete();
+				return new ResponseEntity<String>("success", HttpStatus.OK);
+			}
+
+		} catch (Exception ex) {
+			throw new RuntimeException("file delete Error");
+		}
+		return new ResponseEntity<String>("fail", HttpStatus.NO_CONTENT);
+	}
 	@ApiOperation(value = "파일을 입력한다. 그리고 DB입력 성공여부에 따라 파일 경로 또는 'fail' 문자열을 반환한다.")
 	@PostMapping("upload")
 	public String doFileUpload(@RequestParam("upload_file") MultipartFile uploadfile, HttpServletRequest request) {
@@ -309,5 +331,4 @@ public class PostController {
 			throw new RuntimeException("file Save Error");
 		}
 	}
-
 }

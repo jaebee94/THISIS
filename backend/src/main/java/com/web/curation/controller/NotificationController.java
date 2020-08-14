@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.web.curation.model.Notification;
 import com.web.curation.model.NotificationResponse;
-import com.web.curation.model.UserInfo;
 import com.web.curation.service.NotificationService;
 import com.web.curation.service.UserInfoService;
 
