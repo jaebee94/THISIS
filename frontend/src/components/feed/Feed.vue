@@ -97,7 +97,7 @@
       <div class="qna-comment-write-wrap">
         <input v-model="commentData.comment_main" placeholder="내용을 입력하세요" />
         <button @click="commentInfo(postInfo), createComment(commentData), clearCommentData()">댓글</button>
-      </div>
+      </div> 
       <div class="post-footer">
         <img @click="closePost()" src="../../assets/images/icon/icon_close.png" />
       </div>
@@ -134,16 +134,19 @@
           ref="infiniteLoadingPost" @infinite="infiniteHandler"></infinite-loading>
     </div>
 
-    
-
-
-
+  
     <div v-show="currentTab == 1"> 
       <!-- <h1>Q&A게시판</h1> -->
-      <input placeholder="검색어를 입력하세요">
-      <button>검색</button>
-      <input id="check-mine" type="checkbox">
-      <label for="check-mine">내꺼 보기</label>
+      <form v-on:submit.prevent="searchQna">
+        <select name="qnaoption" id="qnaoption" v-model="qnaoption">
+          <option value="all" selected> 전체보기 </option>
+          <option value="text"> 글내용 </option>
+          <option value="title"> 글제목 </option>
+          <option value="disease"> 질병명 </option>
+        </select>
+        <input v-model="qnakeyword" id="qnakeyword" placeholder="검색어를 입력하세요">
+        <button type="submit">검색</button>
+      </form>
       <qna v-for="qnaInfo in qnas" v-bind:key="qnaInfo.posts_id"
       v-bind:qnaInfo="qnaInfo" @send-modify-qna="showModifyQnA">
       </qna> 
@@ -196,6 +199,9 @@ export default {
       qnaPage: 0,
       qnas:[],
       qnaInfo: {},
+      qnakeyword: "",
+      qnaoption:"",
+      searchType:"nonsearch",
 
       currentTab: 0,
       tabs: [
@@ -243,7 +249,55 @@ export default {
     ]),
     ...mapActions('diseaseStore', ['getFollowingDisease']),
 
+    searchQna(){
+      this.$refs.infiniteLoadingQnA.stateChanger.reset();
+      this.qnaPage = 0;
+      this.qnas = [];
+      if(this.qnaoption!="all"){
+        this.searchType="search";
+      }
+      else{
+        this.searchType="nonsearch";
+        this.qnakeyword="";
+      }
+    },
+
     infiniteHandlerQnA ($state) {
+      if(this.searchType=="search"){//검색일 경우
+        if(this.qnaoption=="text"){
+           var params2 = {
+              params: {
+                num: this.qnaPage,
+                keyword: this.qnakeyword,
+              },
+              headers: { accessToken:  cookies.get('access-token') }
+            };
+            let url = SERVER.URL + SERVER.ROUTES.qnasmain;
+            //통신부분
+            axios.get(url, params2).then(({ data }) => {
+                if (data.length) {
+                  this.qnaPage += 1;
+                
+                  data.forEach((element) => {
+                    element.health = false;
+                    element.scrap = false;
+                    element.post.health_count = element.healths.length;
+                    element.healths.forEach((ele) => {
+                      if (ele.user_id == this.loginData.user_id) {
+                        element.health = true;
+                      }
+                    });
+                  });
+                  this.qnas.push(...data);
+                  $state.loaded();
+                } else {
+                  $state.complete();
+                }
+              });
+        }//글내용 검색
+      }
+      else{ //검색이 아닐때
+
       var params = {
         params: {
           num: this.qnaPage,
@@ -252,7 +306,6 @@ export default {
       };
       
       let url = SERVER.URL + SERVER.ROUTES.qnas;
-      console.log('url', url)
       //통신부분
       axios.get(url, params).then(({ data }) => {
           if (data.length) {
@@ -261,23 +314,20 @@ export default {
             data.forEach((element) => {
               element.health = false;
               element.scrap = false;
-               console.log(element)
               element.post.health_count = element.healths.length;
               element.healths.forEach((ele) => {
-                console.log(ele)
                 if (ele.user_id == this.loginData.user_id) {
                   element.health = true;
                 }
               });
             });
-            console.log("data",data)
             this.qnas.push(...data);
             $state.loaded();
           } else {
             $state.complete();
           }
         });
-      
+        }//else
     },
 
    // Infinite Scrolling
@@ -289,7 +339,6 @@ export default {
         headers: { accessToken:  cookies.get('access-token') }
       };
       let url = SERVER.URL;
-      console.log("In Profile, profile_data is", this.profile_data);
       if(this.profile_data== undefined || this.profile_data.tab == 0) {
         url += SERVER.ROUTES.posts
         params.params.user_id= -1 //-1일 경우 전체 게시물
@@ -301,10 +350,7 @@ export default {
       }
       else if(this.profile_data.tab == 1){ //스크랩 보여주기
         url += SERVER.ROUTES.scrap + "/" + this.profile_data.user_id;
-        console.log("남의 꺼에서 url : ", url);
       } 
-      console.log("params", params);
-      console.log("url", url);
       //통신부분
       axios.get(url, params).then(({ data }) => {
           if (data.length) {
@@ -438,7 +484,7 @@ export default {
      this.$refs.infiniteLoadingQnA.stateChanger.reset();
     this.$store.dispatch("getCheckScrap");
     this.$store.dispatch("diseaseStore/getFollowingDisease");
-    console.log("diseases", this.diseases)
+    this.searchType = "nonsearch";
   },
 };
 </script>

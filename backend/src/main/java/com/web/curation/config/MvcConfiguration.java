@@ -15,6 +15,7 @@ import com.web.curation.config.AuthInterceptor;
 @Configuration
 public class MvcConfiguration extends WebMvcConfigurerAdapter{
 
+	/*
 	//lucy-xss-filter
 	@Bean
 	  public FilterRegistrationBean getFilterRegistrationBean(){
@@ -24,6 +25,7 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter{
         registrationBean.addUrlPatterns("/**");    //filter를 거칠 url patterns
         return registrationBean;
     }
+    */
 	
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {

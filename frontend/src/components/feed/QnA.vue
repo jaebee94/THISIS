@@ -48,11 +48,11 @@ export default {
         "fetchComments",
         'health',
         "scrap",
-        "deleteScrap"
+        "deleteScrap",
+        "setPost"
         ]),
         changeSelectQnA(qna, sort) {
             this.selectedQnA = qna;
-            console.log("QNA에서 찍는 로그", this.selectedQnA);
             let info = {
                 qnaInfo: this.selectedQnA,
                 isHidden: true,
@@ -63,12 +63,15 @@ export default {
             if (sort == 'comment') {
                 info.isQnAHidden = true;
                 this.fetchComments(qna.posts_id);
+                this.$emit('send-modify-qna', info);
                 console.log('comment')
             } else if (sort == 'modify') {
-                info.isModifyHidden = true;
+                //info.isModifyHidden = true;
+                this.setPost(qna)
+                this.$router.push({name: 'Upload'});
                 console.log('modify')
             }
-            this.$emit('send-modify-qna', info);
+            
         },
         timeForToday(time) {
             const today = new Date();

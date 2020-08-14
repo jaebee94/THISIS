@@ -226,12 +226,6 @@ export default {
       this.selectedDisease.name = disease.sickNm;
       this.findDisease(disease.sickNm)
     },
-    // create(item){
-    //   this.createDisease(item);
-    // },
-    // delete(item){
-    //   this.createDisease(item);
-    // },
     async findDisease(disease){
       this.searchedItems = [];
       this.selectedDisease.description=""

@@ -75,7 +75,7 @@ const userStore = {
         .then(() => {
           console.log('소개 변경 완료')
           alert('변경이 완료되었습니다.')
-          dispatch('userStore/goProfile', changeInfo.userInfo.user_id, { root: true })
+          dispatch('goProfile', changeInfo.userInfo.user_id)
         })
         .catch(err => console.log('프로필 변경 에러: ', err))
       if (changeInfo.formData) {
@@ -86,7 +86,7 @@ const userStore = {
         await axios.post(SERVER.URL + SERVER.ROUTES.uploadProfile, changeInfo.formData, config)
         .then(async () => {
           console.log('사진 변경 완료')
-          dispatch('userStore/goProfile', changeInfo.userInfo.user_id, { root: true })
+          dispatch('goProfile', changeInfo.userInfo.user_id)
           // router.push({ name: 'Profile' })
         })
         .catch(err => console.log('사진 변경 에러: ', err))

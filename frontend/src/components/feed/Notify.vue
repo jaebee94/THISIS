@@ -16,7 +16,7 @@
       </div>
       <div class="notify-panel">
         <div v-show="currentTab == 0">
-          <div v-for="(noti, index) in this.notification" v-bind:key="noti.id">
+          <div v-for="(noti, index) in this.notification" v-bind:key="noti.notification.id">
             <div class="notifications" :class="{new : index < noti_count}">
               <div :class="{new : index < noti_count}">
                 <table>
@@ -29,7 +29,7 @@
           </div>
         </div>
         <div v-show="currentTab == 1">
-          <div  v-for="(noti, index) in this.requests" v-bind:key="noti.id">
+          <div  v-for="(noti, index) in this.requests" v-bind:key="noti.notification.id">
           <div
             class="notifications" :class="{new : index < req_count} "
             v-if="noti.notification.approval === 0"
@@ -130,8 +130,8 @@ export default {
       .collection("notification")
       .doc(String(noti.notification.followee_id))
       .update(instance)
-      .then(console.log("FIREBASE DELETION COMPLETE"))
-      .catch(console.error("FIREBASE DELETION UNEXECUTED"))
+      .then(()=>{console.log("FIREBASE DELETION COMPLETE")})
+      .catch(()=>{console.error("FIREBASE DELETION UNEXECUTED")})
     },
     clickNoti(idx) {
       console.log("click")

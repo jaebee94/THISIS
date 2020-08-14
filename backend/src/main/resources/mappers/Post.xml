@@ -65,7 +65,9 @@
 	<update id="modifyPost">
 		update posts
 		set posts_title=#{posts_title},
-		posts_main = #{posts_main}
+		posts_main = #{posts_main},
+		diseasecode=#{diseasecode},
+		imgsrc = #{imgsrc},
 		where posts_id
 		= #{posts_id}
 	</update>
@@ -99,6 +101,14 @@
 		select * from posts
 		where
 		posts.category = 1
+		order by post_date desc
+	</select>
+	
+	<select id="selectQnAByMain" resultType="Post">
+		select * from posts
+		where
+		posts.category = 1
+		AND posts.posts_main LIKE concat('%',#{keyword}, '%')
 		order by post_date desc
 	</select>
 </mapper>

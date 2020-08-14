@@ -2,15 +2,20 @@
   <div class="news-wrap">
     <div class="news-search-input">
         <input v-model="keyword" placeholder="키워드를 입력하세요" v-on:keyup.enter="findNews">
-        <span><img @click="findNews" src="../../assets/images/icon/icon_search_unselect.png"></span>
+        <span><img @click="findNews(keyword)" src="../../assets/images/icon/icon_search_unselect.png"></span>
         <!-- <button >검색</button> -->
+    </div>
+    <div class="tutorial-show-wrap">
+        <span  :selected="!disease.isSelected" :class="{selected : disease.isSelected}" 
+        v-for="disease in this.diseases" v-bind:key="disease.diseasecode" 
+        @click="findNews(disease.diseasename) ">{{disease.diseasename}}</span>
     </div>
     <div v-if="sample_images.one"  class="news-search-image">
         <img :src="sample_images.one"> 
         <img :src="sample_images.two">
     </div>
     <div class="news-content"> 
-        <ul v-for="item in items" v-bind:key="item">
+        <ul v-for="(item,idx) in items" v-bind:key="idx">
             <li><a @click="readNews(item.link)">{{item.title}}</a></li>
         </ul>
     </div>
@@ -19,14 +24,18 @@
 
 <script>
 import axios from 'axios';
+import { mapActions,mapState } from "vuex";
 const proxyurl = "https://cors-anywhere.herokuapp.com/";
 
 export default {
     name : 'news',
-    data() {
+     computed: {
+    ...mapState('diseaseStore', ['diseases']),
+  },data() {
         return {
             keyword: "",
             items: [],
+            selectedDisease:"",
             sample_images: [
                 {one: ""},
                 {two: ""},
@@ -34,18 +43,25 @@ export default {
         }
     },
     methods: {
-        async findNews() {
-            console.log(this.$parent.$parent.$parent)
+         ...mapActions("diseaseStore", ["getFolloingwDisease"]),
+        async findNews(keyword) {
+            console.log(keyword);
             this.$parent.$parent.$parent.isLoaded = false;
-            console.log(this.keyword);
+            this.selectedDisease = keyword
+            this.diseases.forEach(disease => {
+                disease.isSelected = false;
+                if(this.selectedDisease == disease.diseasename){
+                    disease.isSelected = true;
+                }
+            });
             var params = {
-                query: this.keyword,
+                query: keyword,
                 display: 10,
                 start: 1,
                 sort: 'sim'
             }
             var params2 = {
-                query: this.keyword,
+                query: keyword,
                 display: 2,
                 start: 1,
                 sort: 'sim',
@@ -94,7 +110,12 @@ export default {
         readNews(link) {
             window.open(link);
         }
-    }
+    },
+    created(){
+    this.$store.dispatch("diseaseStore/getFollowingDisease");
+    this.selectedDisease == this.diseases[0].diseasename //안됨
+    this.findNews(this.diseases[0].diseasename)
+  },
 }
 </script>
 
@@ -162,5 +183,29 @@ export default {
         color: slategray;
         font-size: 13px;
         font-weight: 600;
+    }
+
+    .tutorial-show-wrap {
+        width: 100%;
+        display: inline-block;
+    }
+
+    .tutorial-show-wrap span {
+        background-color: rgb(0, 171, 132);
+        padding: 5px 15px;
+        border: 10px;
+        font-size: 15px;
+        font-weight: 600;
+        height: 20px;
+        border-radius: 20px;
+        margin: 5px 10px 5px 10px ;
+        color: white;
+        display: inline-block;
+    }
+
+    .tutorial-show-wrap span.selected {
+        background-color: rgb(238, 241, 36);
+        color:black;
+        
     }
 </style>

@@ -21,8 +21,8 @@
           <td>
             <a class="time">{{ timeForToday(postInfo.post.post_date) }}</a>
           </td>
-          <td>
-            <div class="dropdown">
+          <td  >
+            <div class="dropdown" v-show="this.loginData.user_id == postInfo.userinfo.user_id">
               <img class="dropmenu" @click="isDelete = !isDelete" src="../../assets/images/icon/icon_3dots.png" />
             </div>
             <div v-show="isDelete" class="dropdown-content">
