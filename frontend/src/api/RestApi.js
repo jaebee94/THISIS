@@ -1,5 +1,5 @@
 export default {
-  URL: 'http://i3a301.p.ssafy.io:8089/THISIS', // 서버 포트
+  URL: 'https://i3a301.p.ssafy.io:8089/THISIS', // 서버 포트
   // URL: 'https://72dd9fcfa098.ngrok.io/THISIS',
   //URL: 'https://41fa72ea95de.ngrok.io/THISIS',
   //  URL: 'http://localhost:8088/THISIS',
@@ -18,7 +18,7 @@ export default {
     uploadProfile: '/account/upload',
 
     // posts: '/articles',
-    post : '/articles/',
+    post : '/articles',
     posts: '/articles/new',
     qnas: '/articles/qna',
     upload: '/articles/upload',
@@ -35,9 +35,6 @@ export default {
     follow : '/follow',
     followee: '/follow/followee/',
     follower: '/follow/follower/',
-
-    searchUser: '/account/search',
-    modify:'/articles/',
 
     disease: '/disease/user',
     subscribe: '/subscribe'

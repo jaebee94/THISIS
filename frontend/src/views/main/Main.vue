@@ -47,7 +47,6 @@ export default {
   created() {
     document.body.className = "whitebody";
     this.getNoti(this.loginData.user_id);
-    console.log("메인에서 로그인", this.loginData)
   },
   data() {
     return {
@@ -68,10 +67,8 @@ export default {
   },
   computed: {
     ...mapState('userStore', ['loginData', 'profileData']),
-    // ...mapState('profileStore', ['profileData']),
   },
   methods: {
-    // ...mapActions('profileStore', ['goProfile']),
     ...mapActions('userStore', ['goProfile']),
     ...mapActions('postStore', ['setPost','getUserScraps']),
 

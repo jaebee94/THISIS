@@ -79,15 +79,15 @@ export default {
       file: null,
       uploadData: {
         formData: null,
-        postData: {
+        postData: { //back postRequest
           post: {
             category: 0,
             diseasecode: null,
-            // diseasename: null,
             imgsrc: null,
             posts_main: null,
             posts_title: null,
           },
+          diseasename:null,
           tags: []
         },
       },
@@ -118,6 +118,7 @@ export default {
       this.isSearched = false;
       this.getDisease(this.keyword);
     },
+
   },
   methods: {
     ...mapActions('postStore', ['createPost']),
@@ -177,7 +178,7 @@ export default {
         },
         params: params,
       })
-      .then((res) => {
+      .then( (res) => {
         this.items = [];
         var len = res.data.response.body.totalCount;
         var items = res.data.response.body.items.item;
@@ -185,6 +186,7 @@ export default {
         else if(len == 1) this.items.push(items);
         else this.items = items;
         this.isSearched = true;
+        console.log(this.items)
       })
       .catch((err) => {
         this.isSearched = false;
@@ -194,7 +196,7 @@ export default {
     checkItem(item) {
       this.checkedItem = item.split(":");
       this.uploadData.postData.post.diseasecode = this.checkedItem[0]
-      //this.uploadData.postData.diseasename = this.checkedItem[1]
+      this.uploadData.postData.diseasename = this.checkedItem[1]
     },
     deleteItem() {
       // x표를 눌러 선택한 질병을 삭제하는 내용
@@ -240,13 +242,18 @@ export default {
     // ...mapActions(["createPost"]),
   },
   created(){
+    console.log(this.post)
     if(this.post != null){
         this.posts_title = this.post.post.posts_title
+        this.imgsrc = this.post.postimgsrc
+        if(this.post.post.category == 1){ //qna
+          this.checkQnA()
+        }
+        this.checkItem(this.post.post.diseasecode+':'+this.post.diseasename)
+        this.post.tags.forEach(tag => {
+          this.tags.push(tag.tagname)
+        });
         this.posts_main = this.post.post.posts_main;
-        this.uploadData.imgsrc = this.post.post.imgsrc;
-        this.items.sickCk=this.post.postdiseasecode;
-        this.items.sickNm=this.post.post.diseasename;
-        
         this.isFill =true;
     }
   }

@@ -71,7 +71,7 @@ const postStore = {
       commit('SET_POST',postInfo);
     },
     updatePost({ rootGetters }, postInfo) {
-      axios.put(SERVER.URL + SERVER.ROUTES.modify + postInfo.user_id, postInfo, rootGetters.config)
+      axios.put(SERVER.URL + SERVER.ROUTES.post, postInfo, rootGetters.config)
         .then(() => {
           alert('변경이 완료되었습니다.')
         })
