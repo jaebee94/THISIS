@@ -29,9 +29,9 @@
 	<!-- 회원정보 등록 -->
 	<insert id="insertUserInfo" parameterType="UserInfo">
 		insert into UserInfo(
-		username, nickname, email, password, introduction, userimage
+			username, nickname, email, password, introduction, userimage, salt
 		) values (
-		#{username},#{nickname},#{email},#{password},#{introduction},#{userimage}
+			#{username},#{nickname},#{email},#{password},#{introduction},#{userimage}, #{salt}
 		)
 	</insert>
 
@@ -58,18 +58,14 @@
 
 	<!-- 이메일에 해당하는 회원정보 조회 -->
 	<select id="findUserInfoByEmail" resultType="UserInfo">
-		select user_id,
-		username, nickname, email, password, introduction, userimage, role,
-		disabled
+		select user_id, username, nickname, email, password, introduction, userimage, role, disabled, salt
 		from UserInfo
 		where email = #{email}
 	</select>
 
 	<!-- 이메일과 비밀번호에 해당하는 회원정보 조회 -->
 	<select id="findUserByEmailAndPassword" resultType="UserInfo">
-		select
-		user_id, username, nickname, email, password, introduction, userimage,
-		role, disabled
+		select user_id, username, nickname, email, password, introduction, userimage, role, disabled, salt
 		from UserInfo
 		where email = #{email}
 		and password =
@@ -134,5 +130,12 @@
 		set role = "doctor"
 		where user_id = #{user_id}
 	</update>
-
+	
+	<!-- 암호화 -->
+	<select id="selectSaltByUserId" resultType="String">	
+		select salt
+		from UserInfo
+		where user_id = #{user_id}
+	</select>
+	
 </mapper>
