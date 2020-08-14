@@ -1,14 +1,10 @@
 package com.web.curation.controller;
 
-import java.io.Console;
+
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -18,33 +14,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.annotation.JacksonInject.Value;
-import com.google.gson.JsonObject;
 import com.web.curation.model.Auth;
-import com.web.curation.model.BasicResponse;
-import com.web.curation.model.Comment;
 import com.web.curation.model.Doctor;
-import com.web.curation.model.Post;
-import com.web.curation.model.TokenSet;
-import com.web.curation.model.UserInfo;
-import com.web.curation.model.UserResponse;
 import com.web.curation.service.AuthService;
 import com.web.curation.service.DoctorService;
-import com.web.curation.service.FollowService;
-import com.web.curation.service.HealthService;
-import com.web.curation.service.JwtService;
-import com.web.curation.service.PostService;
 import com.web.curation.service.UserInfoService;
 
 import io.swagger.annotations.ApiOperation;
