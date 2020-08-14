@@ -120,7 +120,6 @@ export default {
       }
     },
     items: function () {
-      console.log(this.items)
       this.checkout(this.items);
     },
     diseases:function(){
@@ -132,7 +131,7 @@ export default {
   },
   methods: {
     ...mapActions("userStore", ["goProfile"]),
-     ...mapActions("diseaseStore", ["getFolloingwDisease","createDisease","deleteDisease"]), //add와 딜리트 할때마다 내부에서 disease업데이트함
+    ...mapActions("diseaseStore", ["getFolloingwDisease","createDisease","deleteDisease"]), //add와 딜리트 할때마다 내부에서 disease업데이트함
     getSearchList(keyword) {
       if (this.currentTab == 0) {
         this.getDisease(keyword);
@@ -222,12 +221,6 @@ export default {
       this.selectedDisease.name = disease.sickNm;
       this.findDisease(disease.sickNm)
     },
-    // create(item){
-    //   this.createDisease(item);
-    // },
-    // delete(item){
-    //   this.createDisease(item);
-    // },
     async findDisease(disease){
       this.searchedItems = [];
       this.selectedDisease.description=""

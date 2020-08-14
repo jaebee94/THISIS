@@ -64,10 +64,14 @@ public class ScrapController {
 	@GetMapping("{user_id}")
 	public ResponseEntity<List<PostResponse>> selectuserScrap(@PathVariable int user_id,@RequestParam int num) throws Exception {
 		List<Scrap> scrapList = scrapService.selectScrap(user_id);
+		List<PostResponse> response = new ArrayList<>();
+		if( scrapList == null || scrapList.size()==0 ) {
+			return new ResponseEntity<List<PostResponse>>(response, HttpStatus.OK);
+		}
 		//System.out.println(scrapList.toString());
 		List<Post> Allpage = postService.selectScrapInfo(scrapList);
 		List<Post> page = null;
-		List<PostResponse> response = new ArrayList<>();
+		
 		System.out.println("user_id :" +user_id);
 		if (Allpage.size() / 10 > num && num * 10 + 10 <= Allpage.size()) {
 			page = Allpage.subList(num * 10, num * 10 + 10);

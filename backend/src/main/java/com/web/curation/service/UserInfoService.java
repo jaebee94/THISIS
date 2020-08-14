@@ -3,9 +3,11 @@ package com.web.curation.service;
 import java.util.List;
 
 import com.web.curation.model.UserInfo;
+import com.web.curation.model.UserPolice;
 
 public interface UserInfoService {
 	public List<UserInfo> selectUserInfo();
+	public List<UserPolice> selectUserInfoPolice();
 	public UserInfo selectUserInfoByUserid(int user_id);
 	public int insertUserInfo(UserInfo userinfo);
 	public int updateUserInfo(UserInfo userinfo);

@@ -5,12 +5,14 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.web.curation.model.Post;
+import com.web.curation.model.Postpolice;
 import com.web.curation.model.Scrap;
 
 @Mapper
 public interface PostDAO {
 	public List<Post> selectPost(int user_id);
 	public List<Post> selectAllPost();
+	public List<Postpolice> selectAllPostpolice();
 	public int createPost(Post post);
 	public int modifyPost(Post post);
 	public int deletePost(int id);
@@ -20,4 +22,5 @@ public interface PostDAO {
 	public int selectAutoIncrement();
 	public List<Post> selectQnA();
 	public int hiddenupdate(int posts_id);
+	public List<Post> selectQnAByMain(String keyword);
 }

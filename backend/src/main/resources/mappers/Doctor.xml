@@ -12,14 +12,14 @@
 		)
 	</insert>
 
-	<delete id="deleteDoctor" parameterType="String">
+	<delete id="deleteDoctor" parameterType="Integer">
 		delete
 		from doctor
 		where user_id = #{user_id}
 	</delete>
 	
 	<!-- 회원정보 수정 -->
-	<update id="updateDoctor" parameterType="Doctor">
+	<update id="updateDoctor" parameterType="Integer">
 		update doctor
 		set doctorimg = #{doctorimg}
 		where user_id = #{user_id}
@@ -36,12 +36,20 @@
 		from doctor
 		where doctorauth = "unread" 
 	</select>
-
+	
 	<select id="selectDoctorByUserid" resultType="Doctor">
 		select *
 		from doctor
 		where user_id = #{user_id}
 	</select>
+	
+	<select id="selectMyDoctor" resultType="Doctor">
+		select *
+		from doctor
+		where user_id = #{user_id}
+		order by doctor.doctor_id desc
+		limit 1
+	</select>	
 
 	<update id="updateDoctorImg">
 		update doctor
@@ -52,6 +60,12 @@
 	<update id="updateDoctorAuth">
 		update doctor
 		set doctorauth = "allowance"
+		where user_id = #{user_id}
+	</update>
+	
+	<update id="updateDoctorAuthFail">
+		update doctor
+		set doctorauth = "fail"
 		where user_id = #{user_id}
 	</update>
 

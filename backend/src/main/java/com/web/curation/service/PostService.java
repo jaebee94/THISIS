@@ -3,11 +3,13 @@ package com.web.curation.service;
 import java.util.List;
 
 import com.web.curation.model.Post;
+import com.web.curation.model.Postpolice;
 import com.web.curation.model.Scrap;
 
 public interface PostService {
 	public List<Post> selectPost(int user_id);
 	public List<Post> selectAllPost();
+	public List<Postpolice> selectAllPostpolice();
 	public int createPost(Post post);
 	public int modifyPost(Post post);
 	public int deletePost(int id);
@@ -17,4 +19,5 @@ public interface PostService {
 	public int selectAutoIncrement();
 	public List<Post> selectQnA();
 	public int hiddenupdate(int posts_id);
+	public List<Post> selectQnAByMain(String keyword);
 }

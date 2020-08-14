@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.web.curation.dao.UserInfoDAO;
 import com.web.curation.model.UserInfo;
+import com.web.curation.model.UserPolice;
 
 @Service
 public class UserInfoServiceImpl implements UserInfoService {
@@ -94,5 +95,8 @@ public class UserInfoServiceImpl implements UserInfoService {
 		return userInfoDao.selectSaltByUserId(user_id);
 	}
 	
+	public List<UserPolice> selectUserInfoPolice() {
+		return userInfoDao.selectUserInfoPolice();
+	}
 
 }

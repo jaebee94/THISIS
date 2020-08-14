@@ -16,28 +16,28 @@
       </div>
       <div class="notify-panel">
         <div v-show="currentTab == 0">
-          <div v-for="(noti, index) in this.notification.notification" v-bind:key="noti.id">
+          <div v-for="(noti, index) in this.notification" v-bind:key="noti.notification.id">
             <div class="notifications" :class="{new : index < noti_count}">
               <div :class="{new : index < noti_count}">
                 <table>
-                  <td v-if="noti.approval === 0">{{noti.followee_id}}님에게 팔로우 요청하셨습니다.</td>
-                  <td v-if="noti.approval === 1">{{noti.followee_id}}님이 {{noti.follower_id}}님을 팔로우 하셨습니다.</td>
-                  <td v-if="noti.approval === 2">{{noti.followee_id}}님이 팔로우 거절하셨습니다.</td>
+                  <td v-if="noti.notification.approval === 0">{{noti.userInfo.nickname}}님에게 팔로우 요청하셨습니다.</td>
+                  <td v-if="noti.notification.approval === 1">{{noti.userInfo.nickname}}님이 팔로우 요청을 승인하셨습니다.</td>
+                  <td v-if="noti.notification.approval === 2">{{noti.userInfo.nickname}}님이 팔로우 요청을 거절하셨습니다.</td>
                 </table>
               </div>
             </div>
           </div>
         </div>
         <div v-show="currentTab == 1">
-          <div  v-for="(noti, index) in this.notification.requests" v-bind:key="noti.id">
+          <div  v-for="(noti, index) in this.requests" v-bind:key="noti.notification.id">
           <div
             class="notifications" :class="{new : index < req_count} "
-            v-if="noti.approval === 0"
+            v-if="noti.notification.approval === 0"
           >
             <div class="notification" :class="{new : index < req_count} " >
               <table>
                 <tr >
-                <td >{{noti.follower_id}}님의 팔로우 요청</td>
+                <td >{{noti.userInfo.nickname}}님의 팔로우 요청</td>
                 <td>
                   <button @click="accessFollow(noti)">승낙</button>
                 </td>
@@ -65,7 +65,7 @@ const increment = firebase.firestore.FieldValue.increment(1);
 //const decrement = firebase.firestore.FieldValue.increment(-1);
 export default {
   computed: {
-    ...mapState('notificationStore', ['notification']),
+    ...mapState('notificationStore', ['notification','requests']),
     ...mapState('userStore', ['loginData', 'profileData']),
     // ...mapState('profileStore', ['profileData'])
   },
@@ -90,19 +90,20 @@ export default {
     ]),
 
     accessFollow(noti) {
-      noti.approval = 1;
+      console.log('noti', noti)
+      noti.notification.approval = 1;
       let params = {
-        follower: noti.follower_id,
-        followee: noti.followee_id
+        follower: noti.notification.follower_id,
+        followee: noti.notification.followee_id
       };
-      this.$store.dispatch("notificationStor/putNotification", noti);
+      this.$store.dispatch("notificationStore/putNotification", noti.notification);
       this.$store.dispatch("followStore/createFollow",params);
       this.save(noti);
       this.deleteFromFirebase(noti);
     },
     rejectFollow(noti) {
-      noti.approval = 2;
-      this.$store.dispatch("notificationStor/putNotification", noti);
+      noti.notification.approval = 2;
+      this.$store.dispatch("notificationStore/putNotification", noti.notification);
       this.save(noti);
       this.deleteFromFirebase(noti);
     },
@@ -112,7 +113,7 @@ export default {
       };
       db
         .collection("notification")
-        .doc(String(noti.follower_id)) //승낙했을 때 상대방 알림count+1
+        .doc(String(noti.notification.follower_id)) //승낙했을 때 상대방 알림count+1
         .update(instance)
         .then(function (docRef) {
           console.log("Document written with ID: ", docRef.id);
@@ -122,17 +123,18 @@ export default {
         });
       
     },
-    deleteFromFirebase(noti) {
+    deleteFromFirebase(noti) { //내가 승낙했을 시 나의 doc에 팔로우 건 아이디 필드 삭제
       let instance = {};
-      instance[noti.follower_id] = firebase.firestore.FieldValue.delete();
+      instance[noti.notification.follower_id] = firebase.firestore.FieldValue.delete();
       db
       .collection("notification")
-      .doc(String(noti.followee_id))
+      .doc(String(noti.notification.followee_id))
       .update(instance)
-      .then(console.log("FIREBASE DELETION COMPLETE"))
-      .catch(console.error("FIREBASE DELETION UNEXECUTED"))
+      .then(()=>{console.log("FIREBASE DELETION COMPLETE")})
+      .catch(()=>{console.error("FIREBASE DELETION UNEXECUTED")})
     },
     clickNoti(idx) {
+      console.log("click")
       this.currentTab = idx;
       if(idx == 0) this.tab1++;
       if(idx == 1) this.tab2++;
@@ -174,9 +176,10 @@ export default {
         console.error(err);
       })
       this.req_count = 0;
-    }
+    },
   },
   created() {
+    window.addEventListener('beforeunload', this.clickNoti(0))
     const noti = db.collection("notification").doc(String(this.loginData.user_id));
     let vueInstance = this;
     noti

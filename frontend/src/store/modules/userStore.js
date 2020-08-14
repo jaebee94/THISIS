@@ -2,7 +2,10 @@ import axios from 'axios'
 import router from '@/router'
 import SERVER from '@/api/RestApi.js'
 import cookies from 'vue-cookies'
-
+// import https from 'https';
+// const agent = new https.Agent({  
+//   rejectUnauthorized: false
+// });
 const userStore = {
   namespaced: true,
 
@@ -36,6 +39,7 @@ const userStore = {
   actions: {
     getAccessData({ commit }, info) {
       axios.get(SERVER.URL + info.location, {
+        //httpsAgent: agent,
         params: {
           email: info.params.email,
           password: info.params.password
@@ -71,11 +75,11 @@ const userStore = {
       router.push({ name: 'Login' })
     },
     async changeUserInfo({ rootGetters, dispatch }, changeInfo) {
-      await axios.put(SERVER.URL + SERVER.ROUTES.updateProfile, changeInfo.userInfo, rootGetters.config)
+      await axios.put(SERVER.URL + SERVER.ROUTES.updateProfile, changeInfo.userInfo, {headers: { accessToken:  cookies.get('access-token') }})
         .then(() => {
           console.log('소개 변경 완료')
           alert('변경이 완료되었습니다.')
-          dispatch('userStore/goProfile', changeInfo.userInfo.user_id, { root: true })
+          dispatch('goProfile', changeInfo.userInfo.user_id)
         })
         .catch(err => console.log('프로필 변경 에러: ', err))
       if (changeInfo.formData) {
@@ -86,19 +90,17 @@ const userStore = {
         await axios.post(SERVER.URL + SERVER.ROUTES.uploadProfile, changeInfo.formData, config)
         .then(async () => {
           console.log('사진 변경 완료')
-          dispatch('userStore/goProfile', changeInfo.userInfo.user_id, { root: true })
+          dispatch('goProfile', changeInfo.userInfo.user_id)
           // router.push({ name: 'Profile' })
         })
         .catch(err => console.log('사진 변경 에러: ', err))
       }
     },
-    async goProfile({ state, commit, rootGetters }, userId) {
+    async goProfile({ state, commit }, userId) {
       if (userId == null) {
         userId = state.loginData.user_id
         console.log('userId == null')
       }
-      console.log(userId)
-      console.log("1",rootGetters.config)
       await axios.get(SERVER.URL + SERVER.ROUTES.user + userId, {headers: { accessToken:  cookies.get('access-token') }})
         .then(res => {
           console.log('유저인포 요청완료')
@@ -107,7 +109,6 @@ const userStore = {
           // setTimeout(() => commit('SET_USER_INFO', res.data), 10000)
         })
         .catch(err => console.log(err))
-        console.log("2",rootGetters.config)
       await axios.get(SERVER.URL + SERVER.ROUTES.profile + userId, {headers: { accessToken:  cookies.get('access-token') }})
         .then(res => {
           console.log('프로필인포 요청 완료')

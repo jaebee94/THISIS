@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.web.curation.dao.TagRelationDAO;
-import com.web.curation.model.Tag_relation;
+import com.web.curation.model.TagRelation;
 
 @Service
 public class TagRelationServiceImpl implements TagRelationService {
@@ -15,23 +15,23 @@ public class TagRelationServiceImpl implements TagRelationService {
 	TagRelationDAO tagrelationdao;
 
 	@Override
-	public int createTagRelation(Tag_relation tagrelation) {
+	public int createTagRelation(TagRelation tagrelation) {
 		return tagrelationdao.createTagRelation(tagrelation);
 	}
 
 	@Override
-	public int deleteTagRelation(int tagid, int posts_id) {
-		return tagrelationdao.deleteTagRelation(tagid, posts_id);
+	public int deleteTagRelation(int tag_id, int post_id) {
+		return tagrelationdao.deleteTagRelation(tag_id, post_id);
 	}
 
 	@Override
-	public List<Tag_relation> selectTagRelationpost(int posts_id) {
-		return tagrelationdao.selectTagRelationpost(posts_id);
+	public List<TagRelation> selectTagRelationpost(int post_id) {
+		return tagrelationdao.selectTagRelationpost(post_id);
 	}
 
 	@Override
-	public List<Tag_relation> selectTagRelationtag(int tagid) {
-		return tagrelationdao.selectTagRelationtag(tagid);
+	public List<TagRelation> selectTagRelationtag(int tag_id) {
+		return tagrelationdao.selectTagRelationtag(tag_id);
 	}
 
 }

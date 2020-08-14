@@ -69,10 +69,34 @@
 .feed-main {
   padding: 10px 5px;
   text-align: left;
+  text-overflow: ellipsis;
 }
 
 .feed-main img {
   width: 100%;
+}
+
+.post-content { 
+  max-height: 100px;
+  overflow:hidden;
+  display: -webkit-box;
+  -webkit-line-clamp:3; 
+  -webkit-box-orient:vertical;
+  word-wrap: break-word;
+  text-overflow: ellipsis;
+  -webkit-transition: all .3s linear 0s;
+  transition: all .3s linear 0s;
+}
+
+.post-content.active {
+  display: inline-block;
+  max-height: 1000px;
+  overflow: auto;
+  white-space: normal;
+  word-wrap: unset;
+  text-overflow: unset;
+  -webkit-transition: all .3s linear 0s;
+  transition: all .3s linear 0s;
 }
 
 .feed-main strong {
