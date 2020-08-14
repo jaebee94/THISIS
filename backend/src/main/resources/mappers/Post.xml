@@ -67,9 +67,8 @@
 		set posts_title=#{posts_title},
 		posts_main = #{posts_main},
 		diseasecode=#{diseasecode},
-		imgsrc = #{imgsrc},
-		where posts_id
-		= #{posts_id}
+		imgsrc = #{imgsrc}
+		where posts_id = #{posts_id}
 	</update>
 
 	<update id="hiddenupdate">
