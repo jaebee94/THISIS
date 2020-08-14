@@ -15,7 +15,7 @@
         <img :src="sample_images.two">
     </div>
     <div class="news-content"> 
-        <ul v-for="item in items" v-bind:key="item">
+        <ul v-for="(item,idx) in items" v-bind:key="idx">
             <li><a @click="readNews(item.link)">{{item.title}}</a></li>
         </ul>
     </div>
