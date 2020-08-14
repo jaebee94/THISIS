@@ -61,12 +61,15 @@
 
 <script>
 import axios from 'axios';
-import { mapActions } from "vuex";
+import { mapState,mapActions } from "vuex";
 
 const proxyurl = "https://cors-anywhere.herokuapp.com/";
 
 export default {
   name: "Upload",
+  computed:{
+     ...mapState('postStore', ['post']),
+  },
   data() {
     return {
       isPost: true,
@@ -191,7 +194,7 @@ export default {
     checkItem(item) {
       this.checkedItem = item.split(":");
       this.uploadData.postData.post.diseasecode = this.checkedItem[0]
-      this.uploadData.postData.diseasename = this.checkedItem[1]
+      //this.uploadData.postData.diseasename = this.checkedItem[1]
     },
     deleteItem() {
       // x표를 눌러 선택한 질병을 삭제하는 내용
@@ -236,6 +239,17 @@ export default {
     },
     // ...mapActions(["createPost"]),
   },
+  created(){
+    if(this.post != null){
+        this.posts_title = this.post.post.posts_title
+        this.posts_main = this.post.post.posts_main;
+        this.uploadData.imgsrc = this.post.post.imgsrc;
+        this.items.sickCk=this.post.postdiseasecode;
+        this.items.sickNm=this.post.post.diseasename;
+        
+        this.isFill =true;
+    }
+  }
 };
 </script>
 

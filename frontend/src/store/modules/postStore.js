@@ -5,15 +5,20 @@ const postStore = {
   namespaced: true,
 
   state: {
+    post :{},
     comments: {},
     healths: {},
     checkScrap: 0,
   },
 
   getters: {
+
    },
   
   mutations: {
+    SET_POST(state, post) {
+      state.post = post
+    },
     SET_COMMENTS(state, comments) {
       state.comments = comments
     },
@@ -61,6 +66,9 @@ const postStore = {
           })
           .catch(err => console.log('사진 업로드 에러: ', err))
       }
+    },
+    setPost({commit},postInfo){
+      commit('SET_POST',postInfo);
     },
     updatePost({ rootGetters }, postInfo) {
       axios.put(SERVER.URL + SERVER.ROUTES.modify + postInfo.user_id, postInfo, rootGetters.config)

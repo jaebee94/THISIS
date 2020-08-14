@@ -1,7 +1,5 @@
 package com.web.curation.model;
 
-import java.util.Date;
-
 public class Post {
 	private int posts_id;
 	private int user_id;

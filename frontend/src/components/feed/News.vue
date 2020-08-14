@@ -188,10 +188,9 @@ export default {
     }
 
     .tutorial-show-wrap span {
-        line-height: 1;
         background-color: rgb(0, 171, 132);
         padding: 5px 15px;
-        border: none;
+        border: 10px;
         font-size: 15px;
         font-weight: 600;
         height: 20px;
