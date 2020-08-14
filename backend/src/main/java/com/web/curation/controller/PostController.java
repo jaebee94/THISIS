@@ -124,7 +124,7 @@ public class PostController {
 	// 반환 보내는 부분 함수로 통일
 	public ResponseEntity<List<PostResponse>> sendResponse(List<Post> Allpage, int num) {
 
-		List<PostResponse> response = null;
+		List<PostResponse> response = new ArrayList<>();
 		if (Allpage.size() / 10 > num && num * 10 + 10 <= Allpage.size()) {
 			response = reSaveResponse(Allpage.subList(num * 10, num * 10 + 10));
 			return new ResponseEntity<List<PostResponse>>(response, HttpStatus.OK);

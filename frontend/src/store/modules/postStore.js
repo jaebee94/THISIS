@@ -76,6 +76,7 @@ const postStore = {
       axios.put(SERVER.URL + SERVER.ROUTES.post, postInfo, rootGetters.config)
         .then(() => {
           alert('변경이 완료되었습니다.')
+          router.push({ name: 'Feed' })
         })
         .catch(err => console.log(err))
     },
