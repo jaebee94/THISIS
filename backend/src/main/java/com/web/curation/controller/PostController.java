@@ -84,9 +84,8 @@ public class PostController {
 			}
 		}
 	}
-	public void saveTags(PostRequest postRequest) {
-		List<String> tags = postRequest.tags;
-		int posts_id = postservice.selectAutoIncrement();
+	public void saveTags(List<String> tags,int posts_id) {
+	
 		System.out.println("posts_id :" + posts_id);
 		for (int i = 0; i < tags.size(); i++) {
 			// 태그 저장
@@ -241,7 +240,7 @@ public class PostController {
 
 		if (postservice.createPost(postRequest.post) == 1) {
 			// 태그 저장
-			saveTags(postRequest);
+			saveTags(postRequest.tags, postservice.selectAutoIncrement());
 			return new ResponseEntity<String>("success", HttpStatus.OK);
 		}
 		return new ResponseEntity<String>("fail", HttpStatus.NO_CONTENT);
@@ -250,9 +249,12 @@ public class PostController {
 	@ApiOperation(value = "게시글 수정", response = String.class)
 	@PutMapping
 	public ResponseEntity<String> updatePost(@RequestBody PostRequest postRequest) {
+		System.out.println("게시글 수정 : " + postRequest.toString());
 		createDisease(postRequest);
 		if (postservice.modifyPost(postRequest.post) == 1) {
-			saveTags(postRequest);
+			System.out.println("게시글 수정 완료");
+			saveTags(postRequest.tags,postRequest.post.getPosts_id());
+			System.out.println("태그 저장 완료");
 			return new ResponseEntity<String>("success", HttpStatus.OK);
 		}
 		return new ResponseEntity<String>("fail", HttpStatus.NO_CONTENT);

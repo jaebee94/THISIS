@@ -72,6 +72,7 @@ const postStore = {
       commit('SET_POST',postInfo);
     },
     updatePost({ rootGetters }, postInfo) {
+      console.log("updatePost",postInfo)
       axios.put(SERVER.URL + SERVER.ROUTES.post, postInfo, rootGetters.config)
         .then(() => {
           alert('변경이 완료되었습니다.')
@@ -159,8 +160,9 @@ const postStore = {
           params: {
             posts_id: posts_id,
             user_id: state.loginData.user_id
-          }
-        }, rootGetters.config)
+          },
+          headers : rootGetters.config.headers
+        })
         .then(res => {
           commit('SET_CHECK_SCRAPS', res.data);
         }).catch(err => console.log(err))
@@ -173,14 +175,18 @@ const postStore = {
         }).catch(err => console.log(err))
     },
     deleteFile({rootGetters},deletefile){
-      axios.delete(SERVER.URL + SERVER.ROUTES.upload,{delete_file : deletefile},rootGetters.config)
+      axios.delete(SERVER.URL + SERVER.ROUTES.upload,
+        {
+          data:{delete_file : deletefile}
+          ,headers : rootGetters.config.headers
+        })
       .then(res => {
         console.log("result", res);
       }).catch(err => console.log(err))
     },
     deleteTagRelation({rootGetters},params){
 
-      axios.delete(SERVER.URL + SERVER.ROUTES.tagrelation,params ,rootGetters.config)
+      axios.delete(SERVER.URL + SERVER.ROUTES.tagrelation,{data:params,headers : rootGetters.config.headers})
       .then(res => {
         console.log("result", res);
       }).catch(err => console.log(err));

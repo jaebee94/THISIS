@@ -72,7 +72,7 @@
         :disabled="!isFill"
         :class="{disabled : !isFill}"
       >올리기</button>
-      <button v-else @click="this.modify()" :disabled="!isFill" :class="{disabled : !isFill}">수정하기</button>
+      <button v-else @click="modify()" :disabled="!isFill" :class="{disabled : !isFill}">수정하기</button>
       <!-- <button @click="createPost(postData)" :disabled="!isFill" :class="{disabled : !isFill}">올리기</button> -->
     </div>
   </div>
@@ -263,7 +263,7 @@ export default {
       console.log(this.imgsrc);
     },
     modify() {
-      this.deleteFile(this.post.post.imgsrc); //기존 파일 삭제
+      if(this.post.post.imgsrc != null) this.deleteFile(this.post.post.imgsrc); //기존 파일 삭제
       this.post.tags.forEach((tag) => {
         var params = {
           tag_id: tag.tagid,
@@ -277,6 +277,7 @@ export default {
   created() {
     console.log(this.post);
     if (this.post != null) {
+      this.uploadData.postData.post = this.post.post;
       this.posts_title = this.post.post.posts_title;
       this.imgsrc = this.post.post.imgsrc;
       if (this.post.post.category == 1) {
