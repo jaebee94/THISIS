@@ -2,7 +2,7 @@ export default {
   URL: 'http://i3a301.p.ssafy.io:8089/THISIS', // 서버 포트
   // URL: 'https://72dd9fcfa098.ngrok.io/THISIS',
   //URL: 'https://41fa72ea95de.ngrok.io/THISIS',
-  //  URL: 'http://localhost:8088/THISIS',
+   //URL: 'http://localhost:8089/THISIS',
   ROUTES: {
     myprofile: '/account/0',
     user: '/account/',
@@ -40,7 +40,9 @@ export default {
     modify:'/articles/',
 
     disease: '/disease/user',
-    subscribe: '/subscribe'
+    subscribe: '/subscribe',
+
+    qnasmain : '/articles/qna/main'
 
   }
 }
