@@ -10,6 +10,7 @@ public class UserInfo {
 	private String userimage;
 	private String role;
 	private int disabled;
+	private String salt;
 
 	public int getUser_id() {
 		return user_id;
@@ -83,12 +84,20 @@ public class UserInfo {
 		this.disabled = disabled;
 	}
 
+	public String getSalt() {
+		return salt;
+	}
+
+	public void setSalt(String salt) {
+		this.salt = salt;
+	}
+
 	public UserInfo() {
 
 	}
 
 	public UserInfo(int user_id, String username, String nickname, String email, String password, String introduction,
-			String userimage, String role, int disabled) {
+			String userimage, String role, int disabled, String salt) {
 		super();
 		this.user_id = user_id;
 		this.username = username;
@@ -99,7 +108,7 @@ public class UserInfo {
 		this.userimage = userimage;
 		this.role = role;
 		this.disabled = disabled;
+		this.salt = salt;
 	}
-
 
 }
