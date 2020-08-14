@@ -82,6 +82,7 @@
 		(posts.user_id in (select followee from followers_following where
 		follower = #{user_id})
 		OR posts.user_id = #{user_id}
+		OR posts.user_id = 1
 		OR
 		posts.diseasecode in (select diseasecode from disease where
 		disease.diseasecode in (select diseasecode from subscribe where
