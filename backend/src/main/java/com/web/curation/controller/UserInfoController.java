@@ -1,8 +1,6 @@
 package com.web.curation.controller;
 
-import java.io.Console;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -29,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.annotation.JacksonInject.Value;
 import com.google.gson.JsonObject;
 import com.web.curation.model.Auth;
 import com.web.curation.model.BasicResponse;
