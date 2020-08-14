@@ -18,7 +18,7 @@
 	
 	<insert id="createTagRelation">
 		insert into tag_relation (tag_id, posts_id)
-		values(#{tagid}, #{posts_id})
+		values(#{tag_id}, #{posts_id})
 	</insert>
 
 	<delete id="deleteTagRelation">
