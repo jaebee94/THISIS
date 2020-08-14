@@ -16,7 +16,7 @@
       </div>
       <div class="notify-panel">
         <div v-show="currentTab == 0">
-          <div v-for="(noti, index) in this.notification" v-bind:key="noti.id">
+          <div v-for="(noti, index) in this.notification" v-bind:key="noti.notification.id">
             <div class="notifications" :class="{new : index < noti_count}">
               <div :class="{new : index < noti_count}">
                 <table>
@@ -29,10 +29,10 @@
           </div>
         </div>
         <div v-show="currentTab == 1">
-          <div  v-for="(noti, index) in this.requests" v-bind:key="noti.id">
+          <div  v-for="(noti, index) in this.requests" v-bind:key="noti.notification.id">
           <div
             class="notifications" :class="{new : index < req_count} "
-            v-if="noti.approval === 0"
+            v-if="noti.notification.approval === 0"
           >
             <div class="notification" :class="{new : index < req_count} " >
               <table>
@@ -90,19 +90,20 @@ export default {
     ]),
 
     accessFollow(noti) {
-      noti.approval = 1;
+      console.log('noti', noti)
+      noti.notification.approval = 1;
       let params = {
-        follower: noti.follower_id,
-        followee: noti.followee_id
+        follower: noti.notification.follower_id,
+        followee: noti.notification.followee_id
       };
-      this.$store.dispatch("notificationStore/putNotification", noti);
+      this.$store.dispatch("notificationStore/putNotification", noti.notification);
       this.$store.dispatch("followStore/createFollow",params);
       this.save(noti);
       this.deleteFromFirebase(noti);
     },
     rejectFollow(noti) {
-      noti.approval = 2;
-      this.$store.dispatch("notificationStore/putNotification", noti);
+      noti.notification.approval = 2;
+      this.$store.dispatch("notificationStore/putNotification", noti.notification);
       this.save(noti);
       this.deleteFromFirebase(noti);
     },
@@ -112,7 +113,7 @@ export default {
       };
       db
         .collection("notification")
-        .doc(String(noti.follower_id)) //승낙했을 때 상대방 알림count+1
+        .doc(String(noti.notification.follower_id)) //승낙했을 때 상대방 알림count+1
         .update(instance)
         .then(function (docRef) {
           console.log("Document written with ID: ", docRef.id);
@@ -124,13 +125,13 @@ export default {
     },
     deleteFromFirebase(noti) { //내가 승낙했을 시 나의 doc에 팔로우 건 아이디 필드 삭제
       let instance = {};
-      instance[noti.follower_id] = firebase.firestore.FieldValue.delete();
+      instance[noti.notification.follower_id] = firebase.firestore.FieldValue.delete();
       db
       .collection("notification")
-      .doc(String(noti.followee_id))
+      .doc(String(noti.notification.followee_id))
       .update(instance)
-      .then(console.log("FIREBASE DELETION COMPLETE"))
-      .catch(console.error("FIREBASE DELETION UNEXECUTED"))
+      .then(()=>{console.log("FIREBASE DELETION COMPLETE")})
+      .catch(()=>{console.error("FIREBASE DELETION UNEXECUTED")})
     },
     clickNoti(idx) {
       console.log("click")

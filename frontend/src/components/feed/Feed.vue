@@ -97,7 +97,7 @@
       <div class="qna-comment-write-wrap">
         <input v-model="commentData.comment_main" placeholder="내용을 입력하세요" />
         <button @click="commentInfo(postInfo), createComment(commentData), clearCommentData()">댓글</button>
-      </div>
+      </div> 
       <div class="post-footer">
         <img @click="closePost()" src="../../assets/images/icon/icon_close.png" />
       </div>
@@ -134,10 +134,7 @@
           ref="infiniteLoadingPost" @infinite="infiniteHandler"></infinite-loading>
     </div>
 
-    
-
-
-
+  
     <div v-show="currentTab == 1"> 
       <!-- <h1>Q&A게시판</h1> -->
       <form v-on:submit.prevent="searchQna">
@@ -150,10 +147,6 @@
         <input v-model="qnakeyword" id="qnakeyword" placeholder="검색어를 입력하세요">
         <button type="submit">검색</button>
       </form>
-      <!--
-      <input id="check-mine" type="checkbox">
-      <label for="check-mine">내꺼 보기</label>
-      -->
       <qna v-for="qnaInfo in qnas" v-bind:key="qnaInfo.posts_id"
       v-bind:qnaInfo="qnaInfo" @send-modify-qna="showModifyQnA">
       </qna> 
@@ -282,16 +275,13 @@ export default {
                   data.forEach((element) => {
                     element.health = false;
                     element.scrap = false;
-                    console.log(element)
                     element.post.health_count = element.healths.length;
                     element.healths.forEach((ele) => {
-                      console.log(ele)
                       if (ele.user_id == this.loginData.user_id) {
                         element.health = true;
                       }
                     });
                   });
-                  console.log("data",data)
                   this.qnas.push(...data);
                   $state.loaded();
                 } else {
@@ -310,7 +300,6 @@ export default {
       };
       
       let url = SERVER.URL + SERVER.ROUTES.qnas;
-      console.log('url', url)
       //통신부분
       axios.get(url, params).then(({ data }) => {
           if (data.length) {
@@ -319,16 +308,13 @@ export default {
             data.forEach((element) => {
               element.health = false;
               element.scrap = false;
-               console.log(element)
               element.post.health_count = element.healths.length;
               element.healths.forEach((ele) => {
-                console.log(ele)
                 if (ele.user_id == this.loginData.user_id) {
                   element.health = true;
                 }
               });
             });
-            console.log("data",data)
             this.qnas.push(...data);
             $state.loaded();
           } else {
@@ -347,7 +333,6 @@ export default {
         headers: { accessToken:  cookies.get('access-token') }
       };
       let url = SERVER.URL;
-      console.log("In Profile, profile_data is", this.profile_data);
       if(this.profile_data== undefined || this.profile_data.tab == 0) {
         url += SERVER.ROUTES.posts
         params.params.user_id= -1 //-1일 경우 전체 게시물
@@ -359,10 +344,7 @@ export default {
       }
       else if(this.profile_data.tab == 1){ //스크랩 보여주기
         url += SERVER.ROUTES.scrap + "/" + this.profile_data.user_id;
-        console.log("남의 꺼에서 url : ", url);
       } 
-      console.log("params", params);
-      console.log("url", url);
       //통신부분
       axios.get(url, params).then(({ data }) => {
           if (data.length) {
@@ -496,7 +478,6 @@ export default {
      this.$refs.infiniteLoadingQnA.stateChanger.reset();
     this.$store.dispatch("getCheckScrap");
     this.$store.dispatch("diseaseStore/getFollowingDisease");
-    console.log("diseases", this.diseases)
     this.searchType = "nonsearch";
   },
 };

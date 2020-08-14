@@ -5,9 +5,10 @@
 <mapper namespace="com.web.curation.dao.PoliceDAO">
 
 	<select id="selectUserPolice" resultType="Integer">
-		select count(*)
-		from police
-		where user_id=#{user_id}
+		select (select count(*) from police p join posts po on p.posts_id =
+		po.posts_id where po.user_id = u.user_id) as count
+		from UserInfo u
+		where u.user_id = #{user_id}
 	</select>
 	
 	<insert id="createPolice">

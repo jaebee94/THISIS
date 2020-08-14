@@ -23,6 +23,7 @@ const notificationStore = {
 
   actions: {
     putNotification({ rootGetters }, params) {
+      console.log('putNotification Params', params)
       axios.put(SERVER.URL + SERVER.ROUTES.following, params,rootGetters.config.headers)
         .then(res => {
           console.log(res)
@@ -42,8 +43,9 @@ const notificationStore = {
     fetchRequests({ rootGetters, commit }, id) {
       axios.get(SERVER.URL + SERVER.ROUTES.requests + id, rootGetters.config.headers)
         .then(res => {
+          console.log('fetchRequests 요청 URL', SERVER.URL + SERVER.ROUTES.requests + id)
           commit('SET_REQUESTS', res.data)
-          console.log(res)
+          console.log('fetchRequests', res)
         })
         .catch(err => console.log(err))
     },

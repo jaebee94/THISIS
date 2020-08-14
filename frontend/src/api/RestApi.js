@@ -18,7 +18,7 @@ export default {
     uploadProfile: '/account/upload',
 
     // posts: '/articles',
-    post : '/articles/',
+    post : '/articles',
     posts: '/articles/new',
     qnas: '/articles/qna',
     upload: '/articles/upload',
@@ -35,9 +35,6 @@ export default {
     follow : '/follow',
     followee: '/follow/followee/',
     follower: '/follow/follower/',
-
-    searchUser: '/account/search',
-    modify:'/articles/',
 
     disease: '/disease/user',
     subscribe: '/subscribe',

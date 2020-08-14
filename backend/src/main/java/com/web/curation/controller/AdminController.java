@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.web.curation.model.Auth;
 import com.web.curation.model.BasicResponse;
 import com.web.curation.model.Doctor;
+import com.web.curation.model.DoctorResponse;
 import com.web.curation.model.Follow;
 import com.web.curation.model.Police;
 import com.web.curation.model.PoliceJoin;
@@ -78,7 +79,6 @@ public class AdminController {
 			List<PostpoliceResponse> response = new ArrayList<>();
 			if (Allpage.size() / 10 > num && num * 10 + 10 <= Allpage.size()) {
 				page = Allpage.subList(num * 10, num * 10 + 10);
-
 				// 페이지 돌면서 response에 다시 저장
 				for (int i = 0; i < page.size(); i++) {
 					PostpoliceResponse temp = new PostpoliceResponse();
@@ -149,8 +149,27 @@ public class AdminController {
 	}
 
 	// user
-	
-	
+	@ApiOperation(value = "신고 많이 받은 순으로 유저 반환", response = List.class)
+	@GetMapping("user")
+	public ResponseEntity<List<UserPolice>> selectAllUserpolice(@RequestParam int num, HttpServletRequest request)
+			throws Exception {
+		if (check(request) == 1) {
+			List<UserPolice> Allpage = userInfoService.selectUserInfoPolice();
+			List<UserPolice> page = null;
+			if (Allpage.size() / 10 > num && num * 10 + 10 <= Allpage.size()) {
+				page = Allpage.subList(num * 10, num * 10 + 10);
+				return new ResponseEntity<List<UserPolice>>(page, HttpStatus.OK);
+			} else if (Allpage.size() / 10 < num) {
+				return new ResponseEntity<List<UserPolice>>(page, HttpStatus.NO_CONTENT);
+			} else {
+				page = Allpage.subList(num * 10, Allpage.size());
+				return new ResponseEntity<List<UserPolice>>(page, HttpStatus.OK);
+			}
+		} else {
+			return new ResponseEntity<List<UserPolice>>(HttpStatus.UNAUTHORIZED);
+		}
+	}
+
 	@ApiOperation(value = "계정 사용정지", response = BasicResponse.class)
 	@PostMapping("user/disable")
 	public ResponseEntity<String> disbaledaccount(@RequestParam int user_id, HttpServletRequest request)
@@ -177,7 +196,7 @@ public class AdminController {
 		}
 	}
 
-	@ApiOperation(value = "유저에 신고한 신고한다 수를 반환한다.", response = Integer.class)
+	@ApiOperation(value = "유저가 신고받은 수를 반환한다.", response = Integer.class)
 	@GetMapping("police/user/{user_id}")
 	public ResponseEntity<Integer> selectuserpolice(@PathVariable int user_id, HttpServletRequest request)
 			throws Exception {
@@ -194,7 +213,7 @@ public class AdminController {
 		if (check(request) == 1) {
 			return new ResponseEntity<List<Police>>(policeservice.selectpostPolice(posts_id), HttpStatus.OK);
 		}
-		return new ResponseEntity<List<Police>>(HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<List<Police>>(HttpStatus.UNAUTHORIZED);
 	}
 
 	@ApiOperation(value = "유저에 해당하는 모든 신고 자료를 반환한다.", response = List.class)
@@ -220,11 +239,20 @@ public class AdminController {
 
 	@ApiOperation(value = "체크하지 않은 사람들을 반환한다.", response = List.class)
 	@GetMapping("doctor-auth/check")
-	public ResponseEntity<List<Doctor>> selectCheckDoctor(HttpServletRequest request) throws Exception {
+	public ResponseEntity<List<DoctorResponse>> selectCheckDoctor(HttpServletRequest request) throws Exception {
 		if (check(request) == 1) {
-			return new ResponseEntity<List<Doctor>>(doctorService.selectCheckDoctor(), HttpStatus.OK);
+			List<DoctorResponse> doctorResponse = new ArrayList<>();
+			List<Doctor> doctor = doctorService.selectCheckDoctor();
+			for (int i = 0; i < doctor.size(); i++) {
+				DoctorResponse response = new DoctorResponse();
+				response.doctor = doctor.get(i);
+				response.userinfo = userInfoService.selectUserInfoByUserid(doctor.get(i).getUser_id());
+				doctorResponse.add(response);
+				System.out.println(response.toString());
+			}
+			return new ResponseEntity<List<DoctorResponse>>(doctorResponse, HttpStatus.OK);
 		} else {
-			return new ResponseEntity<List<Doctor>>(HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<List<DoctorResponse>>(HttpStatus.UNAUTHORIZED);
 		}
 	}
 

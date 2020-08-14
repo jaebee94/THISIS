@@ -61,12 +61,15 @@
 
 <script>
 import axios from 'axios';
-import { mapActions } from "vuex";
+import { mapState,mapActions } from "vuex";
 
 const proxyurl = "https://cors-anywhere.herokuapp.com/";
 
 export default {
   name: "Upload",
+  computed:{
+     ...mapState('postStore', ['post']),
+  },
   data() {
     return {
       isPost: true,
@@ -76,15 +79,15 @@ export default {
       file: null,
       uploadData: {
         formData: null,
-        postData: {
+        postData: { //back postRequest
           post: {
             category: 0,
             diseasecode: null,
-            // diseasename: null,
             imgsrc: null,
             posts_main: null,
             posts_title: null,
           },
+          diseasename:null,
           tags: []
         },
       },
@@ -115,6 +118,7 @@ export default {
       this.isSearched = false;
       this.getDisease(this.keyword);
     },
+
   },
   methods: {
     ...mapActions('postStore', ['createPost']),
@@ -174,7 +178,7 @@ export default {
         },
         params: params,
       })
-      .then((res) => {
+      .then( (res) => {
         this.items = [];
         var len = res.data.response.body.totalCount;
         var items = res.data.response.body.items.item;
@@ -182,6 +186,7 @@ export default {
         else if(len == 1) this.items.push(items);
         else this.items = items;
         this.isSearched = true;
+        console.log(this.items)
       })
       .catch((err) => {
         this.isSearched = false;
@@ -236,6 +241,22 @@ export default {
     },
     // ...mapActions(["createPost"]),
   },
+  created(){
+    console.log(this.post)
+    if(this.post != null){
+        this.posts_title = this.post.post.posts_title
+        this.imgsrc = this.post.postimgsrc
+        if(this.post.post.category == 1){ //qna
+          this.checkQnA()
+        }
+        this.checkItem(this.post.post.diseasecode+':'+this.post.diseasename)
+        this.post.tags.forEach(tag => {
+          this.tags.push(tag.tagname)
+        });
+        this.posts_main = this.post.post.posts_main;
+        this.isFill =true;
+    }
+  }
 };
 </script>
 
