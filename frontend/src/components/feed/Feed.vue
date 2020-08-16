@@ -14,40 +14,55 @@
       </div>
     </div>
 
+    <div >
+    <Modal class = "modal"  v-if="this.isShowModal" v-on:close="isShowModal = false">
+      <template v-slot:modal-text>{{ modalText }}</template>
+    </Modal>
+    </div>
+
     <div v-if="this.isQnAHidden" class="post" ref="qna">
       <div class="qna-wrapper">
         <div class="qna-header">
           <div class="title">
-            <a>{{qnaInfo.post.posts_title}}</a>
+            <strong>{{qnaInfo.post.posts_title}}</strong>
           </div>
-          <div class="nickname">
-            <a>{{qnaInfo.userinfo.nickname}}</a>
-          </div>
-          <div class="time">
-            <a>{{ timeForToday(qnaInfo.post.post_date) }}</a>
-          </div>
+          <span class="nickname">
+            {{qnaInfo.userinfo.nickname}}
+          </span>
+          <span class="time">
+            {{ timeForToday(qnaInfo.post.post_date) }}
+          </span>
         </div>
         <div v-if="qnaInfo.post.imgsrc != null" class="qna-photo-wrap">
           <img :src="qnaInfo.post.imgsrc" />
         </div>
         <div class="qna-main-content-wrap">
           <div class="qna-tag-wrap">
-            <div>
-              <span v-if="qnaInfo.diseasename != ''" class="disease-tag">#{{qnaInfo.diseasename}}</span>
+            <div v-if="qnaInfo.diseasename != ''">
+               <strong>관련 질병 :</strong><span  class="disease-tag">#{{qnaInfo.diseasename}}</span>
             </div>
-            <div class="qna-custom-tag-wrap">
+            <br>
+            <!-- <div class="qna-custom-tag-wrap">
+              <div><strong>관련 태그 :</strong>
               <a
                 class="custom-tag"
                 v-for="tag in qnaInfo.tags"
                 v-bind:key="tag.tagid"
-              >#{{tag.tagname}}</a>
-            </div>
+              >#{{tag.tagname}}</a></div>
+            </div> -->
           </div>
           <div
             class="qna-content-wrap"
             :class="{active: isActive}"
             @click="isActive = !isActive"
-          >{{qnaInfo.post.posts_main}}</div>
+          >{{qnaInfo.post.posts_main}}
+          <a
+                class="custom-tag"
+                v-for="tag in qnaInfo.tags"
+                v-bind:key="tag.tagid"
+              >#{{tag.tagname}}</a>
+          </div>
+          
         </div>
         <div :class="{'wide' : qnaInfo.post.imgsrc == null}" class="qna-comment-wrap">
           <comment
@@ -58,7 +73,7 @@
         </div>
         <div class="qna-comment-write-wrap">
           <input v-model="commentData.comment_main" placeholder="내용을 입력하세요" />
-          <button @click="commentInfo(qnaInfo), createComment(commentData), clearCommentData()">댓글</button>
+          <button @click="createComment(commentData), clearCommentData()">댓글</button>
         </div>
         <div class="post-footer">
           <img @click="closeQnA()" src="../../assets/images/icon/icon_close.png" />
@@ -111,18 +126,20 @@
           v-for="comment in comments"
           v-bind:key="comment.comment_id"
           v-bind:comment="comment"
+          @check-delete ="showModal"
         ></comment>
       </div>
       <div class="qna-comment-write-wrap">
         <input v-model="commentData.comment_main" placeholder="내용을 입력하세요" />
-        <button @click="commentInfo(postInfo), createComment(commentData), clearCommentData()">댓글</button>
+        <button @click="createComment(commentData), clearCommentData()">댓글</button>
       </div>
       <div class="post-footer">
         <img @click="closePost()" src="../../assets/images/icon/icon_close.png" />
       </div>
     </div>
 
-    <!-- <div class="modify-wrap" v-if="this.isModifyHidden">
+    <!-- 아예 업로드에서 수정하기로 바꿈
+      <div class="modify-wrap" v-if="this.isModifyHidden">
       <div>
         <h2>제목 : {{ postInfo.post.posts_title }}</h2>
       </div>
@@ -237,7 +254,8 @@ export default {
       qnakeyword: "",
       qnaoption: "",
       searchType: "nonsearch",
-
+      isShowModal:false,
+      modalText:"",
       currentTab: 0,
       tabs: [
         require("../../assets/images/icon/icon_post.png"),
@@ -461,15 +479,6 @@ export default {
       this.commentData.posts_id = info.postInfo.posts_id;
       this.commentData.user_id = this.loginData.user_id;
     },
-    // showModify(info) {
-    //   //댓글이나 글 수정시 부르는 함수
-    //   console.log('showInfo', info)
-    //   this.postInfo = info.postInfo;
-    //   this.commentData.posts_id = info.postInfo.posts_id;
-    //   this.commentData.user_id = this.loginData.user_id;
-    //   // this.$router.push({name: 'Login'});
-    //   this.$router.push({name: 'Detail', params: info});
-    // },
     showModifyQnA(info) {
       console.log(info);
       this.qnaInfo = info.qnaInfo;
@@ -482,6 +491,16 @@ export default {
       this.commentData.posts_id = info.qnaInfo.posts_id;
       this.commentData.user_id = this.loginData.user_id;
     },
+    showModal(modalText){
+      this.$parent.$parent.isHidden= true
+       this.$parent.$parent.$parent.isHidden = true;
+        document.body.className = "lockbody";
+      //this.isQnAHidden= false;
+      //this.isPostHidden= false;
+      this.isShowModal=true;
+      
+      this.modalText=modalText;
+    },
     closeQnA() {
       this.qnas=[];
       this.qnaPage=0;
@@ -493,10 +512,7 @@ export default {
       /*------ 피드 스크롤 unlock ------*/
       document.body.className = "";
       /*------ 피드 스크롤 unlock ------*/
-      
-      
-      
-     
+
     },
     timeForToday(time) {
       const today = new Date();
@@ -518,10 +534,6 @@ export default {
         return `${betweenTimeDay}일전`;
       }
       return `${Math.floor(betweenTimeDay / 365)}년전`;
-    },
-    commentInfo(info) {
-      console.log(info);
-      this.commentData.posts_id = info.posts_id;
     },
   },
   created() {
@@ -664,6 +676,14 @@ div.feed {
   font-size: 10px;
   border-radius: 70%;
   padding: 1px 3px;
+}
+
+.modal{
+  position: fixed;
+  z-index: 100;
+  width: 70%;
+  height: 20%;
+  background-color: white;
 }
 
 .post {
@@ -833,7 +853,7 @@ div.feed {
 }
 
 /* 수정할 포스트 내용 보이기 */
-.modify-wrap {
+/* .modify-wrap {
   position: fixed;
   z-index: 99;
   top: 10%;
@@ -841,7 +861,7 @@ div.feed {
   height: 70%;
   background-color: white;
   border-radius: 5px;
-}
+} */
 
 .post-content textarea {
   padding: 5px 5px;
@@ -892,6 +912,7 @@ div.feed {
 }
 
 .post .qna-wrapper {
+  margin : 15px 0px 15px 0px;
   height: 100%;
   overflow: auto;
 }
@@ -901,25 +922,32 @@ div.feed {
   padding-left: 5%;
 }
 
-.qna-header .title a {
-  font-size: 20px;
-  font-weight: 600;
+.qna-header .title strong{
+  font-size: 30px;
+  
 }
 
-.qna-header .nickname a {
+.qna-header .nickname{
   font-size: 15px;
-  font-weight: 500;
+  position: relative;
+  margin : 10px;
+  left : 70%;
 }
 
-.qna-header .time a {
+.qna-header .time{
   color: slategray;
   font-size: 10px;
+  float: right;
+  margin : 5px 10px 5px 10px;
 }
 
 .qna-photo-wrap {
   width: 90%;
   /* height: 40%; */
-  margin-left: 5%;
+  margin:0 auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  
 }
 
 .qna-photo-wrap img {
@@ -937,9 +965,11 @@ div.feed {
 
 .qna-tag-wrap {
   width: 100%;
+  
 }
 
 .qna-tag-wrap div {
+  float:left;
   margin-bottom: 5px;
 }
 
@@ -951,19 +981,20 @@ div.feed {
   border: none;
   border-radius: 5px;
   padding: 3px 8px;
-}
-
-.qna-custom-tag-wrap {
-  width: 100%;
-}
-
-.qna-tag-wrap .custom-tag {
-  color: rgb(0, 171, 132);
-  font-size: 12px;
   margin-left: 5px;
 }
 
+.qna-custom-tag-wrap{
+  width:100%;
+  float: left;
+}
+
+.custom-tag {
+  color: rgb(0, 171, 132);
+}
+
 .qna-content-wrap {
+  width : 100%;
   max-height: 100px;
   text-align: left;
   overflow: hidden;

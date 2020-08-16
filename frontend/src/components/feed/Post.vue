@@ -38,13 +38,16 @@
         </tr>
       </table>
     </div>
-    <div class="feed-main">
+    <div class="feed-main" @click="changeSelectPost(postInfo,'comment')">
       <img v-show="postInfo.post.imgsrc != null" :src="postInfo.post.imgsrc" />
       <div class = "tag-header">
         <span v-show="postInfo.diseasename !=''">{{postInfo.diseasesename}} | </span>
          <span  v-for="tag in postInfo.tags" v-bind:key="tag.tagid">{{tag.tagname}}</span>
     </div>
-      <div class="post-content" :class="{active : isActive}" @click="isActive = !isActive"><strong @click="goProfile(postInfo.post.user_id)">{{postInfo.userinfo.nickname}}</strong> {{postInfo.post.posts_main }}</div>
+      <div class="post-content" 
+      :class="{active : isActive}" @click="isActive = !isActive"
+      >
+      <strong @click="goProfile(postInfo.post.user_id)">{{postInfo.userinfo.nickname}}</strong> {{postInfo.post.posts_main }}</div>
       <div v-if="postInfo.post.category == 0">
         <a v-show="postInfo.post.health_count != 0">
           <strong>{{postInfo.post.health_count}}명</strong>이 건강해요를 눌렀습니다
