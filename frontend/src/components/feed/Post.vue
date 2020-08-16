@@ -33,6 +33,10 @@
     </div>
     <div class="feed-main">
       <img v-show="postInfo.post.imgsrc != null" :src="postInfo.post.imgsrc" />
+      <div class = "tag-header">
+        <span v-show="postInfo.diseasename !=''">{{postInfo.diseasesename}} | </span>
+         <span  v-for="tag in postInfo.tags" v-bind:key="tag.tagid">{{tag.tagname}}</span>
+    </div>
       <div class="post-content" :class="{active : isActive}" @click="isActive = !isActive"><strong @click="goProfile(postInfo.post.user_id)">{{postInfo.userinfo.nickname}}</strong> {{postInfo.post.posts_main }}</div>
       <div v-if="postInfo.post.category == 0">
         <a v-show="postInfo.post.health_count != 0">
@@ -118,7 +122,8 @@ export default {
       "health",
       "scrap",
       "deleteScrap",
-      "deletePost"
+      "deletePost",
+      "setPost"
     ]),
     changeSelectPost(post, sort) {
       this.selectedPost = post;
@@ -130,12 +135,15 @@ export default {
       };
 
       if (sort === "modify") {
-        info.isModifyHidden = true;
+        console.log("post",post)
+         this.setPost(post)
+         this.$router.push({name: 'Upload'});
       } else if (sort === "comment") {
         info.isPostHidden = true;
         this.fetchComments(post.posts_id);
+         this.$emit("send-modify", info);
       }
-      this.$emit("send-modify", info);
+     
     },
     clickHealth(post) {
       if (post.health == true) {
@@ -218,6 +226,19 @@ export default {
   width : 30px;
   height: 30px;
   object-fit: cover;
+}
+
+.tag-header span{
+  background-color: rgb(0, 171, 132);
+  padding: 5px 15px;
+  border: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  height: 20px;
+  border-radius: 20px;
+  margin: 5px 10px 5px 0px ;
+  color: white;
+  display: inline-block;
 }
 
 .dropdown {

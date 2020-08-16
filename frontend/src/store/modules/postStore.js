@@ -73,9 +73,20 @@ const postStore = {
     setPost({ commit }, postInfo) {
       commit('SET_POST', postInfo);
     },
-    updatePost( uploadData) {
+    updatePost({rootGetters},uploadData) {
       console.log("updatePost", uploadData)
-      if (uploadData.formData != null) {
+
+      if (uploadData.formData == null) {
+        axios.put(SERVER.URL + SERVER.ROUTES.post, 
+          uploadData.postData,
+          rootGetters.config
+          )
+          .then(() => {
+            alert('게시글 변경이 완료되었습니다.')
+            router.push({ name: 'Feed' })
+          })
+          .catch(err => console.log(err))
+      } else {
 
         axios.post(SERVER.URL + SERVER.ROUTES.upload, uploadData.formData, {
           header: {
@@ -84,19 +95,21 @@ const postStore = {
           },
         })
           .then(res => {
-            console.log("사진 수정 완료",  res)
+            uploadData.postData.post.imgsrc = res.data
+            console.log(uploadData.postData)
+            axios.put(SERVER.URL + SERVER.ROUTES.post, 
+              uploadData.postData,
+              rootGetters.config
+              )
+              .then(() => {
+                alert('게시글 변경이 완료되었습니다.')
+                router.push({ name: 'Feed' })
+              })
+              .catch(err => console.log(err))
           })
           .catch(err => console.log('사진 업로드 에러: ', err))
       }
-      //게시글 변경
-      axios.put(SERVER.URL + SERVER.ROUTES.post, 
-        uploadData.postData,
-        {headers: { accessToken:  cookies.get('access-token') }})
-        .then(() => {
-          alert('게시글 변경이 완료되었습니다.')
-          router.push({ name: 'Feed' })
-        })
-        .catch(err => console.log(err))
+     
     },
     deletePost({ rootGetters }, postInfo) {
       if (postInfo.user_id != postInfo.postInfo.userinfo.user_id) {

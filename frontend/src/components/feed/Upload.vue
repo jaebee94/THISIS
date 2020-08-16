@@ -21,7 +21,7 @@
       </div>
       <!-- 질병 태그하는 부분 START -->
       <div class="tutorial-input-wrap">
-        <input list="disease-list" id="keyword" v-model="keyword" placeholder="태그할 질병을 검색하세요" />
+        <input list="disease-list" id="keyword" v-model="keyword" placeholder="태그할 질병을 검색하세요" v-on:keyup.enter="getDisease(keyword)"/>
       </div>
       <div class="tutorial-select-wrap">
         <a v-show="this.isSearched">추가 버튼을 누르시면 태그됩니다</a>
@@ -51,7 +51,7 @@
       </div>
       <!-- 질병 태그하는 부분 END -->
       <div class="custom-tag-wrap">
-        <input v-model="customTag" placeholder="태그를 직접 입력하세요" />
+        <input v-model="customTag" placeholder="태그를 직접 입력하세요" v-on:keyup.enter="addTag()"/>
         <button @click="addTag">추가</button>
       </div>
       <div class="custom-tag-show">
@@ -269,7 +269,8 @@ export default {
         };
         this.deleteTagRelation(params);
       }); //기존 태그 관계 삭제
-      this.updatePost(this.uploadData); //업데이트
+      this.$store.dispatch("postStore/updatePost",this.uploadData)
+      //this.updatePost(this.uploadData); //업데이트
     },
   },
   created() {
@@ -284,8 +285,10 @@ export default {
         //qna
         this.checkQnA();
       }
-      this.checkItem(this.post.post.diseasecode + ":" + this.post.diseasename);
+      if(this.post.diseasename !="")
+        this.checkItem(this.post.post.diseasecode + ":" + this.post.diseasename);
       this.tags = []
+       this.uploadData.postData.tags = this.tags;
       this.post.tags.forEach((tag) => {
         this.tags.push(tag.tagname);
       });
