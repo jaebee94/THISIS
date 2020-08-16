@@ -45,7 +45,7 @@
       <div v-show="profileTab == 1">
         <div class="input-with-label">
           <input
-            v-model="changeInfo.password"
+            v-model="password"
             id="password"
             type="password"
             placeholder="비밀번호를 입력해주세요"
@@ -233,6 +233,7 @@ export default {
       }
       if (!this.error.password && !this.error.passwordConfirm) {
         this.isSubmitPassword = true;
+        this.changeInfo.userInfo.password = this.passwordConfirm;
       } else {
         this.isSubmitPassword = false;
       }

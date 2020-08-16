@@ -1,6 +1,5 @@
 <template>
   <div class="feed wrap">
-
     <div class="tabs" v-if="profile_data == undefined">
       <div class="tab-container">
         <div
@@ -8,16 +7,17 @@
           v-for="(tab, index) in tabs"
           v-bind:key="tab"
           v-bind:class="{active: currentTab === index}"
-          @click="currentTab = index">
-          <img :src="tab"/>
+          @click="currentTab = index"
+        >
+          <img :src="tab" />
         </div>
-      </div> 
+      </div>
     </div>
 
     <div v-if="this.isQnAHidden" class="post" ref="qna">
       <div class="qna-wrapper">
         <div class="qna-header">
-          <div class="title"> 
+          <div class="title">
             <a>{{qnaInfo.post.posts_title}}</a>
           </div>
           <div class="nickname">
@@ -28,7 +28,7 @@
           </div>
         </div>
         <div v-if="qnaInfo.post.imgsrc != null" class="qna-photo-wrap">
-          <img :src="qnaInfo.post.imgsrc">
+          <img :src="qnaInfo.post.imgsrc" />
         </div>
         <div class="qna-main-content-wrap">
           <div class="qna-tag-wrap">
@@ -36,19 +36,28 @@
               <span v-if="qnaInfo.diseasename != ''" class="disease-tag">#{{qnaInfo.diseasename}}</span>
             </div>
             <div class="qna-custom-tag-wrap">
-              <a class="custom-tag" v-for="tag in qnaInfo.tags" v-bind:key="tag.tagid">#{{tag.tagname}}</a>
+              <a
+                class="custom-tag"
+                v-for="tag in qnaInfo.tags"
+                v-bind:key="tag.tagid"
+              >#{{tag.tagname}}</a>
             </div>
           </div>
-          <div class="qna-content-wrap" :class="{active: isActive}" @click="isActive = !isActive">
-            {{qnaInfo.post.posts_main}}
-          </div>
+          <div
+            class="qna-content-wrap"
+            :class="{active: isActive}"
+            @click="isActive = !isActive"
+          >{{qnaInfo.post.posts_main}}</div>
         </div>
         <div :class="{'wide' : qnaInfo.post.imgsrc == null}" class="qna-comment-wrap">
-          <comment v-for="comment in comments" v-bind:key="comment.comment_id"
-          v-bind:comment = "comment"></comment>
+          <comment
+            v-for="comment in comments"
+            v-bind:key="comment.comment_id"
+            v-bind:comment="comment"
+          ></comment>
         </div>
         <div class="qna-comment-write-wrap">
-        <input v-model="commentData.comment_main" placeholder="내용을 입력하세요" />
+          <input v-model="commentData.comment_main" placeholder="내용을 입력하세요" />
           <button @click="commentInfo(qnaInfo), createComment(commentData), clearCommentData()">댓글</button>
         </div>
         <div class="post-footer">
@@ -75,12 +84,12 @@
       </div>
       <carousel class="carousel wrap" :per-page="1" v-bind:pagination-enabled="false">
         <slide v-if="postInfo.post.imgsrc != null" class="myslide">
-            <div>
-                <img :src="postInfo.post.imgsrc">
-                <!-- <img src="../../assets/sample.jpg"> -->
-            </div>
+          <div>
+            <img :src="postInfo.post.imgsrc" />
+            <!-- <img src="../../assets/sample.jpg"> -->
+          </div>
         </slide>
-        <slide class="myslide" >
+        <slide class="myslide">
           <div class="post-main">
             <strong>{{postInfo.post.posts_title}}</strong> <br>
             <a v-if="postInfo.diseasename != null" class="post-disease-tag">#{{postInfo.diseasename}}</a><br>
@@ -89,15 +98,18 @@
           </div>
         </slide>
       </carousel>
-     
+
       <div class="comment-wrap">
-        <comment v-for="comment in comments" v-bind:key="comment.comment_id"
-         v-bind:comment = "comment"></comment>
+        <comment
+          v-for="comment in comments"
+          v-bind:key="comment.comment_id"
+          v-bind:comment="comment"
+        ></comment>
       </div>
       <div class="qna-comment-write-wrap">
         <input v-model="commentData.comment_main" placeholder="내용을 입력하세요" />
         <button @click="commentInfo(postInfo), createComment(commentData), clearCommentData()">댓글</button>
-      </div> 
+      </div>
       <div class="post-footer">
         <img @click="closePost()" src="../../assets/images/icon/icon_close.png" />
       </div>
@@ -118,48 +130,51 @@
       </div>
     </div>
 
-
-
-
     <div v-show="currentTab == 0">
       <div>
-      <post
-        v-for="postInfo in posts"
-        v-bind:key="postInfo.posts_id"
-        v-bind:postInfo="postInfo"
-        @send-modify="showModify"
-      ></post>
+        <post
+          v-for="postInfo in posts"
+          v-bind:key="postInfo.posts_id"
+          v-bind:postInfo="postInfo"
+          @send-modify="showModify"
+        ></post>
       </div>
-      <infinite-loading v-if="this.currentTab == 0" 
-          ref="infiniteLoadingPost" @infinite="infiniteHandler"></infinite-loading>
+      <infinite-loading
+        v-if="this.currentTab == 0"
+        ref="infiniteLoadingPost"
+        @infinite="infiniteHandler"
+      ></infinite-loading>
     </div>
 
-  
-    <div v-show="currentTab == 1"> 
+    <div v-show="currentTab == 1">
       <!-- <h1>Q&A게시판</h1> -->
       <form v-on:submit.prevent="searchQna">
         <select name="qnaoption" id="qnaoption" v-model="qnaoption">
-          <option value="all" selected> 전체보기 </option>
-          <option value="text"> 글내용 </option>
-          <option value="title"> 글제목 </option>
-          <option value="disease"> 질병명 </option>
+          <option value="all" selected>전체보기</option>
+          <option value="text">글내용</option>
+          <option value="title">글제목</option>
+          <option value="disease">질병명</option>
         </select>
-        <input v-model="qnakeyword" id="qnakeyword" placeholder="검색어를 입력하세요">
+        <input v-model="qnakeyword" id="qnakeyword" placeholder="검색어를 입력하세요" />
         <button type="submit">검색</button>
       </form>
-      <qna v-for="qnaInfo in qnas" v-bind:key="qnaInfo.posts_id"
-      v-bind:qnaInfo="qnaInfo" @send-modify-qna="showModifyQnA">
-      </qna> 
-        <infinite-loading v-if="this.currentTab == 1" 
-        ref="infiniteLoadingQnA" @infinite="infiniteHandlerQnA"></infinite-loading>
+      <qna
+        v-for="qnaInfo in qnas"
+        v-bind:key="qnaInfo.posts_id"
+        v-bind:qnaInfo="qnaInfo"
+        @send-modify-qna="showModifyQnA"
+      ></qna>
+      <infinite-loading
+        v-if="this.currentTab == 1"
+        ref="infiniteLoadingQnA"
+        @infinite="infiniteHandlerQnA"
+      ></infinite-loading>
     </div>
-  
 
     <div v-show="currentTab == 2">
       <news></news>
     </div>
     <!-- infinite-loading의 위치를 tab 마다 넣어야 할지 고민중 -->
-    
   </div>
 </template>
 
@@ -168,18 +183,21 @@ import { mapActions, mapState } from "vuex";
 import axios from "axios";
 import SERVER from "@/api/RestApi.js";
 
-import qna from '../feed/QnA.vue';
-import comment from '../feed/Comment.vue';
-import news from '../feed/News.vue';
+import qna from "../feed/QnA.vue";
+import comment from "../feed/Comment.vue";
+import news from "../feed/News.vue";
 
-import {Carousel, Slide} from 'vue-carousel';
-import cookies from 'vue-cookies'
-
+import { Carousel, Slide } from "vue-carousel";
+import cookies from "vue-cookies";
 
 export default {
   name: "Feed",
-  components:{
-    qna, comment, news, Carousel, Slide
+  components: {
+    qna,
+    comment,
+    news,
+    Carousel,
+    Slide,
   },
   data() {
     return {
@@ -190,18 +208,18 @@ export default {
       commentData: {
         posts_id: null,
         comment_main: "",
-        user_nickname:"",
+        user_nickname: "",
       },
-      
+
       page: 0,
       posts: [],
 
       qnaPage: 0,
-      qnas:[],
+      qnas: [],
       qnaInfo: {},
       qnakeyword: "",
-      qnaoption:"",
-      searchType:"nonsearch",
+      qnaoption: "",
+      searchType: "nonsearch",
 
       currentTab: 0,
       tabs: [
@@ -225,92 +243,91 @@ export default {
     this.$parent.$parent.isLoaded = true;
   },
   computed: {
-    ...mapState('userStore', ['loginData']),
-    ...mapState('postStore', ['comments', 'checkScrap']),
-    ...mapState('diseaseStore', ['diseases']),
+    ...mapState("userStore", ["loginData"]),
+    ...mapState("postStore", ["comments", "checkScrap"]),
+    ...mapState("diseaseStore", ["diseases"]),
   },
   watch: {
-    profile_data : function () {
-      this.page = 0
-      this.qnaPage = 0
-      this.qnas = []
-      this.posts = []
+    profile_data: function () {
+      this.page = 0;
+      this.qnaPage = 0;
+      this.qnas = [];
+      this.posts = [];
       this.$refs.infiniteLoadingPost.stateChanger.reset();
       this.$refs.infiniteLoadingQnA.stateChanger.reset();
-    }
+    },
   },
   methods: {
-    ...mapActions('postStore', [
-      'updatePost',
-      'createComment',
-      'updateComment',
+    ...mapActions("postStore", [
+      "updatePost",
+      "createComment",
+      "updateComment",
       //'fetchHealths',
-      'goCheckScrap',
+      "goCheckScrap",
     ]),
-    ...mapActions('diseaseStore', ['getFollowingDisease']),
+    ...mapActions("diseaseStore", ["getFollowingDisease"]),
 
-    searchQna(){
+    searchQna() {
       this.$refs.infiniteLoadingQnA.stateChanger.reset();
       this.qnaPage = 0;
       this.qnas = [];
-      if(this.qnaoption!="all"){
-        this.searchType="search";
-      }
-      else{
-        this.searchType="nonsearch";
-        this.qnakeyword="";
+      if (this.qnaoption != "all") {
+        this.searchType = "search";
+      } else {
+        this.searchType = "nonsearch";
+        this.qnakeyword = "";
       }
     },
 
-    infiniteHandlerQnA ($state) {
-      if(this.searchType=="search"){//검색일 경우
-        if(this.qnaoption=="text"){
-           var params2 = {
-              params: {
-                num: this.qnaPage,
-                keyword: this.qnakeyword,
-              },
-              headers: { accessToken:  cookies.get('access-token') }
-            };
-            let url = SERVER.URL + SERVER.ROUTES.qnasmain;
-            //통신부분
-            axios.get(url, params2).then(({ data }) => {
-                if (data.length) {
-                  this.qnaPage += 1;
-                
-                  data.forEach((element) => {
-                    element.health = false;
-                    element.scrap = false;
-                    element.post.health_count = element.healths.length;
-                    element.healths.forEach((ele) => {
-                      if (ele.user_id == this.loginData.user_id) {
-                        element.health = true;
-                      }
-                    });
-                  });
-                  this.qnas.push(...data);
-                  $state.loaded();
-                } else {
-                  $state.complete();
-                }
-              });
-        }//글내용 검색
-      }
-      else{ //검색이 아닐때
+    infiniteHandlerQnA($state) {
+      if (this.searchType == "search") {
+        //검색일 경우
+        if (this.qnaoption == "text") {
+          var params2 = {
+            params: {
+              num: this.qnaPage,
+              keyword: this.qnakeyword,
+            },
+            headers: { accessToken: cookies.get("access-token") },
+          };
+          let url = SERVER.URL + SERVER.ROUTES.qnasmain;
+          //통신부분
+          axios.get(url, params2).then(({ data }) => {
+            if (data.length) {
+              this.qnaPage += 1;
 
-      var params = {
-        params: {
-          num: this.qnaPage,
-        },
-         headers: { accessToken:  cookies.get('access-token') }
-      };
-      
-      let url = SERVER.URL + SERVER.ROUTES.qnas;
-      //통신부분
-      axios.get(url, params).then(({ data }) => {
+              data.forEach((element) => {
+                element.health = false;
+                element.scrap = false;
+                element.post.health_count = element.healths.length;
+                element.healths.forEach((ele) => {
+                  if (ele.user_id == this.loginData.user_id) {
+                    element.health = true;
+                  }
+                });
+              });
+              this.qnas.push(...data);
+              $state.loaded();
+            } else {
+              $state.complete();
+            }
+          });
+        } //글내용 검색
+      } else {
+        //검색이 아닐때
+        var params = {
+          params: {
+            num: this.qnaPage,
+          },
+          headers: { accessToken: cookies.get("access-token") },
+        };
+
+        let url = SERVER.URL + SERVER.ROUTES.qnas;
+        //통신부분
+        axios.get(url, params).then(({ data }) => {
           if (data.length) {
             this.qnaPage += 1;
-           
+
             data.forEach((element) => {
               element.health = false;
               element.scrap = false;
@@ -321,70 +338,71 @@ export default {
                 }
               });
             });
+            console.log(data);
             this.qnas.push(...data);
             $state.loaded();
           } else {
             $state.complete();
           }
         });
-        }//else
+      } //else
     },
 
-   // Infinite Scrolling
+    // Infinite Scrolling
     infiniteHandler($state) {
       var params = {
         params: {
           num: this.page,
         },
-        headers: { accessToken:  cookies.get('access-token') }
+        headers: { accessToken: cookies.get("access-token") },
       };
       let url = SERVER.URL;
-      if(this.profile_data== undefined || this.profile_data.tab == 0) {
-        url += SERVER.ROUTES.posts
-        params.params.user_id= -1 //-1일 경우 전체 게시물
-        if (this.profile_data != undefined) { // 만약 다른 사람 계정피드에서의 포스트들이면
+      if (this.profile_data == undefined || this.profile_data.tab == 0) {
+        url += SERVER.ROUTES.posts;
+        params.params.user_id = -1; //-1일 경우 전체 게시물
+        if (this.profile_data != undefined) {
+          // 만약 다른 사람 계정피드에서의 포스트들이면
           var profile_id = this.profile_data.user_id;
           params.params.user_id = profile_id;
           //if (profile_id == this.loginData.user_id) params.params.user_id = 0; //0일 경우 내 게시물
         }
-      }
-      else if(this.profile_data.tab == 1){ //스크랩 보여주기
+      } else if (this.profile_data.tab == 1) {
+        //스크랩 보여주기
         url += SERVER.ROUTES.scrap + "/" + this.profile_data.user_id;
-      } 
+      }
       //통신부분
       axios.get(url, params).then(({ data }) => {
-          if (data.length) {
-            this.page += 1;
-            data.forEach((element) => {
-              element.health = false;
-              element.scrap = false;
-               console.log(element)
-              axios
-                .get(SERVER.URL + SERVER.ROUTES.scrap, {
-                  params: {
-                    user_id: this.loginData.user_id,
-                    posts_id: element.posts_id,
-                  },
-                  headers: { accessToken:  cookies.get('access-token') }
-                })
-                .then((res) => {
-                  if (res.data > 0) element.scrap = true;
-                })
-                .catch((err) => console.log(err));
-              element.post.health_count = element.healths.length;
-              element.healths.forEach((ele) => {
-                if (ele.user_id == this.loginData.user_id) {
-                  element.health = true;
-                }
-              });
+        if (data.length) {
+          this.page += 1;
+          data.forEach((element) => {
+            element.health = false;
+            element.scrap = false;
+            console.log(element);
+            axios
+              .get(SERVER.URL + SERVER.ROUTES.scrap, {
+                params: {
+                  user_id: this.loginData.user_id,
+                  posts_id: element.posts_id,
+                },
+                headers: { accessToken: cookies.get("access-token") },
+              })
+              .then((res) => {
+                if (res.data > 0) element.scrap = true;
+              })
+              .catch((err) => console.log(err));
+            element.post.health_count = element.healths.length;
+            element.healths.forEach((ele) => {
+              if (ele.user_id == this.loginData.user_id) {
+                element.health = true;
+              }
             });
-            this.posts.push(...data);
-            $state.loaded();
-          } else {
-            $state.complete();
-          }
-        });
-
+          });
+          this.posts.push(...data);
+          $state.loaded();
+        } else {
+          $state.complete();
+        }
+      });
     },
 
     clearCommentData() {
@@ -414,7 +432,7 @@ export default {
     },
     showModify(info) {
       //댓글이나 글 수정시 부르는 함수
-      console.log('showInfo', info)
+      console.log("showInfo", info);
       this.postInfo = info.postInfo;
       this.$parent.$parent.isHidden = info.isHidden;
       this.$parent.$parent.$parent.isHidden = info.isHidden;
@@ -434,13 +452,13 @@ export default {
     //   // this.$router.push({name: 'Login'});
     //   this.$router.push({name: 'Detail', params: info});
     // },
-    showModifyQnA(info){
+    showModifyQnA(info) {
       console.log(info);
       this.qnaInfo = info.qnaInfo;
       this.$parent.$parent.isHidden = info.isHidden;
       this.$parent.$parent.$parent.isHidden = info.isHidden;
       this.isQnAHidden = info.isQnAHidden;
-      document.body.className= "lockbody";
+      document.body.className = "lockbody";
 
       this.isModifyHidden = info.isModifyHidden;
       this.commentData.posts_id = info.qnaInfo.posts_id;
@@ -459,29 +477,31 @@ export default {
       const today = new Date();
       var timeValue = new Date(time);
       timeValue.setHours(timeValue.getHours() + 9);
-      const betweenTime = Math.floor((today.getTime() - timeValue.getTime()) / 1000 / 60);
-      if (betweenTime < 1) return '방금전';
+      const betweenTime = Math.floor(
+        (today.getTime() - timeValue.getTime()) / 1000 / 60
+      );
+      if (betweenTime < 1) return "방금전";
       if (betweenTime < 60) {
-          return `${betweenTime}분전`;
+        return `${betweenTime}분전`;
       }
       const betweenTimeHour = Math.floor(betweenTime / 60);
       if (betweenTimeHour < 24) {
-          return `${betweenTimeHour}시간전`;
+        return `${betweenTimeHour}시간전`;
       }
       const betweenTimeDay = Math.floor(betweenTime / 60 / 24);
       if (betweenTimeDay < 365) {
-          return `${betweenTimeDay}일전`;
+        return `${betweenTimeDay}일전`;
       }
       return `${Math.floor(betweenTimeDay / 365)}년전`;
     },
     commentInfo(info) {
       console.log(info);
       this.commentData.posts_id = info.posts_id;
-    }
+    },
   },
   created() {
-     this.$refs.infiniteLoadingPost.stateChanger.reset();
-     this.$refs.infiniteLoadingQnA.stateChanger.reset();
+    this.$refs.infiniteLoadingPost.stateChanger.reset();
+    this.$refs.infiniteLoadingQnA.stateChanger.reset();
     this.$store.dispatch("getCheckScrap");
     this.$store.dispatch("diseaseStore/getFollowingDisease");
     this.searchType = "nonsearch";
@@ -500,7 +520,7 @@ export default {
   padding-bottom: 20px;
   margin-top: 0;
   margin-left: 0;
-  width: 100%; 
+  width: 100%;
   padding: 0 0;
   margin-bottom: 50px;
 }
@@ -516,7 +536,7 @@ export default {
 }
 
 .tab.active {
-  background-color:rgb(247, 247, 247);
+  background-color: rgb(247, 247, 247);
   border-bottom: 3px rgb(0, 171, 132) solid;
 }
 
@@ -630,7 +650,6 @@ div.feed {
   border-radius: 5px;
 }
 
-
 .post-header {
   display: flex;
   background-color: rgb(247, 247, 247);
@@ -651,16 +670,16 @@ div.feed {
 .post-header table tr td {
   height: 40px;
 }
-.post-header table tr td:nth-child(1){
+.post-header table tr td:nth-child(1) {
   width: 50px;
 }
 
 .post-header a.time {
-    font-size: 10px;
-    /* color: rgb(247, 247, 247); */
-    color: slategray;
-    font-weight: 400;
-  }
+  font-size: 10px;
+  /* color: rgb(247, 247, 247); */
+  color: slategray;
+  font-weight: 400;
+}
 
 .post-header table tr td a {
   color: black;
@@ -719,8 +738,6 @@ div.feed {
   padding: 10px 10px;
   text-align: left;
 }
-
-
 
 .post-footer {
   position: absolute;
@@ -843,8 +860,6 @@ div.feed {
   height: 80%;
 }
 
-
-
 /* ----- qna 내용 자세히 보기 모달창 코드 -----  */
 .post {
   margin-left: 4%;
@@ -852,7 +867,7 @@ div.feed {
 
 .post .qna-wrapper {
   height: 100%;
-  overflow : auto;
+  overflow: auto;
 }
 
 .qna-header {
@@ -914,7 +929,7 @@ div.feed {
 
 .qna-custom-tag-wrap {
   width: 100%;
-} 
+}
 
 .qna-tag-wrap .custom-tag {
   color: rgb(0, 171, 132);
@@ -931,8 +946,8 @@ div.feed {
   -webkit-box-orient: vertical;
   word-wrap: break-word;
   text-overflow: ellipsis;
-  -webkit-transition: all .3s linear 0s;
-  transition: all .3s linear 0s;
+  -webkit-transition: all 0.3s linear 0s;
+  transition: all 0.3s linear 0s;
 }
 
 .qna-content-wrap.active {
@@ -942,8 +957,8 @@ div.feed {
   white-space: normal;
   word-wrap: unset;
   text-overflow: unset;
-  -webkit-transition: all .3s linear 0s;
-  transition: all .3s linear 0s;
+  -webkit-transition: all 0.3s linear 0s;
+  transition: all 0.3s linear 0s;
 }
 
 .qna-comment-wrap {
@@ -1002,5 +1017,4 @@ div.feed {
 }
 
 /* --------------------------------------------- */
-
 </style>

@@ -36,6 +36,7 @@ const postStore = {
   actions: {
     // Post
     createPost({ rootGetters }, uploadData) {
+      console.log(uploadData)
       if (uploadData.formData == null) {
         let headers = rootGetters.config.headers
         headers['Accept'] = 'application/json'
@@ -71,9 +72,11 @@ const postStore = {
       commit('SET_POST',postInfo);
     },
     updatePost({ rootGetters }, postInfo) {
+      console.log("updatePost",postInfo)
       axios.put(SERVER.URL + SERVER.ROUTES.post, postInfo, rootGetters.config)
         .then(() => {
           alert('변경이 완료되었습니다.')
+          router.push({ name: 'Feed' })
         })
         .catch(err => console.log(err))
     },
@@ -82,9 +85,9 @@ const postStore = {
         alert("너꺼 아니잖아");
         return;
       } else {
-        var con = confirm("진짜 지울꺼야?");
+        var con = confirm("진짜 지우시겠습니까?");
         if(con){ 
-          axios.delete(SERVER.URL + SERVER.ROUTES.post + postInfo.postInfo.posts_id ,rootGetters.config)
+          axios.delete(SERVER.URL + SERVER.ROUTES.post +`/${postInfo.postInfo.posts_id}`  ,rootGetters.config)
           .then(() => {
             alert('게시글이 삭제되었습니다.')
           })
@@ -158,8 +161,9 @@ const postStore = {
           params: {
             posts_id: posts_id,
             user_id: state.loginData.user_id
-          }
-        }, rootGetters.config)
+          },
+          headers : rootGetters.config.headers
+        })
         .then(res => {
           commit('SET_CHECK_SCRAPS', res.data);
         }).catch(err => console.log(err))
@@ -171,14 +175,25 @@ const postStore = {
           commit('SET_SCRAPS', res.data);
         }).catch(err => console.log(err))
     },
+    deleteFile({rootGetters},deletefile){
+      axios.delete(SERVER.URL + SERVER.ROUTES.upload,
+        {
+          data:{delete_file : deletefile}
+          ,headers : rootGetters.config.headers
+        })
+      .then(res => {
+        console.log("result", res);
+      }).catch(err => console.log(err))
+    },
+    deleteTagRelation({rootGetters},params){
 
-    // Disease
-    // createDisease() {
-    //   axios.post(SERVER.URL + SERVER.ROUTES.disease, diseaseData, rootGetters.config)
-    //     .then(() => {
-
-    //     })
-    // }
+      axios.delete(SERVER.URL + SERVER.ROUTES.tagrelation,{data:params,headers : rootGetters.config.headers})
+      .then(res => {
+        console.log("result", res);
+      }).catch(err => console.log(err));
+      
+    }
+    
   }
 }
 

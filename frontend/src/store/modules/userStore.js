@@ -2,7 +2,10 @@ import axios from 'axios'
 import router from '@/router'
 import SERVER from '@/api/RestApi.js'
 import cookies from 'vue-cookies'
-
+// import https from 'https';
+// const agent = new https.Agent({  
+//   rejectUnauthorized: false
+// });
 const userStore = {
   namespaced: true,
 
@@ -36,6 +39,7 @@ const userStore = {
   actions: {
     getAccessData({ commit }, info) {
       axios.get(SERVER.URL + info.location, {
+        //httpsAgent: agent,
         params: {
           email: info.params.email,
           password: info.params.password

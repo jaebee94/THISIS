@@ -25,4 +25,5 @@ public interface UserInfoDAO {
 	public int updatePassword(UserInfo userinfo);
 	public int updateDisable(int user_id);
 	public int updateRole(int user_id);
+	public String selectSaltByUserId(int user_id);
 }

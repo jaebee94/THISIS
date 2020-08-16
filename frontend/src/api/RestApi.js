@@ -1,6 +1,6 @@
 export default {
-  URL: 'http://i3a301.p.ssafy.io:8089/THISIS', // 서버 포트
-  //  URL: 'http://localhost:8088/THISIS',
+  URL: 'https://i3a301.p.ssafy.io:8088/THISIS', // 서버 포트
+  //  URL: 'http://localhost:8089/THISIS',
   ROUTES: {
     myprofile: '/account/0',
     user: '/account/',
@@ -24,6 +24,7 @@ export default {
     health: '/health',
     healthCount: '/health/post/',
     comment: '/comment',
+    tagrelation: '/tagrelation',
 
     notification: '/notification/follower/',  // 해당 user_id 가 follower 인 레코드 목록 조회
     requests: '/notification/followee/',  // 해당 user_id 가 followee 인 레코드 목록 조회
@@ -35,7 +36,9 @@ export default {
     follower: '/follow/follower/',
 
     disease: '/disease/user',
-    subscribe: '/subscribe'
+    subscribe: '/subscribe',
+
+    qnasmain : '/articles/qna/main'
 
   }
 }

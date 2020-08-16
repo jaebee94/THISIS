@@ -91,6 +91,10 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	@Override
+	public String selectSaltByUserId(int user_id) {
+		return userInfoDao.selectSaltByUserId(user_id);
+	}
+	
 	public List<UserPolice> selectUserInfoPolice() {
 		return userInfoDao.selectUserInfoPolice();
 	}
