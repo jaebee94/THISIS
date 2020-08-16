@@ -132,7 +132,10 @@ const postStore = {
     // Comment
     createComment({ commit, rootGetters }, commentData) {
       console.log("createComment - commentData", commentData)
-      axios.post(SERVER.URL + SERVER.ROUTES.comment, commentData, rootGetters.config)
+      if(commentData.comment_main == null || commentData.comment_main == "") {
+        alert("댓글을 입력해주세요")
+      }else{
+        axios.post(SERVER.URL + SERVER.ROUTES.comment, commentData, rootGetters.config)
         .then(
           setTimeout(() => {
             axios.get(SERVER.URL + SERVER.ROUTES.comment + '/' + commentData.posts_id)
@@ -141,6 +144,8 @@ const postStore = {
               })
           }, 100)
         )
+      }
+      
     },
     fetchComments({ commit }, posts_id) {
       console.log('여기가 문제?')
@@ -156,7 +161,12 @@ const postStore = {
         .then((res) => { console.log(res) })
         .catch((err) => { console.log(err) })
     },
-    deleteComment() {     // 삭제 로직 개발 필요
+    deleteComment({ rootGetters,dispatch }, commentData) {     // 삭제 로직 개발 필요
+      axios.delete(SERVER.URL + SERVER.ROUTES.comment + `/${commentData.comment_id}`, rootGetters.config)
+      .then(res => {
+        console.log("result", res);
+        dispatch('fetchComments',commentData.posts_id)
+      }).catch(err => console.log(err))
     },
 
     // Health
