@@ -3,11 +3,18 @@
     <div class="feed-header">
       <table class = "article-header">
         <tr>
-          <td>
+          <td v-if ="postInfo.userinfo.userimage!=null">
             <img
               class="profile-image"
               @click="goProfile(postInfo.post.user_id)"
               :src="postInfo.userinfo.userimage"
+            />
+          </td>
+          <td v-else>
+             <img
+              class="profile-image"
+              @click="goProfile(postInfo.post.user_id)"
+              src="../../assets/user2.png"
             />
           </td>
           <td>
@@ -113,9 +120,6 @@ export default {
   },
 
   methods: {
-    // ...mapActions('profileStore', [
-    //   'goProfile',
-    //   ]),
     ...mapActions('userStore', ["goProfile"]),
     ...mapActions('postStore', [
       "fetchComments",

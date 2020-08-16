@@ -122,7 +122,7 @@
       </div>
     </div>
 
-    <div class="modify-wrap" v-if="this.isModifyHidden">
+    <!-- <div class="modify-wrap" v-if="this.isModifyHidden">
       <div>
         <h2>제목 : {{ postInfo.post.posts_title }}</h2>
       </div>
@@ -135,7 +135,7 @@
       <div class="modify-footer">
         <img @click="closeModify()" src="../../assets/images/icon/icon_close.png" />
       </div>
-    </div>
+    </div> -->
 
     <div v-show="currentTab == 0">
       <div>
@@ -150,7 +150,11 @@
         v-if="this.currentTab == 0"
         ref="infiniteLoadingPost"
         @infinite="infiniteHandler"
-      ></infinite-loading>
+      >
+       <div slot="spinner">Loading...</div>
+      <div slot="no-more">더 이상 게시글이 없습니다 :)</div>
+      <div slot="no-results">게시글이 존재하지 않습니다.</div>
+      </infinite-loading>
     </div>
 
     <div v-show="currentTab == 1">
@@ -175,7 +179,14 @@
         v-if="this.currentTab == 1"
         ref="infiniteLoadingQnA"
         @infinite="infiniteHandlerQnA"
-      ></infinite-loading>
+      >
+         <div slot="spinner">Loading...</div>
+        <div slot="no-more">더 이상 게시글이 없습니다 :)</div>
+        <div slot="no-results">게시글이 존재하지 않습니다.</div>
+        <div slot="error" slot-scope="{ trigger }">
+        Error message, click <a href="javascript:;" @click="trigger">here</a> to retry
+      </div>
+      </infinite-loading>
     </div>
 
     <div v-show="currentTab == 2">
@@ -262,7 +273,6 @@ export default {
       "updatePost",
       "createComment",
       "updateComment",
-      //'fetchHealths',
       "goCheckScrap",
     ]),
     ...mapActions("diseaseStore", ["getFollowingDisease"]),
@@ -279,7 +289,8 @@ export default {
       }
     },
 
-    infiniteHandlerQnA($state) {
+    async infiniteHandlerQnA($state) {
+      console.log("infiniteQna",this.qnaPage)
       if (this.searchType == "search") {
         //검색일 경우
         if (this.qnaoption == "text") {
@@ -292,7 +303,7 @@ export default {
           };
           let url = SERVER.URL + SERVER.ROUTES.qnasmain;
           //통신부분
-          axios.get(url, params2).then(({ data }) => {
+          await axios.get(url, params2).then(({ data }) => {
             if (data.length) {
               this.qnaPage += 1;
 
@@ -307,6 +318,7 @@ export default {
                 });
               });
               this.qnas.push(...data);
+              console.log(data);
               $state.loaded();
             } else {
               $state.complete();
@@ -324,7 +336,8 @@ export default {
 
         let url = SERVER.URL + SERVER.ROUTES.qnas;
         //통신부분
-        axios.get(url, params).then(({ data }) => {
+        await axios.get(url, params).then(({ data }) => {
+          console.log(data)
           if (data.length) {
             this.qnaPage += 1;
 
@@ -342,6 +355,7 @@ export default {
             this.qnas.push(...data);
             $state.loaded();
           } else {
+            console.log("complete")
             $state.complete();
           }
         });
@@ -411,6 +425,10 @@ export default {
       }, 300);
     },
     closePost() {
+      this.posts=[];
+        this.page=0;
+      this.$refs.infiniteLoadingPost.stateChanger.reset();
+    
       this.$parent.$parent.isHidden = false;
       this.$parent.$parent.$parent.isHidden = false;
       this.isPostHidden = false;
@@ -465,6 +483,9 @@ export default {
       this.commentData.user_id = this.loginData.user_id;
     },
     closeQnA() {
+      this.qnas=[];
+      this.qnaPage=0;
+      this.$refs.infiniteLoadingQnA.stateChanger.reset();
       this.$parent.$parent.isHidden = false;
       this.$parent.$parent.$parent.isHidden = false;
       this.isQnAHidden = false;
@@ -472,6 +493,10 @@ export default {
       /*------ 피드 스크롤 unlock ------*/
       document.body.className = "";
       /*------ 피드 스크롤 unlock ------*/
+      
+      
+      
+     
     },
     timeForToday(time) {
       const today = new Date();
