@@ -2,8 +2,11 @@
   <div class="profile wrap">
     <div class="intro-wrap">
       <div class="left-content">
-        <div class="profile-image">
+        <div class="profile-image" v-if="this.profileData.userInfo.userimage != null">
           <img :src="profileData.userInfo.userimage" />
+        </div>
+         <div class="profile-image" v-else>
+          <img src="../../assets/user2.png" />
         </div>
         <div class="profile-name">
           <a>{{ profileData.userInfo.nickname }}</a>
@@ -27,15 +30,17 @@
             <td>{{ profileData.profileInfo.followeenum }}</td>
           </tr>
         </table>
-        <button v-if="loginData.user_id == profileData.userInfo.user_id" id="logout-btn" @click="logout()">로그아웃</button>
+        <button
+          v-if="loginData.user_id == profileData.userInfo.user_id"
+          id="logout-btn"
+          @click="logout()"
+        >로그아웃</button>
       </div>
     </div>
     <div class="profile-modify">
       <!-- 나의 아이디와 보고 있는 페이지의 유저 아이디가 같을 경우 -->
       <router-link to="/main/change">
-        <button
-          v-show="loginData.user_id == profileData.userInfo.user_id"
-        >프로필 수정</button>
+        <button v-show="loginData.user_id == profileData.userInfo.user_id">프로필 수정</button>
       </router-link>
       <!-- 나의 아이디와 보고 있는 페이지의 유저 아이디가 다른 경우 -->
       <!-- 1. 팔로우 요청도 안 보낸 상태(data의 followSend가 false일 경우 + isFollowing이 false일 경우) -->
@@ -68,10 +73,10 @@
       </div>
 
       <div>
-      <feed  
-      v-bind:profile_data = 
-      "{user_id : this.profileData.userInfo.user_id,
-       tab : this.currentTab}"></feed>
+        <feed
+          v-bind:profile_data="{user_id : this.profileData.userInfo.user_id,
+       tab : this.currentTab}"
+        ></feed>
       </div>
     </div>
   </div>
@@ -81,7 +86,7 @@
 import { mapActions, mapState } from "vuex";
 import db from "../../firebaseInit";
 import firebase from "firebase";
-import router from '@/router'
+import router from "@/router";
 
 const increment = firebase.firestore.FieldValue.increment(1);
 const decrement = firebase.firestore.FieldValue.increment(-1);
@@ -129,38 +134,31 @@ export default {
   },
   mounted() {
     this.user.user_id = this.$route.params.id;
-    console.log('mounted')
+    console.log("mounted");
   },
   computed: {
-    ...mapState('userStore', [
-      'loginData',
-      'profileData'
-    ]),
-    // ...mapState('profileStore', ['profileData']),
-    ...mapState('followStore', ['followee_list']),
-    ...mapState('postStore', ['comments']),
+    ...mapState("userStore", ["loginData", "profileData"]),
+    ...mapState("followStore", ["followee_list"]),
+    ...mapState("postStore", ["comments"]),
   },
   methods: {
-    // ...mapActions('profileStore', ['goProfile']),
-    ...mapActions('userStore', ['goProfile']),
-    ...mapActions('postStore', [
-      'updatePost',
-      'createComment',
-      'fetchComments',
-      'updateComment',
-      'health',
-      'deleteScrap',
-      'getUserScraps'
+    ...mapActions("userStore", ["goProfile"]),
+    ...mapActions("postStore", [
+      "updatePost",
+      "createComment",
+      "fetchComments",
+      "updateComment",
+      "health",
+      "deleteScrap",
+      "getUserScraps",
     ]),
-    ...mapActions('followStore', [
-      'createFollowing',
-      'deleteFollowing',
-      'deleteFollow',
-      'getFollowee',
+    ...mapActions("followStore", [
+      "createFollowing",
+      "deleteFollowing",
+      "deleteFollow",
+      "getFollowee",
     ]),
-    ...mapActions('notificationStore', [
-      'createNotification',
-    ]),
+    ...mapActions("notificationStore", ["createNotification"]),
     follow() {
       let vueInstance = this;
       this.followSend = true;
@@ -234,36 +232,38 @@ export default {
       params["approval"] = 1;
       this.$store.dispatch("followStore/deleteFollowing", params);
     },
-    followingCancel() { //팔로우 끊기
+    followingCancel() {
+      //팔로우 끊기
       this.isFollowing = false;
       this.followee_list = false;
       let params = {
-        follower : this.loginData.user_id, //본인
-        followee : this.profileData.userInfo.user_id //상대방
+        follower: this.loginData.user_id, //본인
+        followee: this.profileData.userInfo.user_id, //상대방
       };
       this.$store.dispatch("followStore/deleteFollow", params);
     },
     logout() {
       var result = confirm("로그아웃하시겠습니까?");
-      if(result) {
-        router.push({name: 'Logout'});
+      if (result) {
+        router.push({ name: "Logout" });
       } else {
-        alert("그래요! 좀만 더 놀다가세요")
+        alert("그래요! 좀만 더 놀다가세요");
       }
-    }
+    },
   },
   created() {
-    // this.goProfile()
+    console.log(this.profileData)
     this.getUserScraps(this.profileData.userInfo.user_id);
     var vueInstance = this;
     let params = {
       followee_id: this.profileData.userInfo.user_id,
-      follower_id: this.loginData.user_id
+      follower_id: this.loginData.user_id,
     };
     this.getFollowee(params);
 
-    const noti = db.collection("notification")
-    .doc(String(vueInstance.profileData.userInfo.user_id));
+    const noti = db
+      .collection("notification")
+      .doc(String(vueInstance.profileData.userInfo.user_id));
     let instance = {};
 
     noti
@@ -277,7 +277,11 @@ export default {
       .catch(function (err) {
         console.log("ERROR OCCURED : ", err);
       });
+      
+      console.log(this.profileData)
   },
+
+  
 };
 </script>
 <style scoped>
@@ -356,7 +360,7 @@ export default {
   font-weight: 500;
   height: 30px;
   border-radius: 5px;
-  border:none;
+  border: none;
   transition-duration: 300ms;
 }
 
@@ -502,7 +506,7 @@ export default {
   border: none;
   font-size: 10px;
   border-radius: 70%;
-  padding:1px 3px;
+  padding: 1px 3px;
 }
 
 .post {

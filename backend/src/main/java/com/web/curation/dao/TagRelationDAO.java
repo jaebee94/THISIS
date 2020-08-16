@@ -9,6 +9,6 @@ import com.web.curation.model.TagRelation;
 public interface TagRelationDAO {
 	public int createTagRelation(TagRelation tagrelation);
 	public List<TagRelation> selectTagRelationpost(int posts_id);
-	public List<TagRelation> selectTagRelationtag(int tagid);
-	public int deleteTagRelation(int tagid, int posts_id);
+	public List<TagRelation> selectTagRelationtag(int tag_id);
+	public int deleteTagRelation(int tag_id, int posts_id);
 }

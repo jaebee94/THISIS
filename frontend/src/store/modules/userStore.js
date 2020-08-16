@@ -10,7 +10,7 @@ const userStore = {
   namespaced: true,
 
   state: {
-    loginData: {},
+    loginData: null,
     profileData: {},
   },
 
@@ -104,6 +104,7 @@ const userStore = {
       await axios.get(SERVER.URL + SERVER.ROUTES.user + userId, {headers: { accessToken:  cookies.get('access-token') }})
         .then(res => {
           console.log('유저인포 요청완료')
+          console.log(res.data) 
           commit('SET_USER_INFO', res.data)
             // .then(() => router.push({ name: 'Profile' }))
           // setTimeout(() => commit('SET_USER_INFO', res.data), 10000)
@@ -112,6 +113,7 @@ const userStore = {
       await axios.get(SERVER.URL + SERVER.ROUTES.profile + userId, {headers: { accessToken:  cookies.get('access-token') }})
         .then(res => {
           console.log('프로필인포 요청 완료')
+          console.log(res.data)
           commit('SET_PROFILE_INFO', res.data)
           router.push({ name: 'Profile' })
         })

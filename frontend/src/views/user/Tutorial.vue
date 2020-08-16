@@ -33,6 +33,7 @@
 <script>
 import axios from 'axios';
 import { mapActions } from "vuex";
+import router from '@/router'
 const proxyurl = "https://cors-anywhere.herokuapp.com/";
 export default {
     data() {
@@ -46,6 +47,7 @@ export default {
         }
     },
     created() {
+        if(this.loginData == null) router.push({ name: 'Landing' })
         document.body.className = "greenbody";
     },
     watch : {

@@ -68,7 +68,7 @@
     <div class="button-panel">
       <button
         v-if="this.post==null"
-        @click="sendPhoto(), createPost(uploadData)"
+        @click="createPost(uploadData)"
         :disabled="!isFill"
         :class="{disabled : !isFill}"
       >올리기</button>
@@ -82,13 +82,14 @@
 <script>
 import axios from "axios";
 import { mapState, mapActions } from "vuex";
-
+import router from '@/router'
 const proxyurl = "https://cors-anywhere.herokuapp.com/";
 
 export default {
   name: "Upload",
   computed: {
     ...mapState("postStore", ["post"]),
+    ...mapState("userStore", ["loginData"]),
   },
   data() {
     return {
@@ -169,6 +170,7 @@ export default {
       console.log(file);
       var formData = new FormData();
       formData.append("upload_file", file);
+      console.dir(formData)
       this.uploadData.formData = formData;
       this.imgsrc = URL.createObjectURL(file);
     },
@@ -258,10 +260,6 @@ export default {
         }
       }
     },
-    sendPhoto() {
-      console.log(this.$refs.imageInput);
-      console.log(this.imgsrc);
-    },
     modify() {
       if(this.post.post.imgsrc != null) this.deleteFile(this.post.post.imgsrc); //기존 파일 삭제
       this.post.tags.forEach((tag) => {
@@ -271,10 +269,11 @@ export default {
         };
         this.deleteTagRelation(params);
       }); //기존 태그 관계 삭제
-      this.updatePost(this.uploadData.postData); //업데이트
+      this.updatePost(this.uploadData); //업데이트
     },
   },
   created() {
+    if(this.loginData == null) router.push({ name: 'Landing' })
     console.log(this.post);
     if (this.post != null) {
       
