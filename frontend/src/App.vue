@@ -30,7 +30,7 @@ export default {
 </script>
 
 <style>
-@import url(http://fonts.googleapis.com/earlyaccess/notosanskr.css); *{font-family: 'Noto Sans KR', sans-serif;}
+@import url(https://fonts.googleapis.com/earlyaccess/notosanskr.css); *{font-family: 'Noto Sans KR', sans-serif;}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

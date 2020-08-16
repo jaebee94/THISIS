@@ -77,6 +77,11 @@ export default {
             })
             .then((res) => {
                 console.log(res.data.items[0].link);
+                if(res.data.items[0].link == undefined) {
+                    this.sample_images.one = null;
+                    this.sample_images.two = null;
+                    return;
+                }
                 this.sample_images.one = res.data.items[0].link;
                 this.sample_images.two = res.data.items[1].link;
             })
