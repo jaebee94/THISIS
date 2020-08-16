@@ -43,8 +43,10 @@
 <script>
 import db from "../../firebaseInit";
 import { mapState, mapActions } from "vuex";
+import router from '@/router'
 export default {
   created() {
+    if(this.loginData == null) router.push({ name: 'Landing' })
     document.body.className = "whitebody";
     this.getNoti(this.loginData.user_id);
   },

@@ -28,4 +28,11 @@ public class TagRelation {
 		this.posts_id = posts_id;
 	}
 
+	@Override
+	public String toString() {
+		return "TagRelation [tag_id=" + tag_id + ", posts_id=" + posts_id + "]";
+	}
+	
+	
+
 }

@@ -193,7 +193,6 @@ import SERVER from "@/api/RestApi.js";
 import qna from "../feed/QnA.vue";
 import comment from "../feed/Comment.vue";
 import news from "../feed/News.vue";
-
 import { Carousel, Slide } from "vue-carousel";
 import cookies from "vue-cookies";
 
@@ -501,6 +500,7 @@ export default {
     },
   },
   created() {
+    if(this.loginData == null) this.$router.push({ name: 'Landing' })
     this.$refs.infiniteLoadingPost.stateChanger.reset();
     this.$refs.infiniteLoadingQnA.stateChanger.reset();
     this.$store.dispatch("getCheckScrap");
