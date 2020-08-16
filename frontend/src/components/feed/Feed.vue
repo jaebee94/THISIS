@@ -426,7 +426,7 @@ export default {
     },
     closePost() {
       this.posts=[];
-        this.page=0;
+      this.page=0;
       this.$refs.infiniteLoadingPost.stateChanger.reset();
     
       this.$parent.$parent.isHidden = false;
