@@ -187,7 +187,7 @@ const postStore = {
     },
     deleteTagRelation({rootGetters},params){
 
-      axios.delete(SERVER.URL + SERVER.ROUTES.tagrelation,{data:params,headers : rootGetters.config.headers})
+      axios.delete(SERVER.URL + SERVER.ROUTES.tagrelation,params,rootGetters.config)
       .then(res => {
         console.log("result", res);
       }).catch(err => console.log(err));
