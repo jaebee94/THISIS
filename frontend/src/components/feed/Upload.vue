@@ -269,7 +269,8 @@ export default {
         };
         this.deleteTagRelation(params);
       }); //기존 태그 관계 삭제
-      this.updatePost(this.uploadData); //업데이트
+      this.$store.dispatch("postStore/updatePost",this.uploadData)
+      //this.updatePost(this.uploadData); //업데이트
     },
   },
   created() {
@@ -284,7 +285,8 @@ export default {
         //qna
         this.checkQnA();
       }
-      this.checkItem(this.post.post.diseasecode + ":" + this.post.diseasename);
+      if(this.post.diseasename !="")
+        this.checkItem(this.post.post.diseasecode + ":" + this.post.diseasename);
       this.tags = []
       this.post.tags.forEach((tag) => {
         this.tags.push(tag.tagname);

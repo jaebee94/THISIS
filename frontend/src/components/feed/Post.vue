@@ -118,7 +118,8 @@ export default {
       "health",
       "scrap",
       "deleteScrap",
-      "deletePost"
+      "deletePost",
+      "setPost"
     ]),
     changeSelectPost(post, sort) {
       this.selectedPost = post;
@@ -130,12 +131,14 @@ export default {
       };
 
       if (sort === "modify") {
-        info.isModifyHidden = true;
+         this.setPost(post)
+         this.$router.push({name: 'Upload'});
       } else if (sort === "comment") {
         info.isPostHidden = true;
         this.fetchComments(post.posts_id);
+         this.$emit("send-modify", info);
       }
-      this.$emit("send-modify", info);
+     
     },
     clickHealth(post) {
       if (post.health == true) {
