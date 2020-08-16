@@ -31,7 +31,8 @@
           </td>
           <td>
             <!-- <router-link to="/main/profile"> -->
-              <img @click="checkProfile()" :src="this.loginData.userimage" />
+              <img v-if="this.loginData.userimage!=null" @click="checkProfile()" :src="this.loginData.userimage" />
+              <img v-else @click="checkProfile()" src="../../assets/images/icon/icon_default_image.png" />
             <!-- </router-link> -->
           </td>
         </tr>

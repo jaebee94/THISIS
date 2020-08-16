@@ -40,14 +40,19 @@
     </div>
     <div class="feed-main" @click="changeSelectPost(postInfo,'comment')">
       <img v-show="postInfo.post.imgsrc != null" :src="postInfo.post.imgsrc" />
-      <div class = "tag-header">
-        <span v-show="postInfo.diseasename !=''">{{postInfo.diseasesename}} | </span>
-         <span  v-for="tag in postInfo.tags" v-bind:key="tag.tagid">{{tag.tagname}}</span>
+      <div class = "tag-header" v-show="postInfo.diseasename !=''" >
+       <span >{{postInfo.diseasename}}</span>
     </div>
       <div class="post-content" 
       :class="{active : isActive}" @click="isActive = !isActive"
       >
-      <strong @click="goProfile(postInfo.post.user_id)">{{postInfo.userinfo.nickname}}</strong> {{postInfo.post.posts_main }}</div>
+      <strong @click="goProfile(postInfo.post.user_id)">{{postInfo.userinfo.nickname}}</strong> {{postInfo.post.posts_main }}
+      <a
+        class="custom-tag"
+        v-for="tag in postInfo.tags"
+        v-bind:key="tag.tagid"
+      >#{{tag.tagname}}</a>
+      </div>
       <div v-if="postInfo.post.category == 0">
         <a v-show="postInfo.post.health_count != 0">
           <strong>{{postInfo.post.health_count}}명</strong>이 건강해요를 눌렀습니다
@@ -237,15 +242,15 @@ export default {
 
 .tag-header span{
   background-color: rgb(0, 171, 132);
-  padding: 5px 15px;
   border: 10px;
   font-size: 15px;
   font-weight: 600;
-  height: 20px;
   border-radius: 20px;
   margin: 5px 10px 5px 0px ;
   color: white;
   display: inline-block;
+  padding :5px  10px 5px 10px ;
+  text-align:center;
 }
 
 .dropdown {
@@ -285,5 +290,10 @@ export default {
 .dropdown-content a:hover {background-color: #ddd;}
 
 .dropdown:hover .dropdown-content {display: block;}
+
+.custom-tag {
+  font-size: 13px;
+  color: rgb(0, 171, 132);
+}
 
 </style>
