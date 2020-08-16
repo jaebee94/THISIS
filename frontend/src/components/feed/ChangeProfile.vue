@@ -15,7 +15,7 @@
       <div v-show="profileTab == 0">
         <div class="profile-photo">
           <div class="profile-modify-image">
-            <img :src="imgsrc + ''" />
+            <img :src="imgsrc" />
           </div>
           <div class="profile-image-button">
             <button @click="onClickImageUpload">프로필 사진 변경</button>
@@ -150,7 +150,7 @@ export default {
         require("../../assets/images/icon/icon_key.png"),
       ],
       
-      imgsrc:'../../assets/user2.png'
+      imgsrc:require('../../assets/user2.png')
     };
   },
 

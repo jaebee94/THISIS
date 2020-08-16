@@ -94,7 +94,11 @@ export default {
         },
         deleteCheckComment(comment){
             //확인 부분
-            this.$emit("check-delete","댓글을 정말 지우시겠습니까?")
+            var modalInfo={
+                msg : "댓글을 정말 지우시겠습니까?",
+                data : comment
+            }
+            this.$emit("check-delete",modalInfo)
             console.log(comment)
             //this.deleteComment(comment)
         }

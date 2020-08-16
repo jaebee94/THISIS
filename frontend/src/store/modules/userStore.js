@@ -74,7 +74,8 @@ const userStore = {
       window.localStorage.clear();
       router.push({ name: 'Login' })
     },
-    async changeUserInfo({ rootGetters, dispatch }, changeInfo) {
+    async changeUserInfo({ rootGetters, dispatch,state }, changeInfo) {
+      console.log(changeInfo)
       await axios.put(SERVER.URL + SERVER.ROUTES.updateProfile, changeInfo.userInfo, {headers: { accessToken:  cookies.get('access-token') }})
         .then(() => {
           console.log('소개 변경 완료')
@@ -88,8 +89,10 @@ const userStore = {
         config.headers['Accept'] = 'application/json'
         //config.headers['Content-Type'] = 'multipart/form-data'
         await axios.post(SERVER.URL + SERVER.ROUTES.uploadProfile, changeInfo.formData, config)
-        .then(async () => {
+        .then(async (res) => {
           console.log('사진 변경 완료')
+          state.loginData.userimage=res.data;
+          console.log(res)
           dispatch('goProfile', changeInfo.userInfo.user_id)
           // router.push({ name: 'Profile' })
         })

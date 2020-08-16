@@ -413,6 +413,7 @@ export default {
 
 .custom-tag-wrap {
   width: 100%;
+  margin: 7px 0 7px 0; 
 }
 
 .custom-tag-wrap input {
@@ -456,7 +457,7 @@ export default {
 }
 
 .post-content-panel {
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .post-content-panel textarea {

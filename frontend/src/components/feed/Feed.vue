@@ -15,7 +15,7 @@
     </div>
 
     <div >
-    <Modal class = "modal"  v-if="this.isShowModal" v-on:close="isShowModal = false">
+    <Modal class = "modal"  v-if="this.isShowModal" v-on:close="deleteCommentData">
       <template v-slot:modal-text>{{ modalText }}</template>
     </Modal>
     </div>
@@ -69,6 +69,7 @@
             v-for="comment in comments"
             v-bind:key="comment.comment_id"
             v-bind:comment="comment"
+            @check-delete ="showModal"
           ></comment>
         </div>
         <div class="qna-comment-write-wrap">
@@ -255,6 +256,7 @@ export default {
       qnaoption: "",
       searchType: "nonsearch",
       isShowModal:false,
+      selectedComment:null,
       modalText:"",
       currentTab: 0,
       tabs: [
@@ -292,6 +294,7 @@ export default {
       "createComment",
       "updateComment",
       "goCheckScrap",
+      'deleteComment'
     ]),
     ...mapActions("diseaseStore", ["getFollowingDisease"]),
 
@@ -442,6 +445,12 @@ export default {
         this.commentData = {};
       }, 300);
     },
+    deleteCommentData(flag){
+      if(flag){
+        this.deleteComment(this.selectedComment)
+      }
+      this.isShowModal=false;
+    },
     closePost() {
       this.posts=[];
       this.page=0;
@@ -491,15 +500,15 @@ export default {
       this.commentData.posts_id = info.qnaInfo.posts_id;
       this.commentData.user_id = this.loginData.user_id;
     },
-    showModal(modalText){
+    showModal(modalInfo){
       this.$parent.$parent.isHidden= true
        this.$parent.$parent.$parent.isHidden = true;
         document.body.className = "lockbody";
       //this.isQnAHidden= false;
       //this.isPostHidden= false;
       this.isShowModal=true;
-      
-      this.modalText=modalText;
+      this.selectedComment=modalInfo.data;
+      this.modalText=modalInfo.msg;
     },
     closeQnA() {
       this.qnas=[];
