@@ -20,4 +20,6 @@ public interface PostService {
 	public List<Post> selectQnA();
 	public int hiddenupdate(int posts_id);
 	public List<Post> selectQnAByMain(String keyword);
+	public List<Post> selectQnAByTitle(String keyword);
+	public List<Post> selectQnAByDisease(String keyword);
 }

@@ -3,11 +3,18 @@
     <div class="feed-header">
       <table class = "article-header">
         <tr>
-          <td>
+          <td v-if ="postInfo.userinfo.userimage!=null">
             <img
               class="profile-image"
               @click="goProfile(postInfo.post.user_id)"
               :src="postInfo.userinfo.userimage"
+            />
+          </td>
+          <td v-else>
+             <img
+              class="profile-image"
+              @click="goProfile(postInfo.post.user_id)"
+              src="../../assets/user2.png"
             />
           </td>
           <td>
@@ -31,9 +38,21 @@
         </tr>
       </table>
     </div>
-    <div class="feed-main">
+    <div class="feed-main" @click="changeSelectPost(postInfo,'comment')">
       <img v-show="postInfo.post.imgsrc != null" :src="postInfo.post.imgsrc" />
-      <div class="post-content" :class="{active : isActive}" @click="isActive = !isActive"><strong @click="goProfile(postInfo.post.user_id)">{{postInfo.userinfo.nickname}}</strong> {{postInfo.post.posts_main }}</div>
+      <div class = "tag-header" v-show="postInfo.diseasename !=''" >
+       <span >{{postInfo.diseasename}}</span>
+    </div>
+      <div class="post-content" 
+      :class="{active : isActive}" @click="isActive = !isActive"
+      >
+      <strong @click="goProfile(postInfo.post.user_id)">{{postInfo.userinfo.nickname}}</strong> {{postInfo.post.posts_main }}
+      <a
+        class="custom-tag"
+        v-for="tag in postInfo.tags"
+        v-bind:key="tag.tagid"
+      >#{{tag.tagname}}</a>
+      </div>
       <div v-if="postInfo.post.category == 0">
         <a v-show="postInfo.post.health_count != 0">
           <strong>{{postInfo.post.health_count}}명</strong>이 건강해요를 눌렀습니다
@@ -109,16 +128,14 @@ export default {
   },
 
   methods: {
-    // ...mapActions('profileStore', [
-    //   'goProfile',
-    //   ]),
     ...mapActions('userStore', ["goProfile"]),
     ...mapActions('postStore', [
       "fetchComments",
       "health",
       "scrap",
       "deleteScrap",
-      "deletePost"
+      "deletePost",
+      "setPost"
     ]),
     changeSelectPost(post, sort) {
       this.selectedPost = post;
@@ -130,12 +147,15 @@ export default {
       };
 
       if (sort === "modify") {
-        info.isModifyHidden = true;
+        console.log("post",post)
+         this.setPost(post)
+         this.$router.push({name: 'Upload'});
       } else if (sort === "comment") {
         info.isPostHidden = true;
         this.fetchComments(post.posts_id);
+         this.$emit("send-modify", info);
       }
-      this.$emit("send-modify", info);
+     
     },
     clickHealth(post) {
       if (post.health == true) {
@@ -220,6 +240,19 @@ export default {
   object-fit: cover;
 }
 
+.tag-header span{
+  background-color: rgb(0, 171, 132);
+  border: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 20px;
+  margin: 5px 10px 5px 0px ;
+  color: white;
+  display: inline-block;
+  padding :5px  10px 5px 10px ;
+  text-align:center;
+}
+
 .dropdown {
   position: relative;
   display: inline-block;
@@ -257,5 +290,10 @@ export default {
 .dropdown-content a:hover {background-color: #ddd;}
 
 .dropdown:hover .dropdown-content {display: block;}
+
+.custom-tag {
+  font-size: 13px;
+  color: rgb(0, 171, 132);
+}
 
 </style>

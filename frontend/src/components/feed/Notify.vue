@@ -59,7 +59,7 @@
 import db from "../../firebaseInit";
 import { mapActions, mapState } from "vuex";
 import firebase from "firebase";
-
+import router from '@/router'
 
 const increment = firebase.firestore.FieldValue.increment(1);
 //const decrement = firebase.firestore.FieldValue.increment(-1);
@@ -67,7 +67,6 @@ export default {
   computed: {
     ...mapState('notificationStore', ['notification','requests']),
     ...mapState('userStore', ['loginData', 'profileData']),
-    // ...mapState('profileStore', ['profileData'])
   },
   data() {
     return {
@@ -179,6 +178,7 @@ export default {
     },
   },
   created() {
+     if(this.loginData == null) router.push({ name: 'Landing' })
     window.addEventListener('beforeunload', this.clickNoti(0))
     const noti = db.collection("notification").doc(String(this.loginData.user_id));
     let vueInstance = this;

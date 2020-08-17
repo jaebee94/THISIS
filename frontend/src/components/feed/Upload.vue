@@ -21,7 +21,7 @@
       </div>
       <!-- 질병 태그하는 부분 START -->
       <div class="tutorial-input-wrap">
-        <input list="disease-list" id="keyword" v-model="keyword" placeholder="태그할 질병을 검색하세요" />
+        <input list="disease-list" id="keyword" v-model="keyword" placeholder="태그할 질병을 검색하세요" v-on:keyup.enter="getDisease(keyword)"/>
       </div>
       <div class="tutorial-select-wrap">
         <a v-show="this.isSearched">추가 버튼을 누르시면 태그됩니다</a>
@@ -51,7 +51,7 @@
       </div>
       <!-- 질병 태그하는 부분 END -->
       <div class="custom-tag-wrap">
-        <input v-model="customTag" placeholder="태그를 직접 입력하세요" />
+        <input v-model="customTag" placeholder="태그를 직접 입력하세요" v-on:keyup.enter="addTag()"/>
         <button @click="addTag">추가</button>
       </div>
       <div class="custom-tag-show">
@@ -68,7 +68,7 @@
     <div class="button-panel">
       <button
         v-if="this.post==null"
-        @click="sendPhoto(), createPost(uploadData)"
+        @click="createPost(uploadData)"
         :disabled="!isFill"
         :class="{disabled : !isFill}"
       >올리기</button>
@@ -82,13 +82,14 @@
 <script>
 import axios from "axios";
 import { mapState, mapActions } from "vuex";
-
+import router from '@/router'
 const proxyurl = "https://cors-anywhere.herokuapp.com/";
 
 export default {
   name: "Upload",
   computed: {
     ...mapState("postStore", ["post"]),
+    ...mapState("userStore", ["loginData"]),
   },
   data() {
     return {
@@ -169,6 +170,7 @@ export default {
       console.log(file);
       var formData = new FormData();
       formData.append("upload_file", file);
+      console.dir(formData)
       this.uploadData.formData = formData;
       this.imgsrc = URL.createObjectURL(file);
     },
@@ -258,10 +260,6 @@ export default {
         }
       }
     },
-    sendPhoto() {
-      console.log(this.$refs.imageInput);
-      console.log(this.imgsrc);
-    },
     modify() {
       if(this.post.post.imgsrc != null) this.deleteFile(this.post.post.imgsrc); //기존 파일 삭제
       this.post.tags.forEach((tag) => {
@@ -271,10 +269,12 @@ export default {
         };
         this.deleteTagRelation(params);
       }); //기존 태그 관계 삭제
-      this.updatePost(this.uploadData.postData); //업데이트
+      this.$store.dispatch("postStore/updatePost",this.uploadData)
+      //this.updatePost(this.uploadData); //업데이트
     },
   },
   created() {
+    if(this.loginData == null) router.push({ name: 'Landing' })
     console.log(this.post);
     if (this.post != null) {
       
@@ -285,8 +285,10 @@ export default {
         //qna
         this.checkQnA();
       }
-      this.checkItem(this.post.post.diseasecode + ":" + this.post.diseasename);
+      if(this.post.diseasename !="")
+        this.checkItem(this.post.post.diseasecode + ":" + this.post.diseasename);
       this.tags = []
+       this.uploadData.postData.tags = this.tags;
       this.post.tags.forEach((tag) => {
         this.tags.push(tag.tagname);
       });
@@ -411,6 +413,7 @@ export default {
 
 .custom-tag-wrap {
   width: 100%;
+  margin: 7px 0 7px 0; 
 }
 
 .custom-tag-wrap input {
@@ -454,7 +457,7 @@ export default {
 }
 
 .post-content-panel {
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .post-content-panel textarea {

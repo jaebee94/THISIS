@@ -31,7 +31,8 @@
           </td>
           <td>
             <!-- <router-link to="/main/profile"> -->
-              <img @click="checkProfile()" :src="this.loginData.userimage" />
+              <img v-if="this.loginData.userimage!=null" @click="checkProfile()" :src="this.loginData.userimage" />
+              <img v-else @click="checkProfile()" src="../../assets/images/icon/icon_default_image.png" />
             <!-- </router-link> -->
           </td>
         </tr>
@@ -43,8 +44,10 @@
 <script>
 import db from "../../firebaseInit";
 import { mapState, mapActions } from "vuex";
+import router from '@/router'
 export default {
   created() {
+    if(this.loginData == null) router.push({ name: 'Landing' })
     document.body.className = "whitebody";
     this.getNoti(this.loginData.user_id);
   },

@@ -57,6 +57,7 @@
 </template>
 
 <script>
+import router from '@/router'
 export default {
     name: 'Detail',
     props : {
@@ -68,6 +69,7 @@ export default {
         }
     },
     created() {
+       if(this.loginData == null) router.push({ name: 'Landing' })
         console.log(this.info)
     },
     methods : {

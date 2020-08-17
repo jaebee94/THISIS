@@ -53,6 +53,7 @@ public class TagRelationController {
 	@ApiOperation(value = "태그 릴레이션 삭제", response = String.class)
 	@DeleteMapping
 	public ResponseEntity<String> deleteTagRelation(@RequestBody TagRelation tagrelation) {
+		System.out.println("delete tagRelation : " + tagrelation.toString());
 		if (tagrelationservice.deleteTagRelation(tagrelation.getTag_id(), tagrelation.getPost_id())== 1) {
 			return new ResponseEntity<String>("success", HttpStatus.OK);
 		}
