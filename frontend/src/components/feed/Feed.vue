@@ -155,6 +155,12 @@
       </div>
     </div> -->
 
+    <div class="modify-wrap" v-if="this.isModifyHidden">
+      
+
+    </div>
+
+
     <div v-show="currentTab == 0">
       <div>
         <post
@@ -162,6 +168,7 @@
           v-bind:key="postInfo.posts_id"
           v-bind:postInfo="postInfo"
           @send-modify="showModify"
+          @make-report="makeReport"
         ></post>
       </div>
       <infinite-loading
@@ -993,6 +1000,7 @@ div.feed {
 .qna-header {
   text-align: left;
   padding-left: 5%;
+  margin-bottom: 20px;
 }
 
 .qna-header .title strong{
@@ -1078,6 +1086,7 @@ div.feed {
   text-overflow: ellipsis;
   -webkit-transition: all 0.3s linear 0s;
   transition: all 0.3s linear 0s;
+  
 }
 
 .qna-content-wrap.active {

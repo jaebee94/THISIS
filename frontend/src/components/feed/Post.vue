@@ -28,12 +28,14 @@
             <a class="time">{{ timeForToday(postInfo.post.post_date) }}</a>
           </td>
           <td  >
-            <div class="dropdown" v-show="this.loginData.user_id == postInfo.userinfo.user_id">
-              <img class="dropmenu" @click="isDelete = !isDelete" src="../../assets/images/icon/icon_3dots.png" />
+            <div class="dropdown" v-show="postInfo.userinfo.user_id != 1">
+              <img class="dropmenu" @click="isShow=!isShow" src="../../assets/images/icon/icon_3dots.png" />
+           
+            <div class="dropdown-content" v-if = 'isShow'>
+              <a href="#" v-if="postInfo.userinfo.user_id == this.loginData.user_id" @click="deletePost(postInfo.posts_id), isShow=!isShow">삭제</a>
+              <a href="#" @click="isShow=!isShow, makeReport()">신고</a>
             </div>
-            <div v-show="isDelete" class="dropdown-content">
-              <a href="#" @click="deletePost({postInfo:postInfo,user_id:loginData.user_id})">삭제</a>
-            </div>
+             </div>
           </td>
         </tr>
       </table>
@@ -122,7 +124,7 @@ export default {
         user_id: null,
       },
       selectedPost: {},
-      isDelete: false,
+      isShow: false,
       isActive: false,
     };
   },
@@ -204,7 +206,11 @@ export default {
           return `${betweenTimeDay}일전`;
       }
       return `${Math.floor(betweenTimeDay / 365)}년전`;
+    },
+    makeReport(){
+      this.$emit("make-report");
     }
+  
   },
   created() {
     console.log(this.postInfo);
@@ -261,7 +267,6 @@ export default {
 
 .dropmenu {
   width: 18px;
-  float: right;
 }
 
 .dropdown-content {
@@ -269,27 +274,25 @@ export default {
   right: 5px;
   background-color: rgb(247, 247, 247);
   outline: none;
-  min-width: 160px;
+  min-width: 100px;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 55;
-  -webkit-tap-highlight-color : rgba(247, 247, 247, 0);
+  z-index: 1;
+  display: block;
+
 }
 
-.dropdown-content:focus {
-  outline: none;
-  background-color: rgb(200, 200, 200);
-}
-
-.dropdown-content a {
+.dropdown-content a{
   color: black;
   padding: 12px 16px;
   text-decoration: none;
   display: block;
+  
 }
 
-.dropdown-content a:hover {background-color: #ddd;}
+.dropdown-content a:hover{
+  background-color:rgb(191, 181, 181);
+}
 
-.dropdown:hover .dropdown-content {display: block;}
 
 .custom-tag {
   font-size: 13px;

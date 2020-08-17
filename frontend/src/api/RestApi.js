@@ -40,6 +40,8 @@ export default {
 
     qnasmain : '/articles/qna/main',
     qnastitle : '/articles/qna/title',
-    qnasdisease : '/articles/qna/disease'
+    qnasdisease : '/articles/qna/disease',
+
+    police : '/police'
   }
 }
