@@ -34,5 +34,6 @@
 		from police 
 		join posts
 		on police.posts_id = posts.posts_id 
+		where posts.user_id=#{user_id}
 	</select>
 </mapper>
