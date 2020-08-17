@@ -39,6 +39,7 @@ export default {
     subscribe: '/subscribe',
 
     qnasmain : '/articles/qna/main',
-    qnastitle : '/articles/qna/title'
+    qnastitle : '/articles/qna/title',
+    qnasdisease : '/articles/qna/disease'
   }
 }
