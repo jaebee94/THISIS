@@ -10,6 +10,8 @@
         </div>
         <div class="profile-name">
           <a>{{ profileData.userInfo.nickname }}</a>
+          <!-- 의사 뱃지 보여주는 부분 -->
+          <img v-if ="profileData.userInfo.role == 'doctor'" src='../../assets/images/icon/icon_doctor_mark.png'/> 
         </div>
         <div class="profile-intro">
           <a>{{ profileData.userInfo.introduction }}</a>

@@ -111,21 +111,15 @@ const postStore = {
       }
      
     },
-    deletePost({ rootGetters }, postInfo) {
-      if (postInfo.user_id != postInfo.postInfo.userinfo.user_id) {
-        alert("너꺼 아니잖아");
-        return;
-      } else {
+    deletePost({ rootGetters }, posts_id) {
         var con = confirm("진짜 지우시겠습니까?");
         if (con) {
-          axios.delete(SERVER.URL + SERVER.ROUTES.post + `/${postInfo.postInfo.posts_id}`, rootGetters.config)
+          axios.delete(SERVER.URL + SERVER.ROUTES.post + `/${posts_id}`, rootGetters.config)
             .then(() => {
               alert('게시글이 삭제되었습니다.')
             })
             .catch(err => console.log(err))
-        }
-        else alert("안 지웠어")
-      }
+        }     
 
     },
 
@@ -237,6 +231,14 @@ const postStore = {
           console.log("result", res);
         }).catch(err => console.log(err));
 
+    },
+    //신고하기
+    CreatePolice({rootGetters},policeData){
+      axios.post(SERVER.URL + SERVER.ROUTES.police, policeData, rootGetters.config)
+          .then(() => {
+            alert('신고가 완료되었습니다.')
+          })
+          .catch(err => console.log('신고 에러: ', err))
     }
 
   }
