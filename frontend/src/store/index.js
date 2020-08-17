@@ -8,7 +8,7 @@ import followStore from './modules/followStore.js'
 import notificationStore from './modules/notificationStore.js'
 import diseaseStore from './modules/diseaseStore.js'
 
-import cookies from 'vue-cookies'
+
 import axios from 'axios'
 import SERVER from '@/api/RestApi.js'
 
@@ -24,7 +24,7 @@ export default new Vuex.Store({
   },
 
   getters: {
-    config: () => ({ headers: { accessToken:  cookies.get('access-token') } }),
+    config: () => ({ headers: { accessToken:  window.$cookies.get('access-token') } }),
   },
 
   mutations: {

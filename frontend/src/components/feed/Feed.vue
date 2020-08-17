@@ -14,46 +14,55 @@
       </div>
     </div>
 
+    <div>
+      <Modal class="modal" v-if="this.isShowModal" v-on:close="deleteCommentData">
+        <template v-slot:modal-text>{{ modalText }}</template>
+      </Modal>
+    </div>
+
     <div v-if="this.isQnAHidden" class="post" ref="qna">
       <div class="qna-wrapper">
         <div class="qna-header">
           <div class="title">
-            <a>{{qnaInfo.post.posts_title}}</a>
+            <strong>{{qnaInfo.post.posts_title}}</strong>
           </div>
-          <div class="nickname">
-            <a>{{qnaInfo.userinfo.nickname}}</a>
-          </div>
-          <div class="time">
-            <a>{{ timeForToday(qnaInfo.post.post_date) }}</a>
-          </div>
+          <span class="nickname">{{qnaInfo.userinfo.nickname}}</span>
+          <span class="time">{{ timeForToday(qnaInfo.post.post_date) }}</span>
         </div>
         <div v-if="qnaInfo.post.imgsrc != null" class="qna-photo-wrap">
           <img :src="qnaInfo.post.imgsrc" />
         </div>
         <div class="qna-main-content-wrap">
           <div class="qna-tag-wrap">
-            <div>
-              <span v-if="qnaInfo.diseasename != ''" class="disease-tag">#{{qnaInfo.diseasename}}</span>
+            <div v-if="qnaInfo.diseasename != ''">
+              <strong>관련 질병 :</strong>
+              <span class="disease-tag">#{{qnaInfo.diseasename}}</span>
             </div>
-            <div class="qna-custom-tag-wrap">
+            <br />
+            <!-- <div class="qna-custom-tag-wrap">
+              <div><strong>관련 태그 :</strong>
               <a
                 class="custom-tag"
                 v-for="tag in qnaInfo.tags"
                 v-bind:key="tag.tagid"
-              >#{{tag.tagname}}</a>
-            </div>
+              >#{{tag.tagname}}</a></div>
+            </div>-->
           </div>
-          <div
-            class="qna-content-wrap"
-            :class="{active: isActive}"
-            @click="isActive = !isActive"
-          >{{qnaInfo.post.posts_main}}</div>
+          <div class="qna-content-wrap" :class="{active: isActive}" @click="isActive = !isActive">
+            {{qnaInfo.post.posts_main}}
+            <a
+              class="custom-tag"
+              v-for="tag in qnaInfo.tags"
+              v-bind:key="tag.tagid"
+            >#{{tag.tagname}}</a>
+          </div>
         </div>
         <div :class="{'wide' : qnaInfo.post.imgsrc == null}" class="qna-comment-wrap">
           <comment
             v-for="comment in comments"
             v-bind:key="comment.comment_id"
             v-bind:comment="comment"
+            @check-delete="showModal"
           ></comment>
         </div>
         <div class="qna-comment-write-wrap">
@@ -104,6 +113,7 @@
           v-for="comment in comments"
           v-bind:key="comment.comment_id"
           v-bind:comment="comment"
+          @check-delete="showModal"
         ></comment>
       </div>
       <div class="qna-comment-write-wrap">
@@ -115,7 +125,8 @@
       </div>
     </div>
 
-    <div class="modify-wrap" v-if="this.isModifyHidden">
+    <!-- 아예 업로드에서 수정하기로 바꿈
+      <div class="modify-wrap" v-if="this.isModifyHidden">
       <div>
         <h2>제목 : {{ postInfo.post.posts_title }}</h2>
       </div>
@@ -128,6 +139,69 @@
       <div class="modify-footer">
         <img @click="closeModify()" src="../../assets/images/icon/icon_close.png" />
       </div>
+    </div>-->
+
+    <div class="report-modal" v-if="this.isReportHidden">
+      <table class ="police-table">
+        <tr >
+          <td><strong>신고하기</strong></td>
+        </tr>
+        <tr>
+          <td>
+            <div class="radio">
+              <input type="radio" id="radio-A" name="report" value="A" v-model="selectedReason" checked/>
+              <label for="radio-A" class="radio-label">성적인 내용 포함</label>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="radio">
+              <input type="radio" id="radio-B" name="report" v-model="selectedReason" value="B" />
+              <label for="radio-B" class="radio-label">폭력적 또는 혐오스러운 내용 포함</label>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="radio">
+              <input type="radio" id="radio-C" name="report" v-model="selectedReason" value="C" />
+              <label for="radio-C" class="radio-label">증오 또는 악의적인 내용 포함</label>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="radio">
+              <input type="radio" id="radio-D" name="report" v-model="selectedReason" value="D" />
+              <label for="radio-D" class="radio-label">유해한 위험 내용 포함</label>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="radio">
+              <input type="radio" id="radio-E" name="report" v-model="selectedReason" value="E" />
+              <label for="radio-E" class="radio-label">불확실한 의학 내용 전파</label>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="radio">
+              <input type="radio" id="radio-F" name="report" v-model="selectedReason" value="F" />
+              <label for="radio-F" class="radio-label">권리 침해</label>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div id="police-confirm" @click="policeConfirm()">확인</div>
+            <div id="police-cancel" @click="policeCancel()">취소</div>
+          </td>
+        </tr>
+        <!-- <tr><td>확인</td><td>취소</td></tr> -->
+      </table>
     </div>
 
     <div v-show="currentTab == 0">
@@ -137,25 +211,31 @@
           v-bind:key="postInfo.posts_id"
           v-bind:postInfo="postInfo"
           @send-modify="showModify"
+          @make-report="makeReport"
         ></post>
       </div>
       <infinite-loading
         v-if="this.currentTab == 0"
         ref="infiniteLoadingPost"
         @infinite="infiniteHandler"
-      ></infinite-loading>
+      >
+        <div slot="spinner">Loading...</div>
+        <div slot="no-more">더 이상 게시글이 없습니다 :)</div>
+        <div slot="no-results">게시글이 존재하지 않습니다.</div>
+      </infinite-loading>
     </div>
 
     <div v-show="currentTab == 1">
       <!-- <h1>Q&A게시판</h1> -->
       <form v-on:submit.prevent="searchQna">
         <select name="qnaoption" id="qnaoption" v-model="qnaoption">
-          <option value="all" selected>전체보기</option>
+          <option value="" hidden>카테고리</option>
+          <option value="all">전체보기</option>
           <option value="text">글내용</option>
           <option value="title">글제목</option>
           <option value="disease">질병명</option>
         </select>
-        <input v-model="qnakeyword" id="qnakeyword" placeholder="검색어를 입력하세요" />
+        <input v-model="qnakeyword" id="qnakeyword" v-on:keyup.enter="searchQna()" placeholder="검색어를 입력하세요" />
         <button type="submit">검색</button>
       </form>
       <qna
@@ -168,7 +248,15 @@
         v-if="this.currentTab == 1"
         ref="infiniteLoadingQnA"
         @infinite="infiniteHandlerQnA"
-      ></infinite-loading>
+      >
+        <div slot="spinner">Loading...</div>
+        <div slot="no-more">더 이상 게시글이 없습니다 :)</div>
+        <div slot="no-results">게시글이 존재하지 않습니다.</div>
+        <div slot="error" slot-scope="{ trigger }">
+          Error message, click
+          <a href="javascript:;" @click="trigger">here</a> to retry
+        </div>
+      </infinite-loading>
     </div>
 
     <div v-show="currentTab == 2">
@@ -186,7 +274,6 @@ import SERVER from "@/api/RestApi.js";
 import qna from "../feed/QnA.vue";
 import comment from "../feed/Comment.vue";
 import news from "../feed/News.vue";
-
 import { Carousel, Slide } from "vue-carousel";
 import cookies from "vue-cookies";
 
@@ -204,6 +291,7 @@ export default {
       isPostHidden: false,
       isModifyHidden: false,
       isQnAHidden: false,
+      isReportHidden: false,
       postInfo: {},
       commentData: {
         posts_id: null,
@@ -220,7 +308,9 @@ export default {
       qnakeyword: "",
       qnaoption: "",
       searchType: "nonsearch",
-
+      isShowModal: false,
+      selectedComment: null,
+      modalText: "",
       currentTab: 0,
       tabs: [
         require("../../assets/images/icon/icon_post.png"),
@@ -229,6 +319,8 @@ export default {
       ],
 
       isActive: false,
+
+      selectedReason: '',
     };
   },
   props: {
@@ -256,18 +348,26 @@ export default {
       this.$refs.infiniteLoadingPost.stateChanger.reset();
       this.$refs.infiniteLoadingQnA.stateChanger.reset();
     },
+    selectedReason: function(newRole) {
+      console.log(newRole);
+      this.selectedReason = newRole;
+    }
   },
   methods: {
     ...mapActions("postStore", [
       "updatePost",
       "createComment",
       "updateComment",
-      //'fetchHealths',
       "goCheckScrap",
+      "deleteComment",
     ]),
     ...mapActions("diseaseStore", ["getFollowingDisease"]),
 
     searchQna() {
+      if(this.qnaoption == '') {
+        alert('검색할 카테고리를 선택해주세요!')
+        return;
+      }
       this.$refs.infiniteLoadingQnA.stateChanger.reset();
       this.qnaPage = 0;
       this.qnas = [];
@@ -279,7 +379,8 @@ export default {
       }
     },
 
-    infiniteHandlerQnA($state) {
+    async infiniteHandlerQnA($state) {
+      console.log("infiniteQna", this.qnaPage);
       if (this.searchType == "search") {
         //검색일 경우
         if (this.qnaoption == "text") {
@@ -292,7 +393,7 @@ export default {
           };
           let url = SERVER.URL + SERVER.ROUTES.qnasmain;
           //통신부분
-          axios.get(url, params2).then(({ data }) => {
+          await axios.get(url, params2).then(({ data }) => {
             if (data.length) {
               this.qnaPage += 1;
 
@@ -307,12 +408,79 @@ export default {
                 });
               });
               this.qnas.push(...data);
+              console.log(data);
               $state.loaded();
             } else {
               $state.complete();
             }
           });
         } //글내용 검색
+        else if (this.qnaoption == "title") {
+          //글제목 검색
+          var params3 = {
+            params: {
+              num: this.qnaPage,
+              keyword: this.qnakeyword,
+            },
+            headers: { accessToken: cookies.get("access-token") },
+          };
+          let url = SERVER.URL + SERVER.ROUTES.qnastitle;
+          //통신부분
+          await axios.get(url, params3).then(({ data }) => {
+            if (data.length) {
+              this.qnaPage += 1;
+
+              data.forEach((element) => {
+                element.health = false;
+                element.scrap = false;
+                element.post.health_count = element.healths.length;
+                element.healths.forEach((ele) => {
+                  if (ele.user_id == this.loginData.user_id) {
+                    element.health = true;
+                  }
+                });
+              });
+              this.qnas.push(...data);
+              console.log(data);
+              $state.loaded();
+            } else {
+              $state.complete();
+            }
+          });
+        } //글제목 검색
+        else if (this.qnaoption == "disease") {
+          //질병명 검색
+          var params4 = {
+            params: {
+              num: this.qnaPage,
+              keyword: this.qnakeyword,
+            },
+            headers: { accessToken: cookies.get("access-token") },
+          };
+          let url = SERVER.URL + SERVER.ROUTES.qnasdisease;
+          //통신부분
+          await axios.get(url, params4).then(({ data }) => {
+            if (data.length) {
+              this.qnaPage += 1;
+
+              data.forEach((element) => {
+                element.health = false;
+                element.scrap = false;
+                element.post.health_count = element.healths.length;
+                element.healths.forEach((ele) => {
+                  if (ele.user_id == this.loginData.user_id) {
+                    element.health = true;
+                  }
+                });
+              });
+              this.qnas.push(...data);
+              console.log(data);
+              $state.loaded();
+            } else {
+              $state.complete();
+            }
+          });
+        } //질병명 검색
       } else {
         //검색이 아닐때
         var params = {
@@ -324,7 +492,8 @@ export default {
 
         let url = SERVER.URL + SERVER.ROUTES.qnas;
         //통신부분
-        axios.get(url, params).then(({ data }) => {
+        await axios.get(url, params).then(({ data }) => {
+          console.log(data);
           if (data.length) {
             this.qnaPage += 1;
 
@@ -342,6 +511,7 @@ export default {
             this.qnas.push(...data);
             $state.loaded();
           } else {
+            console.log("complete");
             $state.complete();
           }
         });
@@ -410,7 +580,20 @@ export default {
         this.commentData = {};
       }, 300);
     },
+    deleteCommentData(flag) {
+      if (flag) {
+        this.deleteComment(this.selectedComment);
+      }
+      this.isShowModal = false;
+    },
+    commentInfo(info) {
+      this.commentData.posts_id = info.posts_id;
+    },
     closePost() {
+      this.posts = [];
+      this.page = 0;
+      this.$refs.infiniteLoadingPost.stateChanger.reset();
+
       this.$parent.$parent.isHidden = false;
       this.$parent.$parent.$parent.isHidden = false;
       this.isPostHidden = false;
@@ -443,15 +626,6 @@ export default {
       this.commentData.posts_id = info.postInfo.posts_id;
       this.commentData.user_id = this.loginData.user_id;
     },
-    // showModify(info) {
-    //   //댓글이나 글 수정시 부르는 함수
-    //   console.log('showInfo', info)
-    //   this.postInfo = info.postInfo;
-    //   this.commentData.posts_id = info.postInfo.posts_id;
-    //   this.commentData.user_id = this.loginData.user_id;
-    //   // this.$router.push({name: 'Login'});
-    //   this.$router.push({name: 'Detail', params: info});
-    // },
     showModifyQnA(info) {
       console.log(info);
       this.qnaInfo = info.qnaInfo;
@@ -464,7 +638,20 @@ export default {
       this.commentData.posts_id = info.qnaInfo.posts_id;
       this.commentData.user_id = this.loginData.user_id;
     },
+    showModal(modalInfo) {
+      this.$parent.$parent.isHidden = true;
+      this.$parent.$parent.$parent.isHidden = true;
+      document.body.className = "lockbody";
+      //this.isQnAHidden= false;
+      //this.isPostHidden= false;
+      this.isShowModal = true;
+      this.selectedComment = modalInfo.data;
+      this.modalText = modalInfo.msg;
+    },
     closeQnA() {
+      this.qnas = [];
+      this.qnaPage = 0;
+      this.$refs.infiniteLoadingQnA.stateChanger.reset();
       this.$parent.$parent.isHidden = false;
       this.$parent.$parent.$parent.isHidden = false;
       this.isQnAHidden = false;
@@ -494,12 +681,67 @@ export default {
       }
       return `${Math.floor(betweenTimeDay / 365)}년전`;
     },
-    commentInfo(info) {
-      console.log(info);
-      this.commentData.posts_id = info.posts_id;
+    makeReport(postInfo) {
+      console.log(postInfo)
+      this.postInfo = postInfo;
+      this.$parent.$parent.isHidden = true;
+      this.$parent.$parent.$parent.isHidden = true;
+      this.isReportHidden = true;
+      document.body.className = "lockbody";
+      this.selectedReason = 'A';
+    },
+    policeConfirm() {
+      var reason = '';
+      if(this.selectedReason == 'A'){
+        reason = '성적인 내용 포함';
+      } else if (this.selectedReason == 'B') {
+        reason = '폭력적 또는 혐오스러운 내용 포함';
+      } else if (this.selectedReason == 'C') {
+        reason = '증오 또는 악의적인 내용 포함';
+      } else if (this.selectedReason == 'D') {
+        reason = '유해한 위험 내용 포함';
+      } else if (this.selectedReason == 'E') {
+        reason = '불확실한 의학 내용 전파';
+      } else if (this.selectedReason == 'F') {
+        reason = '권리 침해';
+      } 
+      let params = {
+        posts_id: this.postInfo.post.posts_id,
+        reason: reason,
+        user_id: this.loginData.user_id
+      }
+      axios.post(SERVER.URL + '/police', params, { headers: { accessToken : cookies.get('access-token')}})
+        .then((res) => {
+          console.log(res);
+          // 신고 성공
+          alert('게시물을 신고했습니다')
+          this.$parent.$parent.isHidden = false;
+          this.isReportHidden = false;
+          /*------ 피드 스크롤 unlock ------*/
+          document.body.className = "";
+          /*------ 피드 스크롤 unlock ------*/
+        })
+        .catch((err) => {
+          console.log(err);
+          // 신고 실패
+          alert('게시물 신고에 실패했습니다')
+          this.$parent.$parent.isHidden = false;
+          this.isReportHidden = false;
+          /*------ 피드 스크롤 unlock ------*/
+          document.body.className = "";
+          /*------ 피드 스크롤 unlock ------*/
+        })
+    },
+    policeCancel() {
+      this.$parent.$parent.isHidden = false;
+      this.isReportHidden = false;
+      /*------ 피드 스크롤 unlock ------*/
+      document.body.className = "";
+      /*------ 피드 스크롤 unlock ------*/
     },
   },
   created() {
+    if (this.loginData == null) this.$router.push({ name: "Landing" });
     this.$refs.infiniteLoadingPost.stateChanger.reset();
     this.$refs.infiniteLoadingQnA.stateChanger.reset();
     this.$store.dispatch("getCheckScrap");
@@ -640,6 +882,14 @@ div.feed {
   padding: 1px 3px;
 }
 
+.modal {
+  position: fixed;
+  z-index: 100;
+  width: 70%;
+  height: 20%;
+  background-color: white;
+}
+
 .post {
   position: fixed;
   z-index: 99;
@@ -648,6 +898,7 @@ div.feed {
   height: 80%;
   background-color: white;
   border-radius: 5px;
+   margin-left: 4%;
 }
 
 .post-header {
@@ -807,7 +1058,7 @@ div.feed {
 }
 
 /* 수정할 포스트 내용 보이기 */
-.modify-wrap {
+/* .modify-wrap {
   position: fixed;
   z-index: 99;
   top: 10%;
@@ -815,7 +1066,7 @@ div.feed {
   height: 70%;
   background-color: white;
   border-radius: 5px;
-}
+} */
 
 .post-content textarea {
   padding: 5px 5px;
@@ -861,11 +1112,9 @@ div.feed {
 }
 
 /* ----- qna 내용 자세히 보기 모달창 코드 -----  */
-.post {
-  margin-left: 4%;
-}
 
 .post .qna-wrapper {
+  margin: 15px 0px 15px 0px;
   height: 100%;
   overflow: auto;
 }
@@ -873,27 +1122,33 @@ div.feed {
 .qna-header {
   text-align: left;
   padding-left: 5%;
+  margin-bottom: 20px;
 }
 
-.qna-header .title a {
-  font-size: 20px;
-  font-weight: 600;
+.qna-header .title strong {
+  font-size: 30px;
 }
 
-.qna-header .nickname a {
+.qna-header .nickname {
   font-size: 15px;
-  font-weight: 500;
+  position: relative;
+  margin: 10px;
+  left: 70%;
 }
 
-.qna-header .time a {
+.qna-header .time {
   color: slategray;
   font-size: 10px;
+  float: right;
+  margin: 5px 10px 5px 10px;
 }
 
 .qna-photo-wrap {
   width: 90%;
   /* height: 40%; */
-  margin-left: 5%;
+  margin: 0 auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 .qna-photo-wrap img {
@@ -914,6 +1169,7 @@ div.feed {
 }
 
 .qna-tag-wrap div {
+  float: left;
   margin-bottom: 5px;
 }
 
@@ -925,19 +1181,20 @@ div.feed {
   border: none;
   border-radius: 5px;
   padding: 3px 8px;
+  margin-left: 5px;
 }
 
 .qna-custom-tag-wrap {
   width: 100%;
+  float: left;
 }
 
-.qna-tag-wrap .custom-tag {
+.custom-tag {
   color: rgb(0, 171, 132);
-  font-size: 12px;
-  margin-left: 5px;
 }
 
 .qna-content-wrap {
+  width: 100%;
   max-height: 100px;
   text-align: left;
   overflow: hidden;
@@ -1015,6 +1272,115 @@ div.feed {
   border-radius: 5px;
   margin-left: 1%;
 }
+
+.report-modal {
+  position: fixed;
+  z-index: 99;
+  top: 25%;
+  width: 92%;
+  height: 50%;
+  background-color: white;
+  border-radius: 5px;
+  margin-left: 4%;
+}
+
+.police-table{
+  margin-top: 20px;
+  margin-left: auto; margin-right: auto;
+  /* height: 100%; */
+  text-align: left;
+}
+
+.police-table tr:first-child {
+  height: 40px;
+}
+
+.police-table tr:nth-child(1) td {
+  text-align: center;
+}
+
+.police-table tr:last-child td {
+  display: flex;
+  width: 100%;
+}
+
+.police-table tr:last-child td div {
+  width: 40%;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.police-table tr td {
+  padding: 0;
+}
+
+#police-confirm {
+  margin-left: 5%;
+  background-color: rgb(0, 171, 132);
+  color: white;
+  border:none;
+  outline: none;
+  font-weight: 600;
+  border-radius: 5px;
+  height: 30px;
+  line-height: 2;
+}
+
+#police-cancel {
+  margin-left: 10%;
+  background-color: rgb(200, 200, 200);
+  color: slategray;
+  border:none;
+  outline: none;
+  font-weight: 600;
+  border-radius: 5px;
+  height: 30px;
+  line-height: 2;
+}
+
+/* ======================= radio button css ============================ */
+.radio {
+  margin: 0.5rem;
+}
+.radio input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+}
+.radio input[type="radio"] + .radio-label:before {
+  content: '';
+  background: #f4f4f4;
+  border-radius: 100%;
+  border: 1px solid #b4b4b4;
+  display: inline-block;
+  width: 1.4em;
+  height: 1.4em;
+  position: relative;
+  top: -0.2em;
+  margin-right: 1em;
+  vertical-align: top;
+  cursor: pointer;
+  text-align: center;
+  -webkit-transition: all 250ms ease;
+  transition: all 250ms ease;
+}
+.radio input[type="radio"]:checked + .radio-label:before {
+  background-color: #3197EE;
+  box-shadow: inset 0 0 0 4px #f4f4f4;
+}
+.radio input[type="radio"]:focus + .radio-label:before {
+  outline: none;
+  border-color: #3197EE;
+}
+.radio input[type="radio"]:disabled + .radio-label:before {
+  box-shadow: inset 0 0 0 4px #f4f4f4;
+  border-color: #b4b4b4;
+  background: #b4b4b4;
+}
+.radio input[type="radio"] + .radio-label:empty:before {
+  margin-right: 0;
+}
+
+/* ======================= radio button css ============================ */
 
 /* --------------------------------------------- */
 </style>

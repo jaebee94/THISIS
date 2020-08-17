@@ -82,6 +82,7 @@ public class DiseaseController {
 				Auth auth = authService.findAuthByAccessToken(accessToken);
 				user_id = auth.getUser_id();
 			}
+			System.out.println("user_id : " +user_id);
 			return new ResponseEntity<List<Disease>>(diseaseService.selectDiseaseByUserid(user_id), HttpStatus.OK); 
 	}
 

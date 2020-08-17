@@ -333,4 +333,19 @@ public class PostController {
 			throw new RuntimeException("file Save Error");
 		}
 	}
+	
+	@ApiOperation(value = "글제목에 해당하는 qna 게시판을 반환한다.", response = List.class)
+	@GetMapping("qna/title")
+	public ResponseEntity<List<PostResponse>> selectQnAByTitle(@RequestParam int num, @RequestParam String keyword)
+			throws Exception {
+		return sendResponse(postservice.selectQnAByTitle(keyword), num);
+	}
+	
+	@ApiOperation(value = "질병태그에 해당하는 qna 게시판을 반환한다.", response = List.class)
+	@GetMapping("qna/disease")
+	public ResponseEntity<List<PostResponse>> selectQnAByDisease(@RequestParam int num, @RequestParam String keyword)
+			throws Exception {
+		return sendResponse(postservice.selectQnAByDisease(keyword), num);
+	}
+	
 }

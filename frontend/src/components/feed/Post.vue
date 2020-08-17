@@ -4,11 +4,18 @@
     <div class="feed-header">
       <table class = "article-header">
         <tr>
-          <td>
+          <td v-if ="postInfo.userinfo.userimage!=null">
             <img
               class="profile-image"
               @click="goProfile(postInfo.post.user_id)"
               :src="postInfo.userinfo.userimage"
+            />
+          </td>
+          <td v-else>
+             <img
+              class="profile-image"
+              @click="goProfile(postInfo.post.user_id)"
+              src="../../assets/user2.png"
             />
           </td>
           <td>
@@ -22,21 +29,34 @@
             <a class="time">{{ timeForToday(postInfo.post.post_date) }}</a>
           </td>
           <td  >
-            <div class="dropdown" v-show="this.loginData.user_id == postInfo.userinfo.user_id">
+            <div class="dropdown" >
               <img class="dropmenu" @click="isDelete = !isDelete" src="../../assets/images/icon/icon_3dots.png" />
             </div>
             <div v-show="isDelete" class="dropdown-content">
-              <a href="#" v-if="loginData.user_id == postInfo.post.user_id" @click="showModal(postInfo)">수정</a>
+              <a href="#" v-if="loginData.user_id == postInfo.post.user_id" @click="changeSelectPost(postInfo,'modify')">수정</a>
               <a href="#" v-if="loginData.user_id == postInfo.post.user_id" @click="showModal(postInfo)">삭제</a>
               <a href="#" v-if="loginData.user_id != postInfo.post.user_id"  @click="showModal(postInfo)">신고</a>
             </div>
+             <!-- </div> -->
           </td>
         </tr>
       </table>
     </div>
-    <div class="feed-main">
+    <div class="feed-main" >
       <img v-show="postInfo.post.imgsrc != null" :src="postInfo.post.imgsrc" />
-      <div class="post-content" :class="{active : isActive}" @click="isActive = !isActive"><strong @click="goProfile(postInfo.post.user_id)">{{postInfo.userinfo.nickname}}</strong> {{postInfo.post.posts_main }}</div>
+      <div class = "tag-header" v-show="postInfo.diseasename !=''" >
+       <span >{{postInfo.diseasename}}</span>
+    </div>
+      <div class="post-content" 
+      :class="{active : isActive}" @click="isActive = !isActive"
+      >
+      <strong @click="goProfile(postInfo.post.user_id)">{{postInfo.userinfo.nickname}}</strong> {{postInfo.post.posts_main }}
+      <a
+        class="custom-tag"
+        v-for="tag in postInfo.tags"
+        v-bind:key="tag.tagid"
+      >#{{tag.tagname}}</a>
+      </div>
       <div v-if="postInfo.post.category == 0">
         <a v-show="postInfo.post.health_count != 0">
           <strong>{{postInfo.post.health_count}}명</strong>이 건강해요를 눌렀습니다
@@ -77,13 +97,13 @@
               src="../../assets/images/icon/icon_scrap_unselect.png"
             />
           </td>
-          <td>
+          <!-- <td>
             <img
               @click="changeSelectPost(postInfo,'modify')"
               v-if="loginData.user_id == postInfo.post.user_id"
               src="../../assets/images/icon/icon_edit_unselect.png"
             />
-          </td>
+          </td> -->
         </tr>
       </table>
     </div>
@@ -114,23 +134,22 @@ export default {
         posts_id: null,
         user_id: null,
       },
-      selectedPost: {},
       isDelete: false,
+      selectedPost: {},
+      isShow: false,
       isActive: false,
     };
   },
 
   methods: {
-    // ...mapActions('profileStore', [
-    //   'goProfile',
-    //   ]),
     ...mapActions('userStore', ["goProfile"]),
     ...mapActions('postStore', [
       "fetchComments",
       "health",
       "scrap",
       "deleteScrap",
-      "deletePost"
+      "deletePost",
+      "setPost"
     ]),
     changeSelectPost(post, sort) {
       this.selectedPost = post;
@@ -142,12 +161,15 @@ export default {
       };
 
       if (sort === "modify") {
-        info.isModifyHidden = true;
+        console.log("post",post)
+         this.setPost(post)
+         this.$router.push({name: 'Upload'});
       } else if (sort === "comment") {
         info.isPostHidden = true;
         this.fetchComments(post.posts_id);
+         this.$emit("send-modify", info);
       }
-      this.$emit("send-modify", info);
+     
     },
     clickHealth(post) {
       if (post.health == true) {
@@ -202,26 +224,31 @@ export default {
       console.log(postInfo.userinfo.user_id)
       if(postInfo.userinfo.user_id == this.loginData.user_id) this.deletePost({postInfo:postInfo,user_id: this.loginData.user_id});
       else {
-        var reason = prompt("신고 내용은요?");
-        let params = {
-          posts_id: postInfo.post.posts_id,
-          reason: reason,
-          user_id: this.loginData.user_id
-        }
-        axios.post(SERVER.URL + '/police', params, { headers: { accessToken : cookies.get('access-token')}})
-        .then((res) => {
-          console.log(res);
-          // 신고 성공
-          alert('게시물을 신고했습니다')
-        })
-        .catch((err) => {
-          console.log(err);
-          // 신고 실패
-          alert('게시물 신고에 실패했습니다')
-        })
-
+        // var reason = prompt("신고 내용은요?");
+        // let params = {
+        //   posts_id: postInfo.post.posts_id,
+        //   reason: reason,
+        //   user_id: this.loginData.user_id
+        // }
+        this.makeReport();
+        console.log(SERVER, axios, cookies)
+        // axios.post(SERVER.URL + '/police', params, { headers: { accessToken : cookies.get('access-token')}})
+        // .then((res) => {
+        //   console.log(res);
+        //   // 신고 성공
+        //   alert('게시물을 신고했습니다')
+        // })
+        // .catch((err) => {
+        //   console.log(err);
+        //   // 신고 실패
+        //   alert('게시물 신고에 실패했습니다')
+        // })
       }
+    },
+    makeReport() {
+      this.$emit("make-report", this.postInfo);
     }
+  
   },
   created() {
     console.log(this.postInfo);
@@ -257,6 +284,19 @@ export default {
   object-fit: cover;
 }
 
+.tag-header span{
+  background-color: rgb(0, 171, 132);
+  border: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 20px;
+  margin: 5px 10px 5px 0px ;
+  color: white;
+  display: inline-block;
+  padding :5px  10px 5px 10px ;
+  text-align:center;
+}
+
 .dropdown {
   position: relative;
   display: inline-block;
@@ -265,7 +305,6 @@ export default {
 
 .dropmenu {
   width: 18px;
-  float: right;
 }
 
 .black-layer {
@@ -284,27 +323,30 @@ export default {
   right: 5px;
   background-color: rgb(247, 247, 247);
   outline: none;
-  min-width: 160px;
+  min-width: 100px;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 55;
-  -webkit-tap-highlight-color : rgba(247, 247, 247, 0);
+  display: block;
+
 }
 
-.dropdown-content:focus {
-  outline: none;
-  background-color: rgb(200, 200, 200);
-}
-
-.dropdown-content a {
+.dropdown-content a{
   color: black;
   padding: 12px 16px;
   text-decoration: none;
   display: block;
+  
 }
 
-.dropdown-content a:hover {background-color: #ddd;}
+.dropdown-content a:hover{
+  background-color:rgb(191, 181, 181);
+}
 
-.dropdown:hover .dropdown-content {display: block;}
+
+.custom-tag {
+  font-size: 13px;
+  color: rgb(0, 171, 132);
+}
 
 
 .feed-footer table tr td:nth-child(2) a {

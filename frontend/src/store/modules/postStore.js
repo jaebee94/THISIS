@@ -1,11 +1,12 @@
 import axios from 'axios'
 import router from '@/router'
 import SERVER from '@/api/RestApi.js'
+import cookies from 'vue-cookies'
 const postStore = {
   namespaced: true,
 
   state: {
-    post :{},
+    post: {},
     comments: {},
     healths: {},
     checkScrap: 0,
@@ -13,8 +14,8 @@ const postStore = {
 
   getters: {
 
-   },
-  
+  },
+
   mutations: {
     SET_POST(state, post) {
       state.post = post
@@ -58,7 +59,8 @@ const postStore = {
           .then(res => {
             uploadData.postData.post.imgsrc = res.data
             console.log(uploadData.postData)
-            axios.post(SERVER.URL + SERVER.ROUTES.posts, uploadData.postData, rootGetters.config)
+            axios.post(SERVER.URL + SERVER.ROUTES.posts, uploadData.postData,
+              {headers: { accessToken:  cookies.get('access-token') }})
               .then(() => {
                 alert('작성이 완료되었습니다.')
                 router.push({ name: 'Feed' })
@@ -68,48 +70,76 @@ const postStore = {
           .catch(err => console.log('사진 업로드 에러: ', err))
       }
     },
-    setPost({commit},postInfo){
-      commit('SET_POST',postInfo);
+    setPost({ commit }, postInfo) {
+      commit('SET_POST', postInfo);
     },
-    updatePost({ rootGetters }, postInfo) {
-      console.log("updatePost",postInfo)
-      axios.put(SERVER.URL + SERVER.ROUTES.post, postInfo, rootGetters.config)
-        .then(() => {
-          alert('변경이 완료되었습니다.')
-          router.push({ name: 'Feed' })
-        })
-        .catch(err => console.log(err))
-    },
-    deletePost({ rootGetters }, postInfo) {
-      if(postInfo.user_id != postInfo.postInfo.userinfo.user_id) {
-        alert("너꺼 아니잖아");
-        return;
-      } else {
-        var con = confirm("진짜 지우시겠습니까?");
-        if(con){ 
-          axios.delete(SERVER.URL + SERVER.ROUTES.post +`/${postInfo.postInfo.posts_id}`  ,rootGetters.config)
+    updatePost({rootGetters},uploadData) {
+      console.log("updatePost", uploadData)
+
+      if (uploadData.formData == null) {
+        axios.put(SERVER.URL + SERVER.ROUTES.post, 
+          uploadData.postData,
+          rootGetters.config
+          )
           .then(() => {
-            alert('게시글이 삭제되었습니다.')
+            alert('게시글 변경이 완료되었습니다.')
+            router.push({ name: 'Feed' })
           })
           .catch(err => console.log(err))
-        }
-        else alert("안 지웠어")
+      } else {
+
+        axios.post(SERVER.URL + SERVER.ROUTES.upload, uploadData.formData, {
+          header: {
+            'Accept': 'application/json',
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+          .then(res => {
+            uploadData.postData.post.imgsrc = res.data
+            console.log(uploadData.postData)
+            axios.put(SERVER.URL + SERVER.ROUTES.post, 
+              uploadData.postData,
+              rootGetters.config
+              )
+              .then(() => {
+                alert('게시글 변경이 완료되었습니다.')
+                router.push({ name: 'Feed' })
+              })
+              .catch(err => console.log(err))
+          })
+          .catch(err => console.log('사진 업로드 에러: ', err))
       }
-      
+     
+    },
+    deletePost({ rootGetters }, posts_id) {
+        var con = confirm("진짜 지우시겠습니까?");
+        if (con) {
+          axios.delete(SERVER.URL + SERVER.ROUTES.post + `/${posts_id}`, rootGetters.config)
+            .then(() => {
+              alert('게시글이 삭제되었습니다.')
+            })
+            .catch(err => console.log(err))
+        }     
+
     },
 
     // Comment
     createComment({ commit, rootGetters }, commentData) {
       console.log("createComment - commentData", commentData)
-      axios.post(SERVER.URL + SERVER.ROUTES.comment, commentData, rootGetters.config)
+      if(commentData.comment_main == null || commentData.comment_main == "") {
+        alert("댓글을 입력해주세요")
+      }else{
+        axios.post(SERVER.URL + SERVER.ROUTES.comment, commentData, rootGetters.config)
         .then(
           setTimeout(() => {
             axios.get(SERVER.URL + SERVER.ROUTES.comment + '/' + commentData.posts_id)
-            .then(res => {  
-              commit('SET_COMMENTS', res.data)
-            })
+              .then(res => {
+                commit('SET_COMMENTS', res.data)
+              })
           }, 100)
         )
+      }
+      
     },
     fetchComments({ commit }, posts_id) {
       console.log('여기가 문제?')
@@ -122,15 +152,20 @@ const postStore = {
     updateComment({ rootGetters }, commentData) {
       console.log('server 요청 전', rootGetters)
       axios.put(SERVER.URL + SERVER.ROUTES.comment + '/' + commentData.comment_id, commentData, rootGetters.config)
-      .then((res) => {console.log(res)})
-      .catch((err) => {console.log(err)})
+        .then((res) => { console.log(res) })
+        .catch((err) => { console.log(err) })
     },
-    deleteComment() {     // 삭제 로직 개발 필요
+    deleteComment({ rootGetters,dispatch }, commentData) {     // 삭제 로직 개발 필요
+      axios.delete(SERVER.URL + SERVER.ROUTES.comment + `/${commentData.comment_id}`, rootGetters.config)
+      .then(res => {
+        console.log("result", res);
+        dispatch('fetchComments',commentData.posts_id)
+      }).catch(err => console.log(err))
     },
 
     // Health
     health({ rootGetters }, healthData) {
-      axios.post(SERVER.URL + SERVER.ROUTES.health + `/${healthData.posts_id}`,healthData,rootGetters.config)
+      axios.post(SERVER.URL + SERVER.ROUTES.health + `/${healthData.posts_id}`, healthData, rootGetters.config)
         .then(res => {
           console.log(rootGetters.config)
           console.log(res.data)
@@ -144,16 +179,16 @@ const postStore = {
     },
 
     // Scrap
-    scrap({rootGetters},params) {
+    scrap({ rootGetters }, params) {
       axios.post(SERVER.URL + SERVER.ROUTES.scrap, {
         posts_id: params.posts_id
       }, rootGetters.config)
     },
-    deleteScrap({ rootGetters }, params){
-      axios.delete(SERVER.URL + SERVER.ROUTES.scrap+`/${params.posts_id}`,rootGetters.config)
-      .then(res => {
-        console.log("result", res);
-      }).catch(err => console.log(err))
+    deleteScrap({ rootGetters }, params) {
+      axios.delete(SERVER.URL + SERVER.ROUTES.scrap + `/${params.posts_id}`, rootGetters.config)
+        .then(res => {
+          console.log("result", res);
+        }).catch(err => console.log(err))
     },
     getCheckScrap({ state, rootGetters, commit }, posts_id) {
       axios.get(SERVER.URL + SERVER.ROUTES.scrap,
@@ -162,38 +197,50 @@ const postStore = {
             posts_id: posts_id,
             user_id: state.loginData.user_id
           },
-          headers : rootGetters.config.headers
+          headers: rootGetters.config.headers
         })
         .then(res => {
           commit('SET_CHECK_SCRAPS', res.data);
         }).catch(err => console.log(err))
     },
     getUserScraps({ rootGetters, commit }, userId) {
-      console.log("rootGetters.config",rootGetters.config)
+      console.log("rootGetters.config", rootGetters.config)
       axios.get(SERVER.URL + SERVER.ROUTES.scrap + "/" + userId, rootGetters.config)
         .then(res => {
           commit('SET_SCRAPS', res.data);
         }).catch(err => console.log(err))
     },
-    deleteFile({rootGetters},deletefile){
+    deleteFile({ rootGetters }, deletefile) {
       axios.delete(SERVER.URL + SERVER.ROUTES.upload,
         {
-          data:{delete_file : deletefile}
-          ,headers : rootGetters.config.headers
+          params: { delete_file: deletefile },
+          headers:rootGetters.config.headers
         })
-      .then(res => {
-        console.log("result", res);
-      }).catch(err => console.log(err))
+        .then(res => {
+          console.log("result", res);
+        }).catch(err => console.log(err))
     },
-    deleteTagRelation({rootGetters},params){
+    deleteTagRelation({ rootGetters }, params) {
 
-      axios.delete(SERVER.URL + SERVER.ROUTES.tagrelation,params,rootGetters.config)
-      .then(res => {
-        console.log("result", res);
-      }).catch(err => console.log(err));
-      
+      axios.delete(SERVER.URL + SERVER.ROUTES.tagrelation, 
+        {
+          data: params,
+          headers:rootGetters.config.headers
+        })
+        .then(res => {
+          console.log("result", res);
+        }).catch(err => console.log(err));
+
+    },
+    //신고하기
+    CreatePolice({rootGetters},policeData){
+      axios.post(SERVER.URL + SERVER.ROUTES.police, policeData, rootGetters.config)
+          .then(() => {
+            alert('신고가 완료되었습니다.')
+          })
+          .catch(err => console.log('신고 에러: ', err))
     }
-    
+
   }
 }
 

@@ -15,7 +15,7 @@
       <div v-show="profileTab == 0">
         <div class="profile-photo">
           <div class="profile-modify-image">
-            <img :src="imgsrc + ''" />
+            <img :src="imgsrc" />
           </div>
           <div class="profile-image-button">
             <button @click="onClickImageUpload">프로필 사진 변경</button>
@@ -92,10 +92,12 @@
 import PV from "password-validator";
 import axios from "axios";
 import SERVER from "@/api/RestApi.js";
+import router from '@/router'
 import { mapState, mapActions } from "vuex";
 
 export default {
   created() {
+    if(this.loginData == null) router.push({ name: 'Landing' })
     this.passwordSchema
       .is()
       .min(8)
@@ -106,18 +108,11 @@ export default {
       .has()
       .letters();
 
-    // this.changeInfo.email = this.loginData.email;
-    // this.changeInfo.introduction = this.profileData.userInfo.introduction;
-    // this.changeInfo.nickname = this.loginData.nickname;
-    // this.changeInfo.password = this.loginData.password;
-    // this.changeInfo.user_id = this.loginData.user_id;
-    // this.changeInfo.username = this.loginData.username;
-    // this.changeInfo.userInfo = this.loginData
     console.log("프로필 데이터" ,this.profileData)
     this.email = this.profileData.userInfo.email;
     this.nickname = this.profileData.userInfo.nickname;
     this.introduction = this.profileData.userInfo.introduction;
-    this.imgsrc = this.profileData.userInfo.userimage;
+    if(this.profileData.userInfo.userimage!=null) this.imgsrc = this.profileData.userInfo.userimage;
   },
 
   computed: {
@@ -165,7 +160,7 @@ export default {
         require("../../assets/images/icon/icon_key.png"),
       ],
       
-      imgsrc: ''
+      imgsrc:require('../../assets/user2.png')
     };
   },
 
