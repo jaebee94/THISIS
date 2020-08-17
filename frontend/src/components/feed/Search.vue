@@ -14,6 +14,9 @@
           <div><strong>{{item.title}}</strong></div>
           <div><img v-show="item.thumbnail != null" :src="item.thumbnail"></div>
           <div><a>{{item.description}}</a></div>
+          <div class="morebtn">  
+            <a @click="openLink(item.link)"><i style="color:skyblue">더보기 </i></a>
+            <img src="../../assets/images/icon/icon_search_select.png"></div>
         </slide>
       </carousel>
       </div>
@@ -29,7 +32,7 @@
         v-for="(tab, index) in tabs"
         v-bind:key="tab"
         v-bind:class="{active: currentTab === index}"
-        @click="currentTab = index"
+        @click="switchTab(index)"
       >
         <a>{{tab}}</a>
       </div>
@@ -250,6 +253,7 @@ export default {
               item.title = String(item.title).replace(/<br\/>/ig, "\n");
               item.title = String(item.title).replace(/&quot;/ig, "");
               item.title = String(item.title).replace(/<(\/)?([a-zA-Z]*)(\s[a-zA-Z]*=[^>]*)?(\s)*(\/)?>/ig, "");
+
               this.searchedItems.push(item);
               // this.selectedDisease.description += item.description+"\n";
               // item.title = String(item.title).replace(/<br\/>/ig, "\n");
@@ -265,10 +269,16 @@ export default {
       })
       console.log(this.searchedItems)
     },
-    
+    switchTab(index){
+      this.currentTab=index;
+      this.keyword = "";
+    },
     close(){
       this.$parent.$parent.isHidden = false;
       this.isDiseaseHidden = true;    
+    },
+    openLink(link) {
+            window.open(link,"_parent");
     }
   },
 };
@@ -315,6 +325,7 @@ export default {
 
 .post-content {
   width: 100%;
+  max-height: 100%;
 }
 
 .post-content .carousel.wrap {
@@ -331,9 +342,17 @@ export default {
   font-weight: 600;
 }
 
+.VueCarousel-wrapper{
+  height: 70%;
+}
 
 
 .myslide div:nth-child(3) {
+  padding-left: 10%;
+  padding-right: 10%;
+}
+
+.myslide div:nth-child(4) {
   padding-left: 10%;
   padding-right: 10%;
 }
@@ -361,10 +380,6 @@ export default {
 
 .modify-footer img {
   height: 80%;
-}
-
-.search:last-child {
-  margin-bottom: 100px;
 }
 
 .search-panel input {
@@ -478,4 +493,10 @@ button {
   margin-top : 10px;
   margin-bottom : 10px;
 }
+
+.morebtn{
+  height: 30px;
+  float: right;
+}
+
 </style>
