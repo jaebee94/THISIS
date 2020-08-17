@@ -111,4 +111,20 @@
 		AND posts.posts_main LIKE concat('%',#{keyword}, '%')
 		order by post_date desc
 	</select>
+	
+	<select id="selectQnAByTitle" resultType="Post">
+		select * from posts
+		where
+		posts.category = 1
+		AND posts.posts_title LIKE concat('%',#{keyword}, '%')
+		order by post_date desc
+	</select>
+	
+	<select id="selectQnAByDisease" resultType="Post">
+		select * from posts
+		where
+		posts.category = 1
+		AND posts.diseasecode in (select disease.diseasecode from disease where disease.diseasename LIKE concat('%',#{keyword}, '%'))
+		order by post_date desc
+	</select>
 </mapper>

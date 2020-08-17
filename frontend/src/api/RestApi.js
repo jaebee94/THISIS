@@ -38,7 +38,8 @@ export default {
     disease: '/disease/user',
     subscribe: '/subscribe',
 
-    qnasmain : '/articles/qna/main'
-
+    qnasmain : '/articles/qna/main',
+    qnastitle : '/articles/qna/title',
+    qnasdisease : '/articles/qna/disease'
   }
 }

@@ -346,6 +346,70 @@ export default {
             }
           });
         } //글내용 검색
+        else if(this.qnaoption == "title"){ //글제목 검색
+           var params3 = {
+            params: {
+              num: this.qnaPage,
+              keyword: this.qnakeyword,
+            },
+            headers: { accessToken: cookies.get("access-token") },
+          };
+          let url = SERVER.URL + SERVER.ROUTES.qnastitle;
+          //통신부분
+          await axios.get(url, params3).then(({ data }) => {
+            if (data.length) {
+              this.qnaPage += 1;
+
+              data.forEach((element) => {
+                element.health = false;
+                element.scrap = false;
+                element.post.health_count = element.healths.length;
+                element.healths.forEach((ele) => {
+                  if (ele.user_id == this.loginData.user_id) {
+                    element.health = true;
+                  }
+                });
+              });
+              this.qnas.push(...data);
+              console.log(data);
+              $state.loaded();
+            } else {
+              $state.complete();
+            }
+          });
+        }//글제목 검색
+        else if(this.qnaoption == "disease"){ //질병명 검색
+           var params4 = {
+            params: {
+              num: this.qnaPage,
+              keyword: this.qnakeyword,
+            },
+            headers: { accessToken: cookies.get("access-token") },
+          };
+          let url = SERVER.URL + SERVER.ROUTES.qnasdisease;
+          //통신부분
+          await axios.get(url, params4).then(({ data }) => {
+            if (data.length) {
+              this.qnaPage += 1;
+
+              data.forEach((element) => {
+                element.health = false;
+                element.scrap = false;
+                element.post.health_count = element.healths.length;
+                element.healths.forEach((ele) => {
+                  if (ele.user_id == this.loginData.user_id) {
+                    element.health = true;
+                  }
+                });
+              });
+              this.qnas.push(...data);
+              console.log(data);
+              $state.loaded();
+            } else {
+              $state.complete();
+            }
+          });
+        }//질병명 검색
       } else {
         //검색이 아닐때
         var params = {
