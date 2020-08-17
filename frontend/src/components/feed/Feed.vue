@@ -218,7 +218,7 @@
       <!-- <h1>Q&A게시판</h1> -->
       <form v-on:submit.prevent="searchQna">
         <select name="qnaoption" id="qnaoption" v-model="qnaoption">
-          <option value="all" selected>전체보기</option>
+          <option value="all" selected >전체보기</option>
           <option value="text">글내용</option>
           <option value="title">글제목</option>
           <option value="disease">질병명</option>
