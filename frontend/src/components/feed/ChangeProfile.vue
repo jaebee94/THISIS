@@ -268,6 +268,7 @@ export default {
       this.changeInfo.formData = formData;
       console.log("changeInfo : ", this.changeInfo);
       this.imgsrc = URL.createObjectURL(file);
+      
     },
     signOut() {
       var res = confirm("정말로 탈퇴하시겠습니까?");
