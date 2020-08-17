@@ -14,10 +14,10 @@
       </div>
     </div>
 
-    <div >
-    <Modal class = "modal"  v-if="this.isShowModal" v-on:close="deleteCommentData">
-      <template v-slot:modal-text>{{ modalText }}</template>
-    </Modal>
+    <div>
+      <Modal class="modal" v-if="this.isShowModal" v-on:close="deleteCommentData">
+        <template v-slot:modal-text>{{ modalText }}</template>
+      </Modal>
     </div>
 
     <div v-if="this.isQnAHidden" class="post" ref="qna">
@@ -26,12 +26,8 @@
           <div class="title">
             <strong>{{qnaInfo.post.posts_title}}</strong>
           </div>
-          <span class="nickname">
-            {{qnaInfo.userinfo.nickname}}
-          </span>
-          <span class="time">
-            {{ timeForToday(qnaInfo.post.post_date) }}
-          </span>
+          <span class="nickname">{{qnaInfo.userinfo.nickname}}</span>
+          <span class="time">{{ timeForToday(qnaInfo.post.post_date) }}</span>
         </div>
         <div v-if="qnaInfo.post.imgsrc != null" class="qna-photo-wrap">
           <img :src="qnaInfo.post.imgsrc" />
@@ -39,9 +35,10 @@
         <div class="qna-main-content-wrap">
           <div class="qna-tag-wrap">
             <div v-if="qnaInfo.diseasename != ''">
-               <strong>관련 질병 :</strong><span  class="disease-tag">#{{qnaInfo.diseasename}}</span>
+              <strong>관련 질병 :</strong>
+              <span class="disease-tag">#{{qnaInfo.diseasename}}</span>
             </div>
-            <br>
+            <br />
             <!-- <div class="qna-custom-tag-wrap">
               <div><strong>관련 태그 :</strong>
               <a
@@ -49,27 +46,23 @@
                 v-for="tag in qnaInfo.tags"
                 v-bind:key="tag.tagid"
               >#{{tag.tagname}}</a></div>
-            </div> -->
+            </div>-->
           </div>
-          <div
-            class="qna-content-wrap"
-            :class="{active: isActive}"
-            @click="isActive = !isActive"
-          >{{qnaInfo.post.posts_main}}
-          <a
-                class="custom-tag"
-                v-for="tag in qnaInfo.tags"
-                v-bind:key="tag.tagid"
-              >#{{tag.tagname}}</a>
+          <div class="qna-content-wrap" :class="{active: isActive}" @click="isActive = !isActive">
+            {{qnaInfo.post.posts_main}}
+            <a
+              class="custom-tag"
+              v-for="tag in qnaInfo.tags"
+              v-bind:key="tag.tagid"
+            >#{{tag.tagname}}</a>
           </div>
-          
         </div>
         <div :class="{'wide' : qnaInfo.post.imgsrc == null}" class="qna-comment-wrap">
           <comment
             v-for="comment in comments"
             v-bind:key="comment.comment_id"
             v-bind:comment="comment"
-            @check-delete ="showModal"
+            @check-delete="showModal"
           ></comment>
         </div>
         <div class="qna-comment-write-wrap">
@@ -127,7 +120,7 @@
           v-for="comment in comments"
           v-bind:key="comment.comment_id"
           v-bind:comment="comment"
-          @check-delete ="showModal"
+          @check-delete="showModal"
         ></comment>
       </div>
       <div class="qna-comment-write-wrap">
@@ -153,7 +146,52 @@
       <div class="modify-footer">
         <img @click="closeModify()" src="../../assets/images/icon/icon_close.png" />
       </div>
-    </div> -->
+    </div>-->
+
+    <div class="post" v-if="this.isReportHidden">
+      <table class ="police-table">
+        <thead>
+        <tr >
+          <th><strong>신고하기</strong></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td >
+            <input type="radio" name="" value="A" />성적인 내용 포함
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input type="radio" name="" value="B" />폭력적 또는 혐오스러운 내용 포함
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input type="radio" name="" value="C" />증오 또는 악의적인 내용 포함
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input type="radio" name="" value="D" />유해한 위험 내용 포함
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input type="radio" name="" value="E" />불확실한 의학 내용 전파
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input type="radio" name="" value="F" />권리 침해
+          </td>
+        </tr>
+        </tbody>
+        <tfoot>
+        <tr><td>확인</td><td>취소</td></tr>
+        </tfoot>
+      </table>
+    </div>
 
     <div v-show="currentTab == 0">
       <div>
@@ -162,6 +200,7 @@
           v-bind:key="postInfo.posts_id"
           v-bind:postInfo="postInfo"
           @send-modify="showModify"
+          @make-report="makeReport"
         ></post>
       </div>
       <infinite-loading
@@ -169,9 +208,9 @@
         ref="infiniteLoadingPost"
         @infinite="infiniteHandler"
       >
-       <div slot="spinner">Loading...</div>
-      <div slot="no-more">더 이상 게시글이 없습니다 :)</div>
-      <div slot="no-results">게시글이 존재하지 않습니다.</div>
+        <div slot="spinner">Loading...</div>
+        <div slot="no-more">더 이상 게시글이 없습니다 :)</div>
+        <div slot="no-results">게시글이 존재하지 않습니다.</div>
       </infinite-loading>
     </div>
 
@@ -179,7 +218,7 @@
       <!-- <h1>Q&A게시판</h1> -->
       <form v-on:submit.prevent="searchQna">
         <select name="qnaoption" id="qnaoption" v-model="qnaoption">
-          <option value="all" selected>전체보기</option>
+          <option value="all" selected >전체보기</option>
           <option value="text">글내용</option>
           <option value="title">글제목</option>
           <option value="disease">질병명</option>
@@ -198,12 +237,13 @@
         ref="infiniteLoadingQnA"
         @infinite="infiniteHandlerQnA"
       >
-         <div slot="spinner">Loading...</div>
+        <div slot="spinner">Loading...</div>
         <div slot="no-more">더 이상 게시글이 없습니다 :)</div>
         <div slot="no-results">게시글이 존재하지 않습니다.</div>
         <div slot="error" slot-scope="{ trigger }">
-        Error message, click <a href="javascript:;" @click="trigger">here</a> to retry
-      </div>
+          Error message, click
+          <a href="javascript:;" @click="trigger">here</a> to retry
+        </div>
       </infinite-loading>
     </div>
 
@@ -239,6 +279,7 @@ export default {
       isPostHidden: false,
       isModifyHidden: false,
       isQnAHidden: false,
+      isReportHidden: false,
       postInfo: {},
       commentData: {
         posts_id: null,
@@ -255,9 +296,9 @@ export default {
       qnakeyword: "",
       qnaoption: "",
       searchType: "nonsearch",
-      isShowModal:false,
-      selectedComment:null,
-      modalText:"",
+      isShowModal: false,
+      selectedComment: null,
+      modalText: "",
       currentTab: 0,
       tabs: [
         require("../../assets/images/icon/icon_post.png"),
@@ -294,7 +335,7 @@ export default {
       "createComment",
       "updateComment",
       "goCheckScrap",
-      'deleteComment'
+      "deleteComment",
     ]),
     ...mapActions("diseaseStore", ["getFollowingDisease"]),
 
@@ -311,7 +352,7 @@ export default {
     },
 
     async infiniteHandlerQnA($state) {
-      console.log("infiniteQna",this.qnaPage)
+      console.log("infiniteQna", this.qnaPage);
       if (this.searchType == "search") {
         //검색일 경우
         if (this.qnaoption == "text") {
@@ -346,8 +387,9 @@ export default {
             }
           });
         } //글내용 검색
-        else if(this.qnaoption == "title"){ //글제목 검색
-           var params3 = {
+        else if (this.qnaoption == "title") {
+          //글제목 검색
+          var params3 = {
             params: {
               num: this.qnaPage,
               keyword: this.qnakeyword,
@@ -377,9 +419,10 @@ export default {
               $state.complete();
             }
           });
-        }//글제목 검색
-        else if(this.qnaoption == "disease"){ //질병명 검색
-           var params4 = {
+        } //글제목 검색
+        else if (this.qnaoption == "disease") {
+          //질병명 검색
+          var params4 = {
             params: {
               num: this.qnaPage,
               keyword: this.qnakeyword,
@@ -409,7 +452,7 @@ export default {
               $state.complete();
             }
           });
-        }//질병명 검색
+        } //질병명 검색
       } else {
         //검색이 아닐때
         var params = {
@@ -422,7 +465,7 @@ export default {
         let url = SERVER.URL + SERVER.ROUTES.qnas;
         //통신부분
         await axios.get(url, params).then(({ data }) => {
-          console.log(data)
+          console.log(data);
           if (data.length) {
             this.qnaPage += 1;
 
@@ -440,7 +483,7 @@ export default {
             this.qnas.push(...data);
             $state.loaded();
           } else {
-            console.log("complete")
+            console.log("complete");
             $state.complete();
           }
         });
@@ -509,17 +552,17 @@ export default {
         this.commentData = {};
       }, 300);
     },
-    deleteCommentData(flag){
-      if(flag){
-        this.deleteComment(this.selectedComment)
+    deleteCommentData(flag) {
+      if (flag) {
+        this.deleteComment(this.selectedComment);
       }
-      this.isShowModal=false;
+      this.isShowModal = false;
     },
     closePost() {
-      this.posts=[];
-      this.page=0;
+      this.posts = [];
+      this.page = 0;
       this.$refs.infiniteLoadingPost.stateChanger.reset();
-    
+
       this.$parent.$parent.isHidden = false;
       this.$parent.$parent.$parent.isHidden = false;
       this.isPostHidden = false;
@@ -564,19 +607,19 @@ export default {
       this.commentData.posts_id = info.qnaInfo.posts_id;
       this.commentData.user_id = this.loginData.user_id;
     },
-    showModal(modalInfo){
-      this.$parent.$parent.isHidden= true
-       this.$parent.$parent.$parent.isHidden = true;
-        document.body.className = "lockbody";
+    showModal(modalInfo) {
+      this.$parent.$parent.isHidden = true;
+      this.$parent.$parent.$parent.isHidden = true;
+      document.body.className = "lockbody";
       //this.isQnAHidden= false;
       //this.isPostHidden= false;
-      this.isShowModal=true;
-      this.selectedComment=modalInfo.data;
-      this.modalText=modalInfo.msg;
+      this.isShowModal = true;
+      this.selectedComment = modalInfo.data;
+      this.modalText = modalInfo.msg;
     },
     closeQnA() {
-      this.qnas=[];
-      this.qnaPage=0;
+      this.qnas = [];
+      this.qnaPage = 0;
       this.$refs.infiniteLoadingQnA.stateChanger.reset();
       this.$parent.$parent.isHidden = false;
       this.$parent.$parent.$parent.isHidden = false;
@@ -585,7 +628,6 @@ export default {
       /*------ 피드 스크롤 unlock ------*/
       document.body.className = "";
       /*------ 피드 스크롤 unlock ------*/
-
     },
     timeForToday(time) {
       const today = new Date();
@@ -608,9 +650,14 @@ export default {
       }
       return `${Math.floor(betweenTimeDay / 365)}년전`;
     },
+    makeReport() {
+      this.$parent.$parent.isHidden = true;
+      this.$parent.$parent.$parent.isHidden = true;
+      this.isReportHidden = true;
+    },
   },
   created() {
-    if(this.loginData == null) this.$router.push({ name: 'Landing' })
+    if (this.loginData == null) this.$router.push({ name: "Landing" });
     this.$refs.infiniteLoadingPost.stateChanger.reset();
     this.$refs.infiniteLoadingQnA.stateChanger.reset();
     this.$store.dispatch("getCheckScrap");
@@ -751,7 +798,7 @@ div.feed {
   padding: 1px 3px;
 }
 
-.modal{
+.modal {
   position: fixed;
   z-index: 100;
   width: 70%;
@@ -767,6 +814,7 @@ div.feed {
   height: 80%;
   background-color: white;
   border-radius: 5px;
+   margin-left: 4%;
 }
 
 .post-header {
@@ -980,12 +1028,9 @@ div.feed {
 }
 
 /* ----- qna 내용 자세히 보기 모달창 코드 -----  */
-.post {
-  margin-left: 4%;
-}
 
 .post .qna-wrapper {
-  margin : 15px 0px 15px 0px;
+  margin: 15px 0px 15px 0px;
   height: 100%;
   overflow: auto;
 }
@@ -993,34 +1038,33 @@ div.feed {
 .qna-header {
   text-align: left;
   padding-left: 5%;
+  margin-bottom: 20px;
 }
 
-.qna-header .title strong{
+.qna-header .title strong {
   font-size: 30px;
-  
 }
 
-.qna-header .nickname{
+.qna-header .nickname {
   font-size: 15px;
   position: relative;
-  margin : 10px;
-  left : 70%;
+  margin: 10px;
+  left: 70%;
 }
 
-.qna-header .time{
+.qna-header .time {
   color: slategray;
   font-size: 10px;
   float: right;
-  margin : 5px 10px 5px 10px;
+  margin: 5px 10px 5px 10px;
 }
 
 .qna-photo-wrap {
   width: 90%;
   /* height: 40%; */
-  margin:0 auto;
+  margin: 0 auto;
   margin-top: 10px;
   margin-bottom: 10px;
-  
 }
 
 .qna-photo-wrap img {
@@ -1038,11 +1082,10 @@ div.feed {
 
 .qna-tag-wrap {
   width: 100%;
-  
 }
 
 .qna-tag-wrap div {
-  float:left;
+  float: left;
   margin-bottom: 5px;
 }
 
@@ -1057,8 +1100,8 @@ div.feed {
   margin-left: 5px;
 }
 
-.qna-custom-tag-wrap{
-  width:100%;
+.qna-custom-tag-wrap {
+  width: 100%;
   float: left;
 }
 
@@ -1067,7 +1110,7 @@ div.feed {
 }
 
 .qna-content-wrap {
-  width : 100%;
+  width: 100%;
   max-height: 100px;
   text-align: left;
   overflow: hidden;
@@ -1144,6 +1187,12 @@ div.feed {
   outline: none;
   border-radius: 5px;
   margin-left: 1%;
+}
+
+.police-table{
+  margin-left: auto; margin-right: auto;
+  height: 100%;
+  text-align: center;
 }
 
 /* --------------------------------------------- */
