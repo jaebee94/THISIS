@@ -310,10 +310,20 @@ export default {
   margin-left: 5%;
 }
 
+.title-panel #posts_title {
+  transition-duration: 300ms;
+}
+
+.title-panel #posts_title:focus {
+  background-color: rgb(247, 247, 247);
+  color: black;
+  font-weight: 600;
+}
+
 .content-panel {
   width: 90%;
   background-color: rgb(200, 200, 200);
-  margin-top: 20px;
+  margin-top: 10px;
   margin-left: 5%;
   border-radius: 5px;
 }
@@ -413,7 +423,8 @@ export default {
 
 .custom-tag-wrap {
   width: 100%;
-  margin: 7px 0 7px 0; 
+  margin-bottom: 3px;
+  /* margin: 7px 0 7px 0;  */
 }
 
 .custom-tag-wrap input {
@@ -441,6 +452,7 @@ export default {
   background-color: rgb(0, 171, 132);
   padding: 5px 10px;
   margin: 3px 5px auto;
+  margin-top: 5px;
   border: none;
   font-size: 11px;
   font-weight: 600;
@@ -508,5 +520,9 @@ export default {
 
 #uploadImg {
   visibility: hidden;
+}
+
+.post-content-panel #posts_main {
+  border-radius: 5px;
 }
 </style>

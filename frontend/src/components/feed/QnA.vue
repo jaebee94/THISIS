@@ -1,32 +1,21 @@
 <template>
   <div class="qna wrap">
     <div class="qna-header">
-      <table style="width: 100%;">
-        <tr>
-        <!-- <td>
-            <img
-              v-if=" qnaInfo.post.imgsrc != ''"
-              @click="changeSelectQnA(qnaInfo, 'modify')"
-              src="../../assets/images/icon/icon_edit_unselect.png"
-            />
-        </td> -->
-          <td>
-            <div class="qna-title">
-              <a>{{qnaInfo.post.posts_title}}</a>
-            </div>
-          </td>
-          <td>
-            <img
-              v-if="loginData.user_id == qnaInfo.userinfo.user_id"
-              @click="changeSelectQnA(qnaInfo, 'modify')"
-              src="../../assets/images/icon/icon_edit_unselect.png"
-            />
-          </td>
-        </tr>
-      </table>
-      <div class="qna-tag" @click="changeSelectQnA(qnaInfo, 'comment')">
-        <a v-if="qnaInfo.diseasename != ''">#{{qnaInfo.diseasename}}</a>
-      </div>
+        <table style="width: 100%;">
+            <tr >
+                <td>
+                    <div class="qna-title">
+                        <a>{{qnaInfo.post.posts_title}}</a>
+                    </div>
+                </td>
+                <td>
+                    <img v-if="loginData.user_id == qnaInfo.userinfo.user_id" @click="changeSelectQnA(qnaInfo, 'modify')" src="../../assets/images/icon/icon_edit_unselect.png">
+                </td>
+            </tr>
+        </table>
+        <div  class="qna-tag" @click="changeSelectQnA(qnaInfo, 'comment')">
+            <a v-if="qnaInfo.diseasename != ''">#{{qnaInfo.diseasename}}</a>
+        </div>
     </div>
     <div class="qna-footer" @click="changeSelectQnA(qnaInfo, 'comment')">
       <!-- <img

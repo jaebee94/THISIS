@@ -67,7 +67,7 @@
         </div>
         <div class="qna-comment-write-wrap">
           <input v-model="commentData.comment_main" placeholder="내용을 입력하세요" />
-          <button @click="createComment(commentData), clearCommentData()">댓글</button>
+          <button @click="commentInfo(qnaInfo), createComment(commentData), clearCommentData()">댓글</button>
         </div>
         <div class="post-footer">
           <img @click="closeQnA()" src="../../assets/images/icon/icon_close.png" />
@@ -100,16 +100,9 @@
         </slide>
         <slide class="myslide">
           <div class="post-main">
-            <strong>{{postInfo.post.posts_title}}</strong>
-            <br />
-            <a class="post-disease-tag">#{{postInfo.diseasename}}</a>
-            <br />
-            <a
-              class="post-custom-tag"
-              v-for="tag in postInfo.tags"
-              v-bind:key="tag.tagid"
-            >#{{tag.tagname}}</a>
-            <br />
+            <strong>{{postInfo.post.posts_title}}</strong> <br>
+            <a v-if="postInfo.diseasename != null" class="post-disease-tag">#{{postInfo.diseasename}}</a><br>
+            <a class="post-custom-tag" v-for="tag in postInfo.tags" v-bind:key="tag.tagid">#{{tag.tagname}} </a> <br>
             {{ postInfo.post.posts_main }}
           </div>
         </slide>
@@ -125,7 +118,7 @@
       </div>
       <div class="qna-comment-write-wrap">
         <input v-model="commentData.comment_main" placeholder="내용을 입력하세요" />
-        <button @click="createComment(commentData), clearCommentData()">댓글</button>
+        <button @click="commentInfo(postInfo), createComment(commentData), clearCommentData()">댓글</button>
       </div>
       <div class="post-footer">
         <img @click="closePost()" src="../../assets/images/icon/icon_close.png" />
@@ -148,48 +141,66 @@
       </div>
     </div>-->
 
-    <div class="post" v-if="this.isReportHidden">
+    <div class="report-modal" v-if="this.isReportHidden">
       <table class ="police-table">
-        <thead>
         <tr >
-          <th><strong>신고하기</strong></th>
+          <td><strong>신고하기</strong></td>
         </tr>
-        </thead>
-        <tbody>
         <tr>
-          <td >
-            <input type="radio" name="" value="A" />성적인 내용 포함
+          <td>
+            <div class="radio">
+              <input type="radio" id="radio-A" name="report" value="A" v-model="selectedReason" checked/>
+              <label for="radio-A" class="radio-label">성적인 내용 포함</label>
+            </div>
           </td>
         </tr>
         <tr>
           <td>
-            <input type="radio" name="" value="B" />폭력적 또는 혐오스러운 내용 포함
+            <div class="radio">
+              <input type="radio" id="radio-B" name="report" v-model="selectedReason" value="B" />
+              <label for="radio-B" class="radio-label">폭력적 또는 혐오스러운 내용 포함</label>
+            </div>
           </td>
         </tr>
         <tr>
           <td>
-            <input type="radio" name="" value="C" />증오 또는 악의적인 내용 포함
+            <div class="radio">
+              <input type="radio" id="radio-C" name="report" v-model="selectedReason" value="C" />
+              <label for="radio-C" class="radio-label">증오 또는 악의적인 내용 포함</label>
+            </div>
           </td>
         </tr>
         <tr>
           <td>
-            <input type="radio" name="" value="D" />유해한 위험 내용 포함
+            <div class="radio">
+              <input type="radio" id="radio-D" name="report" v-model="selectedReason" value="D" />
+              <label for="radio-D" class="radio-label">유해한 위험 내용 포함</label>
+            </div>
           </td>
         </tr>
         <tr>
           <td>
-            <input type="radio" name="" value="E" />불확실한 의학 내용 전파
+            <div class="radio">
+              <input type="radio" id="radio-E" name="report" v-model="selectedReason" value="E" />
+              <label for="radio-E" class="radio-label">불확실한 의학 내용 전파</label>
+            </div>
           </td>
         </tr>
         <tr>
           <td>
-            <input type="radio" name="" value="F" />권리 침해
+            <div class="radio">
+              <input type="radio" id="radio-F" name="report" v-model="selectedReason" value="F" />
+              <label for="radio-F" class="radio-label">권리 침해</label>
+            </div>
           </td>
         </tr>
-        </tbody>
-        <tfoot>
-        <tr><td>확인</td><td>취소</td></tr>
-        </tfoot>
+        <tr>
+          <td>
+            <div id="police-confirm" @click="policeConfirm()">확인</div>
+            <div id="police-cancel" @click="policeCancel()">취소</div>
+          </td>
+        </tr>
+        <!-- <tr><td>확인</td><td>취소</td></tr> -->
       </table>
     </div>
 
@@ -218,12 +229,13 @@
       <!-- <h1>Q&A게시판</h1> -->
       <form v-on:submit.prevent="searchQna">
         <select name="qnaoption" id="qnaoption" v-model="qnaoption">
-          <option value="all" selected >전체보기</option>
+          <option value="" hidden>카테고리</option>
+          <option value="all">전체보기</option>
           <option value="text">글내용</option>
           <option value="title">글제목</option>
           <option value="disease">질병명</option>
         </select>
-        <input v-model="qnakeyword" id="qnakeyword" placeholder="검색어를 입력하세요" />
+        <input v-model="qnakeyword" id="qnakeyword" v-on:keyup.enter="searchQna()" placeholder="검색어를 입력하세요" />
         <button type="submit">검색</button>
       </form>
       <qna
@@ -307,12 +319,20 @@ export default {
       ],
 
       isActive: false,
+
+      selectedReason: '',
     };
   },
   props: {
     profile_data: {
       default: void 0,
     },
+  },
+  beforeCreate() {
+    this.$parent.$parent.isLoaded = false;
+  },
+  mounted() {
+    this.$parent.$parent.isLoaded = true;
   },
   computed: {
     ...mapState("userStore", ["loginData"]),
@@ -328,6 +348,10 @@ export default {
       this.$refs.infiniteLoadingPost.stateChanger.reset();
       this.$refs.infiniteLoadingQnA.stateChanger.reset();
     },
+    selectedReason: function(newRole) {
+      console.log(newRole);
+      this.selectedReason = newRole;
+    }
   },
   methods: {
     ...mapActions("postStore", [
@@ -340,6 +364,10 @@ export default {
     ...mapActions("diseaseStore", ["getFollowingDisease"]),
 
     searchQna() {
+      if(this.qnaoption == '') {
+        alert('검색할 카테고리를 선택해주세요!')
+        return;
+      }
       this.$refs.infiniteLoadingQnA.stateChanger.reset();
       this.qnaPage = 0;
       this.qnas = [];
@@ -558,6 +586,9 @@ export default {
       }
       this.isShowModal = false;
     },
+    commentInfo(info) {
+      this.commentData.posts_id = info.posts_id;
+    },
     closePost() {
       this.posts = [];
       this.page = 0;
@@ -650,10 +681,63 @@ export default {
       }
       return `${Math.floor(betweenTimeDay / 365)}년전`;
     },
-    makeReport() {
+    makeReport(postInfo) {
+      console.log(postInfo)
+      this.postInfo = postInfo;
       this.$parent.$parent.isHidden = true;
       this.$parent.$parent.$parent.isHidden = true;
       this.isReportHidden = true;
+      document.body.className = "lockbody";
+      this.selectedReason = 'A';
+    },
+    policeConfirm() {
+      var reason = '';
+      if(this.selectedReason == 'A'){
+        reason = '성적인 내용 포함';
+      } else if (this.selectedReason == 'B') {
+        reason = '폭력적 또는 혐오스러운 내용 포함';
+      } else if (this.selectedReason == 'C') {
+        reason = '증오 또는 악의적인 내용 포함';
+      } else if (this.selectedReason == 'D') {
+        reason = '유해한 위험 내용 포함';
+      } else if (this.selectedReason == 'E') {
+        reason = '불확실한 의학 내용 전파';
+      } else if (this.selectedReason == 'F') {
+        reason = '권리 침해';
+      } 
+      let params = {
+        posts_id: this.postInfo.post.posts_id,
+        reason: reason,
+        user_id: this.loginData.user_id
+      }
+      axios.post(SERVER.URL + '/police', params, { headers: { accessToken : cookies.get('access-token')}})
+        .then((res) => {
+          console.log(res);
+          // 신고 성공
+          alert('게시물을 신고했습니다')
+          this.$parent.$parent.isHidden = false;
+          this.isReportHidden = false;
+          /*------ 피드 스크롤 unlock ------*/
+          document.body.className = "";
+          /*------ 피드 스크롤 unlock ------*/
+        })
+        .catch((err) => {
+          console.log(err);
+          // 신고 실패
+          alert('게시물 신고에 실패했습니다')
+          this.$parent.$parent.isHidden = false;
+          this.isReportHidden = false;
+          /*------ 피드 스크롤 unlock ------*/
+          document.body.className = "";
+          /*------ 피드 스크롤 unlock ------*/
+        })
+    },
+    policeCancel() {
+      this.$parent.$parent.isHidden = false;
+      this.isReportHidden = false;
+      /*------ 피드 스크롤 unlock ------*/
+      document.body.className = "";
+      /*------ 피드 스크롤 unlock ------*/
     },
   },
   created() {
@@ -1189,11 +1273,114 @@ div.feed {
   margin-left: 1%;
 }
 
+.report-modal {
+  position: fixed;
+  z-index: 99;
+  top: 25%;
+  width: 92%;
+  height: 50%;
+  background-color: white;
+  border-radius: 5px;
+  margin-left: 4%;
+}
+
 .police-table{
+  margin-top: 20px;
   margin-left: auto; margin-right: auto;
-  height: 100%;
+  /* height: 100%; */
+  text-align: left;
+}
+
+.police-table tr:first-child {
+  height: 40px;
+}
+
+.police-table tr:nth-child(1) td {
   text-align: center;
 }
+
+.police-table tr:last-child td {
+  display: flex;
+  width: 100%;
+}
+
+.police-table tr:last-child td div {
+  width: 40%;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.police-table tr td {
+  padding: 0;
+}
+
+#police-confirm {
+  margin-left: 5%;
+  background-color: rgb(0, 171, 132);
+  color: white;
+  border:none;
+  outline: none;
+  font-weight: 600;
+  border-radius: 5px;
+  height: 30px;
+  line-height: 2;
+}
+
+#police-cancel {
+  margin-left: 10%;
+  background-color: rgb(200, 200, 200);
+  color: slategray;
+  border:none;
+  outline: none;
+  font-weight: 600;
+  border-radius: 5px;
+  height: 30px;
+  line-height: 2;
+}
+
+/* ======================= radio button css ============================ */
+.radio {
+  margin: 0.5rem;
+}
+.radio input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+}
+.radio input[type="radio"] + .radio-label:before {
+  content: '';
+  background: #f4f4f4;
+  border-radius: 100%;
+  border: 1px solid #b4b4b4;
+  display: inline-block;
+  width: 1.4em;
+  height: 1.4em;
+  position: relative;
+  top: -0.2em;
+  margin-right: 1em;
+  vertical-align: top;
+  cursor: pointer;
+  text-align: center;
+  -webkit-transition: all 250ms ease;
+  transition: all 250ms ease;
+}
+.radio input[type="radio"]:checked + .radio-label:before {
+  background-color: #3197EE;
+  box-shadow: inset 0 0 0 4px #f4f4f4;
+}
+.radio input[type="radio"]:focus + .radio-label:before {
+  outline: none;
+  border-color: #3197EE;
+}
+.radio input[type="radio"]:disabled + .radio-label:before {
+  box-shadow: inset 0 0 0 4px #f4f4f4;
+  border-color: #b4b4b4;
+  background: #b4b4b4;
+}
+.radio input[type="radio"] + .radio-label:empty:before {
+  margin-right: 0;
+}
+
+/* ======================= radio button css ============================ */
 
 /* --------------------------------------------- */
 </style>
