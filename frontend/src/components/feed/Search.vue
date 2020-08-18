@@ -56,7 +56,7 @@
       </div>
       <div v-show="currentTab == 1">
         <div class="searchU" v-for="user in this.users" v-bind:key="user.user_id">
-          <div class="search-itemU" v-if="user.nickname.includes(keyword) || user.username.includes(keyword) || user.introduction.includes(keyword)" @click="goProfile(user.user_id)">
+          <div class="search-itemU" @click="goProfile(user.user_id)">
             <div class="search-img">
               <img :src="user.userimage" style="height:50px" />
             </div>

@@ -2,6 +2,7 @@
   <div class="main wrap">
     <div class="logo wrap">
       <img src="../../assets/images/icon/logo_green.png" />
+      <router-link v-if="loginData.role == 'admin'" to="/admin">ADMIN</router-link>
     </div>
     <router-view></router-view>
 

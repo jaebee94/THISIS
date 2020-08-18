@@ -71,14 +71,14 @@ public class DoctorController {
 			// String attach_path = "resources\\upload\\";
 
 			String filename = user_id + ".jpg";
-			File checkFile = new File(root_path + filename);
+			File checkFile = new File(real_path + filename);
 			if (checkFile.exists()) {
 				System.out.println("Delete");
 				checkFile.delete();
 			}
 			System.out.println(real_path + filename);
 
-			FileOutputStream fos = new FileOutputStream(root_path + filename);
+			FileOutputStream fos = new FileOutputStream(real_path + filename);
 			// 파일 저장할 경로 + 파일명을 파라미터로 넣고 fileOutputStream 객체 생성하고
 			InputStream is = uploadfile.getInputStream();
 			// file로 부터 inputStream을 가져온다.
