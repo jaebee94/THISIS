@@ -124,7 +124,7 @@ public class AdminController {
 	}
 
 	@ApiOperation(value = "게시글 설정", response = String.class)
-	@PostMapping("post/hide")
+	@PostMapping("post")
 	public ResponseEntity<String> DesidePost(@RequestBody DesidePost desidepost, HttpServletRequest request) {
 		if (check(request) == 1) {
 			int posts_id = desidepost.getPosts_id();
@@ -174,7 +174,7 @@ public class AdminController {
 	}
 
 	@ApiOperation(value = "계정 사용판단", response = BasicResponse.class)
-	@PostMapping("user/disable")
+	@PostMapping("user")
 	public ResponseEntity<String> DesiceAccount(@RequestBody CheckUser checkuser, HttpServletRequest request)
 			throws Exception {
 		if (check(request) == 1) {
