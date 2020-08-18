@@ -17,12 +17,12 @@ const adminStore = {
   },
 
   mutations: {
-    INCREASE_PAGE(state) {
-      state.page += 1
-    },
-    RESET_PAGE(state) {
-      state.page = 0
-    },
+    // INCREASE_PAGE(state) {
+    //   state.page += 1
+    // },
+    // RESET_PAGE(state) {
+    //   state.page = 0
+    // },
     SET_POST_LIST(state, data) {
       state.postList.push(...data)
     },
