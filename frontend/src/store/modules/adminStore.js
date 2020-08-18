@@ -63,6 +63,11 @@ const adminStore = {
     },
     fetchDoctors({ rootGetters }) {
       axios.get(SERVER.URL + SERVER.ROUTES.doctors, rootGetters.config)
+    },
+    decideDoctorauth({ rootGetters }, requestdoctor) {
+      console.log(requestdoctor)
+      axios.put(SERVER.URL + SERVER.ROUTES.doctorauth, requestdoctor, rootGetters.config)
+        .then(() => console.log('성공'))
     }
   },
 }

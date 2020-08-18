@@ -97,6 +97,15 @@ export default {
       this.page = 0
       this.postList = []
       this.userList = []
+      this.doctorList = []
+      if (this.currentTab == 2) {
+        console.log('asdasd')
+        axios.get(SERVER.URL + SERVER.ROUTES.doctors, {headers: { accessToken: cookies.get('access-token') }})
+          .then(({data}) => {
+            this.doctorList = data
+            console.log(this.doctorList)
+          })
+      }
     },
   },
 
@@ -113,21 +122,6 @@ export default {
   },
 
   methods: {
-    // ...mapActions("userStore", ["goProfile"]),
-    // ...mapActions("adminStore", [
-    //   "fetchReportedPosts",
-    //   "fetchReportedUsers",
-    //   "fetchDoctors",
-    // ]),
-    // ...mapActions("postStore", [
-    //   "updatePost",
-    //   "createComment",
-    //   "updateComment",
-    //   //'fetchHealths',
-    //   "goCheckScrap",
-    // ]),
-    // ...mapState("userStore", ["loginData"]),
-
     infiniteHandler($state) {
       var params = {
         params: {
@@ -162,14 +156,7 @@ export default {
               $state.complete();
             }
           })
-      } else {
-        axios.get(SERVER.URL + SERVER.ROUTES.doctors, params)
-          .then(({data}) => {
-            this.doctorList = data
-          })
       }
-        
-
     },
   },
 };

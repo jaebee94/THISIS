@@ -42,6 +42,7 @@ export default {
     reportedPosts: '/admin/post',
     reportedUsers: '/admin/user',
     doctors: '/admin/doctor-auth/check',
+    doctorauth: '/admin/doctor-auth',
 
     qnasmain : '/articles/qna/main',
     qnastitle : '/articles/qna/title',

@@ -19,8 +19,6 @@
 </template>
 
 <script>
-// import { mapActions, mapState } from "vuex";
-// import PostListItem from './PostListItem'
 
 export default {
   name: "UserList",

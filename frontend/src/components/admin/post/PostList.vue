@@ -14,7 +14,10 @@
         <a class="qna-time">{{timeForToday(post.postpolice.post_date) }}</a>
         <img @click="changeSelectpost(post, 'comment')" src="@/assets/images/icon/icon_talk.png" />
         <a class="qna-reply">{{post.comments.length}}</a>
-        <a href="">{{ post.postpolice.count }}</a>
+        <div>
+          <img src="@/assets/images/icon/icon_siren.png" alt="신고 아이콘">
+          <a href="">{{ post.postpolice.count }}</a>
+        </div>
       </span>
     </div>
   </div>
