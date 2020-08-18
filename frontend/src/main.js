@@ -6,6 +6,7 @@ import VueAnalytics from 'vue-analytics'
 import Post from './components/feed/Post.vue'
 import Feed from './components/feed/Feed.vue'
 import Modal from './components/feed/Modal.vue'
+import UserList from './components/feed/UserList.vue'
 import InfiniteLoading from "vue-infinite-loading";
 require('@/assets/style.css')
 Vue.config.productionTip = false
@@ -13,6 +14,7 @@ Vue.config.productionTip = false
 Vue.component('Post', Post)
 Vue.component('InfiniteLoading', InfiniteLoading)
 Vue.component('Feed', Feed)
+Vue.component('UserList', UserList)
 Vue.component('Modal', Modal)
 
 new Vue({

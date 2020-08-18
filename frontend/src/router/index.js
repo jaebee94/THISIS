@@ -21,6 +21,7 @@ import Search from '../components/feed/Search.vue'
 import Upload from '../components/feed/Upload.vue'
 import Notify from '../components/feed/Notify.vue'
 import Profile from '../components/feed/Profile.vue'
+import FollowList from '../components/feed/FollowList.vue'
 
 import PostDetail from '../components/feed/PostDetail.vue'
 
@@ -76,7 +77,13 @@ const routes = [
       {
         path: 'profile',
         name: 'Profile',
-        component: Profile
+        component: Profile,
+      },
+      {
+        path: 'followlist',
+        name: 'FollowList',
+        component: FollowList,
+        props:true
       },
       {
         path: 'change',
