@@ -309,12 +309,13 @@ export default {
   padding: 20px;
   float: left;
   width: 50%;
+  text-align: center;
 }
 
 .profile-image {
-  width: 60%;
-  height: 60%;
-  margin-left: 20%;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
   margin-bottom: 10px;
   display: flex;
   align-items: center;
