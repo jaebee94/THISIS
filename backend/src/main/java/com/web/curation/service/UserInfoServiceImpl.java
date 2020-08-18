@@ -91,8 +91,23 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	@Override
+	public String selectSaltByUserId(int user_id) {
+		return userInfoDao.selectSaltByUserId(user_id);
+	}
+	
 	public List<UserPolice> selectUserInfoPolice() {
 		return userInfoDao.selectUserInfoPolice();
+	}
+
+	@Override
+	public int updateable(int user_id) {
+		return userInfoDao.updateable(user_id);
+	}
+
+	@Override
+	public int deleteRole(int user_id) {
+		return userInfoDao.deleteRole(user_id);
+		
 	}
 
 }

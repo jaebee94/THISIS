@@ -37,18 +37,6 @@ const diseaseStore = {
                 dispatch('getFollowingDisease')
             })
         },
-        // addDisease({ rootGetters }, diseasecode) { //이부분 아직 백엔드에 구현 안되어 있음
-        //     axios.put(SERVER.URL + SERVER.ROUTES.disease,
-        //         {
-        //             diseasecode: diseasecode
-        //         }
-        //         , rootGetters.config)
-        //         .then(res => {
-        //             console.log("result", res);
-        //             this.getFolloingwDisease(rootGetters.config) //다시 업데이트
-        //         }).catch(err => console.log(err))
-
-        // },
         deleteDisease({ rootGetters, dispatch }, diseasecode) {
             console.log(rootGetters.config)
             axios.delete(SERVER.URL + SERVER.ROUTES.subscribe,

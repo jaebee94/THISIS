@@ -82,4 +82,31 @@ public class PostServiceImpl implements PostService {
 	public List<Post> selectQnAByMain(String keyword) {
 		return PostDao.selectQnAByMain(keyword);
 	}
+
+	@Override
+	public List<Post> selectQnAByTitle(String keyword) {
+		return PostDao.selectQnAByTitle(keyword);
+	}
+
+	@Override
+	public List<Post> selectQnAByDisease(String keyword) {
+		return PostDao.selectQnAByDisease(keyword);
+	}
+
+	@Override
+	public int showupdate(int posts_id) {
+		return PostDao.showupdate(posts_id);
+	}
+
+	@Override
+	public int updatehiddenuser(int user_id) {
+		return PostDao.updatehiddenuser(user_id);
+		
+	}
+
+	@Override
+	public int updateshownuser(int user_id) {
+		return PostDao.updateshownuser(user_id);
+		
+	}
 }

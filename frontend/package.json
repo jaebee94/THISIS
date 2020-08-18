@@ -1,5 +1,5 @@
 {
-  "name": "example",
+  "name": "THISIS",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -13,7 +13,13 @@
     "element-ui": "^2.13.2",
     "email-validator": "^2.0.4",
     "firebase": "^7.17.1",
+    "firebase-admin": "^9.1.0",
+    "firebase-functions": "^3.9.1",
+    "https": "^1.0.0",
     "password-validator": "^5.0.3",
+    "sass-loader": "^9.0.3",
+    "scss": "^0.2.4",
+    "scss-loader": "0.0.1",
     "vue": "^2.6.11",
     "vue-carousel": "^0.18.0",
     "vue-cookies": "^1.7.3",
@@ -33,6 +39,7 @@
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
+    "vue-analytics": "^5.22.1",
     "vue-template-compiler": "^2.6.11"
   },
   "eslintConfig": {

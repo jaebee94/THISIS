@@ -11,10 +11,7 @@
         <div class="profile-name">
           <a>{{ profileData.userInfo.nickname }}</a>
           <!-- 의사 뱃지 보여주는 부분 -->
-          <img
-            v-if="profileData.userInfo.role == 'doctor'"
-            src="../../assets/images/icon/icon_doctor_mark.png"
-          />
+          <img v-if ="profileData.userInfo.role == 'doctor'" src='../../assets/images/icon/icon_doctor_mark.png'/> 
         </div>
         <div class="profile-intro">
           <a>{{ profileData.userInfo.introduction }}</a>
@@ -259,10 +256,9 @@ export default {
       params["approval"] = 1;
       this.$store.dispatch("followStore/deleteFollowing", params);
     },
-    followingCancel() {
-      //팔로우 끊기
+    followingCancel() { //팔로우 끊기
       var res = confirm("팔로우를 끊으시겠어요?");
-      if (!res) {
+      if(!res) {
         alert("팔로잉 상태를 유지할게요~");
         return;
       }
@@ -327,6 +323,8 @@ export default {
 
     console.log(this.profileData);
   },
+
+  
 };
 </script>
 <style scoped>
@@ -367,9 +365,13 @@ export default {
   font-size: 20px;
   font-weight: 600;
 }
+.profile-name img {
+  width: 15px;
+  height: 15px;
+}
 
 .profile-intro a {
-  font-size: 15px;
+  font-size: 12px;
 }
 .right-content {
   float: right;

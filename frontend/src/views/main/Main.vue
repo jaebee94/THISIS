@@ -2,6 +2,7 @@
   <div class="main wrap">
     <div class="logo wrap">
       <img src="../../assets/images/icon/logo_green.png" />
+      <router-link v-if="loginData.role == 'admin'" to="/admin">ADMIN</router-link>
     </div>
     <router-view></router-view>
 
@@ -31,7 +32,8 @@
           </td>
           <td>
             <!-- <router-link to="/main/profile"> -->
-              <img @click="checkProfile()" :src="this.loginData.userimage" />
+              <img v-if="this.loginData.userimage!=null" @click="checkProfile()" :src="this.loginData.userimage" />
+              <img v-else @click="checkProfile()" src="../../assets/images/icon/icon_default_image.png" />
             <!-- </router-link> -->
           </td>
         </tr>
@@ -43,11 +45,21 @@
 <script>
 import db from "../../firebaseInit";
 import { mapState, mapActions } from "vuex";
+import router from '@/router'
+//const functions = require('firebase-functions');
 export default {
   created() {
+    if(this.loginData == null) router.push({ name: 'Landing' })
     document.body.className = "whitebody";
-    this.getNoti(this.loginData.user_id);
-    console.log("메인에서 로그인", this.loginData)
+    var vueInstance = this;
+    db.collection("notification").doc(String(this.loginData.user_id))
+    .onSnapshot({
+        // Listen for document metadata changes
+        includeMetadataChanges: true
+    }, function(doc) {
+        vueInstance.getNoti(String(vueInstance.loginData.user_id))
+        console.log("이벤트 발생", doc)
+    });
   },
   data() {
     return {
@@ -61,19 +73,12 @@ export default {
       },
     };
   },
-  watch: {
-    noti: function () {
-      this.getNoti(this.loginData.user_id);
-    }
-  },
   computed: {
     ...mapState('userStore', ['loginData', 'profileData']),
-    // ...mapState('profileStore', ['profileData']),
   },
   methods: {
-    // ...mapActions('profileStore', ['goProfile']),
     ...mapActions('userStore', ['goProfile']),
-    ...mapActions('postStore', ['getUserScraps']),
+    ...mapActions('postStore', ['setPost','getUserScraps']),
 
     getNoti(id) {
       const noti = db.collection("notification").doc(String(id));
@@ -94,31 +99,28 @@ export default {
       this.selectPage.home = require("../../assets/images/icon/icon_home_select.png");
       this.selectPage.search = require("../../assets/images/icon/icon_search_unselect.png");
       this.selectPage.notify = require("../../assets/images/icon/icon_bell_unselect.png");
-      this.getNoti(this.loginData.user_id);
     },
     checkSearch() {
       this.selectPage.home = require("../../assets/images/icon/icon_home_unselect.png");
       this.selectPage.search = require("../../assets/images/icon/icon_search_select.png");
       this.selectPage.notify = require("../../assets/images/icon/icon_bell_unselect.png");
-      this.getNoti(this.loginData.user_id);
     },
     checkUpload() {
       this.selectPage.home = require("../../assets/images/icon/icon_home_unselect.png");
       this.selectPage.search = require("../../assets/images/icon/icon_search_unselect.png");
       this.selectPage.notify = require("../../assets/images/icon/icon_bell_unselect.png");
-      this.getNoti(this.loginData.user_id);
+      this.setPost(null);
     },
     checkNotify() {
       this.selectPage.home = require("../../assets/images/icon/icon_home_unselect.png");
       this.selectPage.search = require("../../assets/images/icon/icon_search_unselect.png");
       this.selectPage.notify = require("../../assets/images/icon/icon_bell_select.png");
-      this.noti = 0;
+
     },
     checkProfile() {
       this.selectPage.home = require("../../assets/images/icon/icon_home_unselect.png");
       this.selectPage.search = require("../../assets/images/icon/icon_search_unselect.png");
       this.selectPage.notify = require("../../assets/images/icon/icon_bell_unselect.png");
-      this.getNoti(this.loginData.user_id);
       this.goProfile(this.loginData.user_id);
       this.getUserScraps(this.loginData.user_id);
     },
@@ -137,7 +139,7 @@ export default {
   background-color: rgb(240, 240, 240);
 }
 .logo.wrap img {
-  margin: 5px 5px auto;
+  margin: 8px 5px 8px 5px;
   width: 20%;
 }
 .footer.wrap {
@@ -165,7 +167,7 @@ export default {
 }
 
 .notify-num {
-  padding: 2px 2px;
+  padding: 1px 4px;
   position: fixed;
   margin-left: -5px;
   text-decoration: none;

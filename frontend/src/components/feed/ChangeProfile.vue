@@ -15,7 +15,7 @@
       <div v-show="profileTab == 0">
         <div class="profile-photo">
           <div class="profile-modify-image">
-            <img :src="imgsrc + ''" />
+            <img :src="imgsrc" />
           </div>
           <div class="profile-image-button">
             <button @click="onClickImageUpload">프로필 사진 변경</button>
@@ -43,9 +43,33 @@
         </div>
       </div>
       <div v-show="profileTab == 1">
+
+    <!--모달 시작 (의사 업로드) -->
+    <div class="doctor-wrap" v-if="!this.isDoctorHidden"> 
+      <div class="doctor-title">
+        <a id="doctor1">의료진 인증 화면입니다.</a><br>
+        <a id="doctor2">증빙 자료를 첨부해주세요</a>
+      </div>
+      <div class="doctor-content">
+        <div class="doctor-photo">
+            <div class="doctor-modify-image" v-if="this.Doctorimgsrc != null">
+              <img :src="Doctorimgsrc" />
+            </div>
+            <div class="doctor-image-button">
+              <button @click="onClickDoctorImageUpload">사진 첨부하기</button>
+            </div>
+            <input ref="DoctorImg" type="file" hidden @change="onChangeDoctorImages" />
+        </div>
+      </div>
+      <button class="doctor-submit-button" @click="doctorSubmit">인증 제출하기</button>
+      <div class="doctor-footer">
+        <img @click="close()" src="../../assets/images/icon/icon_close.png" />
+      </div>
+    </div> <!--모달 끝-->
+
         <div class="input-with-label">
           <input
-            v-model="changeInfo.password"
+            v-model="password"
             id="password"
             type="password"
             placeholder="비밀번호를 입력해주세요"
@@ -68,11 +92,21 @@
             :class="{disabled: !isSubmitPassword}"
           >비밀번호 변경</button>
         </div>
-        <div class="signout-wrap">
+        <div class="important-auth-wrap">
+          <div class="doctor-auth-wrap">
+            <img src="../../assets/images/icon/icon_doctor.png">
+            <div><a @click="showDoctor">의료진 인증하기</a></div>
+          </div>
+          <div class="signout-wrap" >
+            <img src="../../assets/images/icon/icon_signout.png" @click="withdraw">
+            <div><a>THISIS 떠나기</a></div>
+          </div>
+        </div>
+        <!-- <div class="signout-wrap">
           <button @click="signOut()">
             회원탈퇴
           </button>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
@@ -82,10 +116,12 @@
 import PV from "password-validator";
 import axios from "axios";
 import SERVER from "@/api/RestApi.js";
+import router from '@/router'
 import { mapState, mapActions } from "vuex";
 
 export default {
   created() {
+    if(this.loginData == null) router.push({ name: 'Landing' })
     this.passwordSchema
       .is()
       .min(8)
@@ -96,18 +132,11 @@ export default {
       .has()
       .letters();
 
-    // this.changeInfo.email = this.loginData.email;
-    // this.changeInfo.introduction = this.profileData.userInfo.introduction;
-    // this.changeInfo.nickname = this.loginData.nickname;
-    // this.changeInfo.password = this.loginData.password;
-    // this.changeInfo.user_id = this.loginData.user_id;
-    // this.changeInfo.username = this.loginData.username;
-    // this.changeInfo.userInfo = this.loginData
     console.log("프로필 데이터" ,this.profileData)
     this.email = this.profileData.userInfo.email;
     this.nickname = this.profileData.userInfo.nickname;
     this.introduction = this.profileData.userInfo.introduction;
-    this.imgsrc = this.profileData.userInfo.userimage;
+    if(this.profileData.userInfo.userimage!=null) this.imgsrc = this.profileData.userInfo.userimage;
   },
 
   computed: {
@@ -136,6 +165,7 @@ export default {
           userimage: "",
         },
       },
+      DoctorFormData : null,
       confirm: {
         email: false,
         nickname: false,
@@ -154,8 +184,9 @@ export default {
         require("../../assets/images/icon/icon_info.png"),
         require("../../assets/images/icon/icon_key.png"),
       ],
-      
-      imgsrc: ''
+      isDoctorHidden: true,
+      imgsrc:require('../../assets/user2.png'),
+      Doctorimgsrc:null,
     };
   },
 
@@ -174,7 +205,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions("userStore", ["changeUserInfo", "getAccessData"]),
+    ...mapActions("userStore", ["changeUserInfo", "getAccessData","UploadDoctorAuth"]),
     checkFormInfo() {
       if (this.nickname.length == 0) {
         this.error.nickname = false;
@@ -223,6 +254,7 @@ export default {
       }
       if (!this.error.password && !this.error.passwordConfirm) {
         this.isSubmitPassword = true;
+        this.changeInfo.userInfo.password = this.passwordConfirm;
       } else {
         this.isSubmitPassword = false;
       }
@@ -265,6 +297,32 @@ export default {
       } else {
         alert("그래요 잘 생각했어요")
       }
+    },
+    showDoctor(){
+      this.$parent.$parent.isHidden = true;
+      this.isDoctorHidden = false;
+    },
+    close(){
+      this.$parent.$parent.isHidden = false;
+      this.isDoctorHidden = true;    
+    },
+    onChangeDoctorImages(e) {
+      const file = e.target.files[0];
+      var formData = new FormData();
+      formData.append("upload_file", file);
+      //console.log('formData', formData)
+      //console.log("file",formData)
+      this.DoctorFormData = formData;
+      //console.log("DoctorFormData : ", this.DoctorFormData);
+      this.Doctorimgsrc = URL.createObjectURL(file);
+    },
+    onClickDoctorImageUpload() {
+      this.$refs.DoctorImg.click();
+    },
+    doctorSubmit(){
+      this.UploadDoctorAuth(this.DoctorFormData);
+      alert("성공적으로 서버에 등록되었습니다.")
+      this.close();
     }
   },
 };
@@ -401,21 +459,124 @@ export default {
   border-radius: 5px;
 }
 
-.signout-wrap {
-  position: absolute;
+.important-auth-wrap {
   width: 100%;
-  bottom: 50px;
+  height: 120px;
+  margin-top: 10%;
+  display: flex;
+  font-size: 13px;
+  font-weight: 600;
 }
 
-.signout-wrap button {
+.important-auth-wrap .doctor-auth-wrap img {
+  /* width: 50%; */
+  height: 80px;
+}
+
+.important-auth-wrap .signout-wrap img {
+  height: 70px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.important-auth-wrap .doctor-auth-wrap {
+  width: 40%;
+  height: 100%;
+  margin-left: 5%;
+  padding-top: 5%;
+  border: none;
+  border-radius: 15px;
+  outline: none;
+  color: rgb(0, 171, 132);
+  background-color: rgb(247, 247, 247);
+  transition-duration: 300ms;
+  /* color: white;
+  background-color: rgb(79, 158, 129); */
+}
+
+.important-auth-wrap .doctor-auth-wrap:hover {
+  background-color: rgb(200, 200, 200);
+}
+
+.important-auth-wrap .signout-wrap {
+  width: 40%;
+  height: 100%;
+  margin-left: 10%;
+  padding-top: 5%;
+  border: none;
+  border-radius: 15px;
+  outline: none;
+  color: rgb(220, 0, 27);
+  background-color: rgb(247, 247, 247);
+  transition-duration: 300ms;
+  /* color: white;
+  background-color: rgb(220, 0, 27); */
+}
+
+.important-auth-wrap .signout-wrap:hover {
+  background-color: rgb(200, 200, 200);
+}
+
+.doctor-wrap {
+  position: fixed;
+  z-index: 98;
+  top: 10%;
+  width: 92%;
+  height: 70%;
+  background-color: white;
+  border-radius: 5px;
+  margin : auto 4%;
+}
+
+.doctor-footer {
+  position: absolute;
+  width: 100%;
+  height: 10%;
+  bottom: -12%;
+}
+
+.doctor-footer img {
+  height: 80%;
+}
+
+.doctor-submit-button{
   width: 90%;
   height: 40px;
   border: none;
-  background-color: rgb(220, 0, 27);
+  background-color: rgb(0, 171, 132);
   color: white;
   font-size: 20px;
   font-weight: 600;
   border-radius: 5px;
 }
 
+.doctor-modify-image{
+  width: 100%;
+  height: 350px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.doctor-modify-image img{
+  width:100%;
+  max-height: 350px;
+  object-fit: cover;
+}
+
+.doctor-photo{
+  width: 100%;
+  height: 420px;
+}
+
+#doctor1{
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.doctor-title{
+  padding : 10px;
+}
 </style>

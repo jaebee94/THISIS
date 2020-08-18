@@ -14,18 +14,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.web.curation.model.Post;
-import com.web.curation.model.Scrap;
-import com.web.curation.model.Tag;
-import com.web.curation.model.Tag_relation;
+import com.web.curation.model.TagRelation;
 import com.web.curation.service.TagRelationService;
-import com.web.curation.service.TagService;
 
 import io.swagger.annotations.ApiOperation;
 
 @CrossOrigin(origins = { "*" })
 @RestController
-@RequestMapping("/tag-relation")
+@RequestMapping("/tagrelation")
 public class TagRelationController {
 	
 	@Autowired
@@ -33,31 +29,32 @@ public class TagRelationController {
 	
 	@ApiOperation(value = "태그 릴레이션 추가", response = String.class)
 	@PostMapping
-	public ResponseEntity<String> CreateTagRelation(@RequestBody Tag_relation tagrelation) {
+	public ResponseEntity<String> CreateTagRelation(@RequestBody TagRelation tagrelation) {
 		if (tagrelationservice.createTagRelation(tagrelation)==1) {
 			return new ResponseEntity<String>("success", HttpStatus.OK);
 		}
 		return new ResponseEntity<String>("fail", HttpStatus.NO_CONTENT);
 	}
 	
-	@ApiOperation(value = "태그 릴레이션 불러오기", response = Tag_relation.class)
+	@ApiOperation(value = "태그 릴레이션 불러오기", response = TagRelation.class)
 	@GetMapping("/post/{posts_id}")
-	public ResponseEntity<List<Tag_relation>> selectTagRelationpost(@PathVariable int posts_id) throws Exception {
-		List<Tag_relation> tagrelation=tagrelationservice.selectTagRelationpost(posts_id);
-		return new ResponseEntity<List<Tag_relation>>(tagrelation, HttpStatus.OK);
+	public ResponseEntity<List<TagRelation>> selectTagRelationpost(@PathVariable int posts_id) throws Exception {
+		List<TagRelation> tagrelation=tagrelationservice.selectTagRelationpost(posts_id);
+		return new ResponseEntity<List<TagRelation>>(tagrelation, HttpStatus.OK);
 	}
 	
-	@ApiOperation(value = "태그 릴레이션 불러오기", response = Tag_relation.class)
+	@ApiOperation(value = "태그 릴레이션 불러오기", response = TagRelation.class)
 	@GetMapping("/tag/{tagid}")
-	public ResponseEntity<List<Tag_relation>> selectTagRelationtag(@PathVariable int tagid) throws Exception {
-		List<Tag_relation> tagrelation=tagrelationservice.selectTagRelationtag(tagid);
-		return new ResponseEntity<List<Tag_relation>>(tagrelation, HttpStatus.OK);
+	public ResponseEntity<List<TagRelation>> selectTagRelationtag(@PathVariable int tagid) throws Exception {
+		List<TagRelation> tagrelation=tagrelationservice.selectTagRelationtag(tagid);
+		return new ResponseEntity<List<TagRelation>>(tagrelation, HttpStatus.OK);
 	}
 	
 	@ApiOperation(value = "태그 릴레이션 삭제", response = String.class)
-	@DeleteMapping("{tagid}/{posts_id}")
-	public ResponseEntity<String> deleteTagRelation(@PathVariable int tagid,@PathVariable int posts_id) {
-		if (tagrelationservice.deleteTagRelation(tagid, posts_id)== 1) {
+	@DeleteMapping
+	public ResponseEntity<String> deleteTagRelation(@RequestBody TagRelation tagrelation) {
+		System.out.println("delete tagRelation : " + tagrelation.toString());
+		if (tagrelationservice.deleteTagRelation(tagrelation.getTag_id(), tagrelation.getPost_id())== 1) {
 			return new ResponseEntity<String>("success", HttpStatus.OK);
 		}
 		return new ResponseEntity<String>("fail", HttpStatus.NO_CONTENT);

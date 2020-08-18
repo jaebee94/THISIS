@@ -9,7 +9,7 @@
           v-model="loginData.email" 
           id="email"
           type="text" 
-          placeholder="이메일을 입력해주세요" 
+          placeholder="이메일을 입력해주세요"
         />
       </div>
       <div class="password wrap">
@@ -35,15 +35,19 @@
       <div class="help join">
         <router-link to="/account/signup" class="btn--text"><a>아직 회원이 아니신가요?</a></router-link>
       </div>
-
+      <!-- <loading></loading> -->
   </div>
 </template>
 
 <script>
 import { mapActions } from 'vuex'
+// import loading from '../../components/loading/Loading.vue';
 
 export default {
   name: 'Login',
+  components: {
+    // loading,
+  },
   data() {
     return {
       loginData: {
@@ -52,19 +56,16 @@ export default {
       }
     }
   },
+  mounted() {
+    this.$parent.isLoaded = true;
+  },
   beforeCreate() {
     document.body.className = "whitebody";
+    this.$parent.isLoaded = false;
   },
   methods: {
-    ...mapActions('userStore', [
-      'login'
-    ]),
-    // ,login(loginData){
-    //   this.$store.dispatch("login",loginData);
-    // }
+    ...mapActions('userStore', ['login']),
   },
-  created() {
-  }
 };
 </script>
 

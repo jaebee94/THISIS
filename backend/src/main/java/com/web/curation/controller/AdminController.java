@@ -1,6 +1,7 @@
 package com.web.curation.controller;
 
 import java.util.ArrayList;
+
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,12 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.web.curation.model.Auth;
 import com.web.curation.model.BasicResponse;
+import com.web.curation.model.CheckUser;
 import com.web.curation.model.Doctor;
-import com.web.curation.model.Follow;
+import com.web.curation.model.DoctorResponse;
 import com.web.curation.model.Police;
 import com.web.curation.model.PoliceJoin;
-import com.web.curation.model.Post;
-import com.web.curation.model.PostResponse;
 import com.web.curation.model.Postpolice;
 import com.web.curation.model.PostpoliceResponse;
 import com.web.curation.model.RequestDoctor;
@@ -39,7 +39,7 @@ import com.web.curation.service.DoctorService;
 import com.web.curation.service.PoliceService;
 import com.web.curation.service.PostService;
 import com.web.curation.service.UserInfoService;
-
+import com.web.curation.model.DesidePost;
 import io.swagger.annotations.ApiOperation;
 
 @CrossOrigin(origins = { "*" })
@@ -123,26 +123,30 @@ public class AdminController {
 		}
 	}
 
-	@ApiOperation(value = "게시글 숨김", response = String.class)
-	@PostMapping("post/{posts_id}")
-	public ResponseEntity<String> HiddenPost(@PathVariable int posts_id, HttpServletRequest request) {
+	@ApiOperation(value = "게시글 설정", response = String.class)
+	@PostMapping("post")
+	public ResponseEntity<String> DesidePost(@RequestBody DesidePost desidepost, HttpServletRequest request) {
 		if (check(request) == 1) {
-			if (postservice.hiddenupdate(posts_id) == 1) {
-				return new ResponseEntity<String>("success", HttpStatus.OK);
+			int posts_id = desidepost.getPosts_id();
+			String check = desidepost.getCheck();
+			if (check.equals("hide")) {
+				if (postservice.hiddenupdate(posts_id) == 1) {
+					return new ResponseEntity<String>("success", HttpStatus.OK);
+				}
+				return new ResponseEntity<String>("fail", HttpStatus.NO_CONTENT);
+			} else if (check.equals("delete")) {
+				if (postservice.deletePost(posts_id) == 1) {
+					return new ResponseEntity<String>("success", HttpStatus.OK);
+				}
+				return new ResponseEntity<String>("fail", HttpStatus.NO_CONTENT);
+			} else if (check.equals("show")) {
+				if (postservice.showupdate(posts_id) == 1) {
+					return new ResponseEntity<String>("success", HttpStatus.OK);
+				}
+				return new ResponseEntity<String>("fail", HttpStatus.NO_CONTENT);
+			} else {
+				return new ResponseEntity<String>("Wrong Check", HttpStatus.NO_CONTENT);
 			}
-			return new ResponseEntity<String>("fail", HttpStatus.NO_CONTENT);
-		}
-		return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
-	}
-
-	@ApiOperation(value = "게시글 삭제", response = String.class)
-	@DeleteMapping("post/{posts_id}")
-	public ResponseEntity<String> deleteUserInfo(@PathVariable int posts_id, HttpServletRequest request) {
-		if (check(request) == 1) {
-			if (postservice.deletePost(posts_id) == 1) {
-				return new ResponseEntity<String>("success", HttpStatus.OK);
-			}
-			return new ResponseEntity<String>("fail", HttpStatus.NO_CONTENT);
 		}
 		return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
 	}
@@ -169,15 +173,35 @@ public class AdminController {
 		}
 	}
 
-	@ApiOperation(value = "계정 사용정지", response = BasicResponse.class)
-	@PostMapping("user/disable")
-	public ResponseEntity<String> disbaledaccount(@RequestParam int user_id, HttpServletRequest request)
+	@ApiOperation(value = "계정 사용판단", response = BasicResponse.class)
+	@PostMapping("user")
+	public ResponseEntity<String> DesiceAccount(@RequestBody CheckUser checkuser, HttpServletRequest request)
 			throws Exception {
 		if (check(request) == 1) {
-			if (userInfoService.updateDisable(user_id) == 1) {
-				return new ResponseEntity<String>("success", HttpStatus.OK);
+			int user_id = checkuser.getUser_id();
+			String check = checkuser.getCheck();
+			if (check.equals("disable")) {
+				if (userInfoService.updateDisable(user_id) == 1) {
+					postservice.updatehiddenuser(user_id);
+					return new ResponseEntity<String>("success", HttpStatus.OK);
+				} else {
+					return new ResponseEntity<String>(HttpStatus.NO_CONTENT);
+				}
+			} else if (check.equals("delete")) {
+				if (userInfoService.deleteUserInfo(user_id) == 1) {
+					return new ResponseEntity<String>("success", HttpStatus.OK);
+				} else {
+					return new ResponseEntity<String>(HttpStatus.NO_CONTENT);
+				}
+			} else if (check.equals("able")) {
+				if (userInfoService.updateable(user_id) == 1) {
+					postservice.updateshownuser(user_id);
+					return new ResponseEntity<String>("success", HttpStatus.OK);
+				} else {
+					return new ResponseEntity<String>(HttpStatus.NO_CONTENT);
+				}
 			} else {
-				return new ResponseEntity<String>(HttpStatus.NO_CONTENT);
+				return new ResponseEntity<String>("Wrong Check", HttpStatus.NO_CONTENT);
 			}
 		} else {
 			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
@@ -228,21 +252,39 @@ public class AdminController {
 	// doctor-auth
 	@ApiOperation(value = "모든 의사를 반환한다.", response = List.class)
 	@GetMapping("doctor-auth")
-	public ResponseEntity<List<Doctor>> selectDoctor(HttpServletRequest request) throws Exception {
+	public ResponseEntity<List<DoctorResponse>> selectDoctor(HttpServletRequest request) throws Exception {
 		if (check(request) == 1) {
-			return new ResponseEntity<List<Doctor>>(doctorService.selectDoctor(), HttpStatus.OK);
+			List<DoctorResponse> doctorResponse = new ArrayList<>();
+			List<Doctor> doctor = doctorService.selectDoctor();
+			for (int i = 0; i < doctor.size(); i++) {
+				DoctorResponse response = new DoctorResponse();
+				response.doctor = doctor.get(i);
+				response.userinfo = userInfoService.selectUserInfoByUserid(doctor.get(i).getUser_id());
+				doctorResponse.add(response);
+				System.out.println(response.toString());
+			}
+			return new ResponseEntity<List<DoctorResponse>>(doctorResponse, HttpStatus.OK);
 		} else {
-			return new ResponseEntity<List<Doctor>>(HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<List<DoctorResponse>>(HttpStatus.UNAUTHORIZED);
 		}
 	}
 
 	@ApiOperation(value = "체크하지 않은 사람들을 반환한다.", response = List.class)
 	@GetMapping("doctor-auth/check")
-	public ResponseEntity<List<Doctor>> selectCheckDoctor(HttpServletRequest request) throws Exception {
+	public ResponseEntity<List<DoctorResponse>> selectCheckDoctor(HttpServletRequest request) throws Exception {
 		if (check(request) == 1) {
-			return new ResponseEntity<List<Doctor>>(doctorService.selectCheckDoctor(), HttpStatus.OK);
+			List<DoctorResponse> doctorResponse = new ArrayList<>();
+			List<Doctor> doctor = doctorService.selectCheckDoctor();
+			for (int i = 0; i < doctor.size(); i++) {
+				DoctorResponse response = new DoctorResponse();
+				response.doctor = doctor.get(i);
+				response.userinfo = userInfoService.selectUserInfoByUserid(doctor.get(i).getUser_id());
+				doctorResponse.add(response);
+				System.out.println(response.toString());
+			}
+			return new ResponseEntity<List<DoctorResponse>>(doctorResponse, HttpStatus.OK);
 		} else {
-			return new ResponseEntity<List<Doctor>>(HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<List<DoctorResponse>>(HttpStatus.UNAUTHORIZED);
 		}
 	}
 
@@ -251,16 +293,19 @@ public class AdminController {
 	public ResponseEntity<String> updatedoctor(@RequestBody RequestDoctor requestdoctor, HttpServletRequest request) {
 		if (check(request) == 1) {
 			String check = requestdoctor.getCheck();
-			int user_id = requestdoctor.getUser_id();
+			int doctor_id = requestdoctor.getDoctor_id();
+			Doctor doctor = doctorService.selectMyDoctorID(doctor_id);
+			int user_id = doctor.getUser_id();
 			if (check.equals("accept")) {
-				if (doctorService.updateDoctorAuth(user_id) == 1) {
+				if (doctorService.updateDoctorAuth(doctor_id) == 1) {
 					userInfoService.updateRole(user_id);
 					return new ResponseEntity<String>("success", HttpStatus.OK);
 				} else {
 					return new ResponseEntity<String>("fail", HttpStatus.NO_CONTENT);
 				}
 			} else if (check.equals("reject")) {
-				if (doctorService.updateDoctorAuthFail(user_id) == 1) {
+				if (doctorService.updateDoctorAuthFail(doctor_id) == 1) {
+					userInfoService.deleteRole(user_id);
 					return new ResponseEntity<String>("success", HttpStatus.OK);
 				}
 				return new ResponseEntity<String>("fail", HttpStatus.NO_CONTENT);
