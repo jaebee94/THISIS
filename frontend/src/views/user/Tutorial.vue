@@ -32,7 +32,7 @@
 </template>
 <script>
 import axios from 'axios';
-import { mapActions } from "vuex";
+import { mapState, mapActions } from "vuex";
 import router from '@/router'
 const proxyurl = "https://cors-anywhere.herokuapp.com/";
 export default {
@@ -45,6 +45,9 @@ export default {
             isSearched: false,
             checkedItems : [],
         }
+    },
+    computed: {
+    ...mapState('userStore', ['loginData']),
     },
     created() {
         if(this.loginData == null) router.push({ name: 'Landing' })
