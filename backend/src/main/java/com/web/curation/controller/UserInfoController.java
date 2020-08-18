@@ -92,9 +92,9 @@ public class UserInfoController {
 	@PostMapping("signup")
 	public ResponseEntity<BasicResponse> insertUserInfo(@RequestBody UserInfo userinfo) {
 		userinfo.setIntroduction("한줄 소개를 작성해 주세요");
+		userinfo.setUserimage("http://i3a301.p.ssafy.io/images/profile/default.jpg");
 		String salt = SHA256Util.generateSalt();
 		userinfo.setSalt(salt);
-		
 		String password = userinfo.getPassword();
 		password = SHA256Util.getEncrypt(password, salt);
 		userinfo.setPassword(password);
