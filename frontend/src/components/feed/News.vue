@@ -10,9 +10,20 @@
         v-for="disease in this.diseases" v-bind:key="disease.diseasecode" 
         @click="findNews(disease.diseasename) ">{{disease.diseasename}}</span>
     </div>
-    <div v-if="sample_images.one"  class="news-search-image">
+    <!-- <div v-if="sample_images.one"  class="news-search-image">
         <img :src="sample_images.one"> 
         <img :src="sample_images.two">
+    </div> -->
+    <div class="news-ment">
+        <span>
+            <img src="../../assets/images/icon/quot_open.png">
+            <strong>{{selectedDisease}}</strong>
+            <img src="../../assets/images/icon/quot_close.png">
+            <a>에 대한</a>
+            <br>
+            <a>뉴스 기사입니다</a>
+        </span>
+        
     </div>
     <div class="news-content"> 
         <ul v-for="(item,idx) in items" v-bind:key="idx">
@@ -48,6 +59,7 @@ export default {
     methods: {
          ...mapActions("diseaseStore", ["getFolloingwDisease"]),
         async findNews(keyword) {
+            this.selectedDisease = keyword;
             console.log(keyword);
             this.$parent.$parent.$parent.isLoaded = false;
             this.selectedDisease = keyword
@@ -57,41 +69,42 @@ export default {
                     disease.isSelected = true;
                 }
             });
+            
             var params = {
                 query: keyword,
                 display: 10,
                 start: 1,
                 sort: 'sim'
             }
-            var params2 = {
-                query: keyword,
-                display: 2,
-                start: 1,
-                sort: 'sim',
-                filter: 'small'
-            }
-            await axios.request({
-                url: proxyurl + 'https://openapi.naver.com/v1/search/image',
-                headers: {
-                    'X-Naver-Client-Id' : 'VmhwDszuy_Em4wjSyKBs',
-                    'X-Naver-Client-Secret' : 'u1VmQ08Ai6'
-                },
-                params: params2
-            })
-            .then((res) => {
-                console.log(res.data.items[0].link);
-                console.log(res);
-                if(res.data.items.length == 0) {
-                    this.sample_images.one = null;
-                    this.sample_images.two = null;
-                } else if(res.data.items.length == 1) {
-                    this.sample_images.one = res.data.items[0].link;
-                    this.sample_images.two = null;
-                } else {
-                    this.sample_images.one = res.data.items[0].link;
-                    this.sample_images.two = res.data.items[1].link;
-                }
-            })
+            // var params2 = {
+            //     query: keyword,
+            //     display: 2,
+            //     start: 1,
+            //     sort: 'sim',
+            //     filter: 'small'
+            // }
+            // await axios.request({
+            //     url: proxyurl + 'https://openapi.naver.com/v1/search/image',
+            //     headers: {
+            //         'X-Naver-Client-Id' : 'VmhwDszuy_Em4wjSyKBs',
+            //         'X-Naver-Client-Secret' : 'u1VmQ08Ai6'
+            //     },
+            //     params: params2
+            // })
+            // .then((res) => {
+            //     console.log(res.data.items[0].link);
+            //     console.log(res);
+            //     if(res.data.items.length == 0) {
+            //         this.sample_images.one = null;
+            //         this.sample_images.two = null;
+            //     } else if(res.data.items.length == 1) {
+            //         this.sample_images.one = res.data.items[0].link;
+            //         this.sample_images.two = null;
+            //     } else {
+            //         this.sample_images.one = res.data.items[0].link;
+            //         this.sample_images.two = res.data.items[1].link;
+            //     }
+            // })
             await axios.request({
                 url: proxyurl + 'https://openapi.naver.com/v1/search/news.json',
                 headers: {
@@ -139,9 +152,10 @@ export default {
     }
 
     .news-search-input {
-        margin-top: 5px;
+        margin-top: 10px;
         width: 100%;
         height: 30px;
+        margin-bottom: 10px;
     }
 
     .news-search-input input {
@@ -153,19 +167,49 @@ export default {
         border: none;
         background-color: rgb(240, 240, 240);
         color: black;
-        font-weight: 700;
+        font-weight: 600;
         outline: none;
     }
 
-    .news-search-input input:focus {
+    /* .news-search-input input:focus {
         background-color: rgb(0, 171, 132);
         color: white;
-    }
+    } */
 
     .news-search-input span{
         position: relative;
         right: 8%;
         top: 5px;
+    }
+
+    .news-ment {
+        /* background-color: rgba(250, 200, 200, 0.3); */
+        margin-top: 20px;
+        width: 90%;
+        margin-left: 5%;
+        padding: 5px 0px;
+        /* border: none; */
+        /* border-radius: 15px; */
+        /* border-top: 3px slategray solid; */
+        border-bottom: 3px slategray solid;
+    }
+
+    .news-ment img {
+        width: 12px;
+        height: 12px;
+        position: relative;
+        top: -5px;
+        margin: 0 5px auto;
+    }
+
+    .news-ment strong {
+        font-size: 20px;
+        font-weight: 600;
+    }
+
+    .news-ment a {
+        font-size: 13px;
+        font-weight: 600;
     }
 
     .news-search-input span img {
@@ -200,7 +244,8 @@ export default {
 
     .tutorial-show-wrap {
         width: 100%;
-        margin-top: 3px;
+        margin-top: -4px;
+        /* margin-top: 3px; */
         display: inline-block;
     }
 
@@ -213,7 +258,7 @@ export default {
         border: none;
         border-radius: 5px;
         display: inline-block;
-        margin: 3px 5px auto;
+        margin: 5px 5px auto;
     }
 
     .tutorial-show-wrap span.selected {

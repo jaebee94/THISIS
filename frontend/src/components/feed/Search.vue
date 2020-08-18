@@ -199,6 +199,7 @@ export default {
           var items = res.data.response.body.items.item;
           if (len == 0) { //찾은게 있음
             this.isSearched = false;
+            this.$parent.$parent.isLoaded = true;
             return;
           } else if (len == 1) this.items.push(items);
           else this.items = items;
@@ -207,6 +208,7 @@ export default {
         })
         .catch((err) => {
           this.isSearched = false;
+          this.$parent.$parent.isLoaded = true;
           console.log(err);
         });
     },
