@@ -9,15 +9,22 @@
         @click="currentTab = index"
       >
         <a>{{tab}}</a>
-        <span v-if="currentTab==0">{{ profileData.profileInfo.followernum }}</span>
-        <span v-else>{{ profileData.profileInfo.followeenum }}}</span>
+        <span v-if="tab=='팔로워'">{{ profileData.profileInfo.followernum }}</span>
+        <span v-else>{{ profileData.profileInfo.followeenum }}</span>
       </div>
     </div>
 
     <div>
+    <div class="search-panel">
+      <div>
+        <input type="text" v-model="keyword" placeholder="검색어를 입력하세요" v-on:keyup.enter="getSearchList(keyword)"/>
+        <img id="search" @click="getSearchList(keyword)" src="../../assets/images/icon/icon_search_unselect.png">
+      </div>
+    </div>
       <user-list 
       v-bind:users="this.users"
       v-bind:sort="this.currentTab"
+      v-bind:keyword="this.keyword"
       >
       </user-list>
     </div>
@@ -30,11 +37,10 @@ export default {
   name: "FollowList",
   data() {
     return {
-      follower: 0,
-      followee: 0,
       currentTab: 0,
       tabs: ["팔로워", "팔로잉"],
       users: [],
+      keyword:"",
     };
   },
   watch: {

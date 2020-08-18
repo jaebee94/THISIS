@@ -33,8 +33,9 @@ import { mapActions } from "vuex";
 export default {
   name: "UserList",
   props: {
-    users: { type: Object },
+    users: { type: Array },
     sort: { type: Number },
+    keyword:{type:String}
   },
   methods: {
     ...mapActions("followStore", ["deleteFollow"]),
