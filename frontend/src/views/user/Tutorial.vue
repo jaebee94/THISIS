@@ -203,23 +203,23 @@ export default {
 
     .tutorial-show-wrap {
         width: 100%;
-        margin: 7px 0 0 0; 
+        margin-top: 7px; 
     }
 
     .tutorial-show-wrap div {
-        
+        margin : 5px;
         height: 100%;
     }
 
     .tutorial-show-wrap div span {
+
         background-color: white;
-        padding: 5px 10px;
         border: none;
-        font-size: 11px;
+        font-size: 14px;
         font-weight: 600;
-        height: 15px;
+        height: 20px;
         border-radius: 5px;
-        color: rgb(0, 171, 132);
+        color: black;
         display: inline-block;
         text-align: center;
     }

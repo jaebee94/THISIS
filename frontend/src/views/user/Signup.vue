@@ -39,13 +39,11 @@
 <script>
 import PV from "password-validator";
 import * as EmailValidator from "email-validator";
-// import { mapActions } from "vuex";
+import { mapActions } from "vuex";
 
-import router from '@/router'
 import axios from 'axios'
 import SERVER from '@/api/RestApi.js'
 
-import db from "../../firebaseInit";
 
 export default {
   name: "Signup",
@@ -109,6 +107,7 @@ export default {
   },
 
   methods: {
+    ...mapActions('userStore', ['signup' ]),
     checkForm() {
       if (this.email.length >= 0) {
         if (!EmailValidator.validate(this.email)) {
@@ -144,13 +143,7 @@ export default {
         //alert('8자리를 넘으면 안됩니다')
         this.nickname = this.nickname.substr(0, 8);
       }
-      // this.isSubmit = true
 
-      // this.error.forEach((element) => {
-      //   if (element == true) {
-      //     this.isSubmit = false;
-      //   }
-      // })
       let isSubmit = true;
       Object.values(this.error).map((v) => {
         if (v) isSubmit = false;
@@ -203,28 +196,7 @@ export default {
         this.checkForm();
     },
 
-    signup(signupData) {
-      const info = {
-        data: signupData,
-        location: SERVER.ROUTES.signup
-      }
-      axios.post(SERVER.URL + info.location, info.data)
-        .then((res) => {
-          var id = res.data.object;
-          let instance = {
-            notification: 0,
-            request: 0
-          }
-          db
-          .collection("notification")
-          .doc(String(id))
-          .set(instance);
 
-          alert('회원가입이 완료되었습니다.')
-          router.push({ name: 'Login'})
-        })
-        .catch(err => console.log(err))
-    },
   },
 
 };

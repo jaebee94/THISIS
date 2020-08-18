@@ -102,7 +102,7 @@
         <slide class="myslide">
           <div class="post-main">
             <strong>{{postInfo.post.posts_title}}</strong> <br>
-            <a v-if="postInfo.diseasename != null" class="post-disease-tag">#{{postInfo.diseasename}}</a><br>
+            <a v-if="postInfo.diseasename != ''" class="post-disease-tag">#{{postInfo.diseasename}}</a><br>
             <a class="post-custom-tag" v-for="tag in postInfo.tags" v-bind:key="tag.tagid">#{{tag.tagname}} </a> <br>
             {{ postInfo.post.posts_main }}
           </div>
@@ -228,7 +228,7 @@
 
     <div v-show="currentTab == 1">
       <!-- <h1>Q&A게시판</h1> -->
-      <form v-on:submit.prevent="searchQna">
+      <form class="qna-search-panel" v-on:submit.prevent="searchQna">
         <select name="qnaoption" id="qnaoption" v-model="qnaoption">
           <option value="" hidden>카테고리</option>
           <option value="all">전체보기</option>
@@ -237,13 +237,15 @@
           <option value="disease">질병명</option>
         </select>
         <input v-model="qnakeyword" id="qnakeyword" v-on:keyup.enter="searchQna()" placeholder="검색어를 입력하세요" />
-        <button type="submit">검색</button>
+        <button type="submit"><img src='../../assets/images/icon/icon_search_unselect.png'></button>
+        <!-- <input type="image" name="submit" border="0" alt="" src="../../assets/images/icon/icon_search_unselect.png"> -->
       </form>
       <qna
         v-for="qnaInfo in qnas"
         v-bind:key="qnaInfo.posts_id"
         v-bind:qnaInfo="qnaInfo"
         @send-modify-qna="showModifyQnA"
+        @make-report="makeReport"
       ></qna>
       <infinite-loading
         v-if="this.currentTab == 1"
@@ -987,9 +989,8 @@ div.feed {
 }
 
 .post-main {
-  /* height: 100%; */
-  height: 300px;
-  overflow-y: auto;
+  height: 250px;
+  overflow: auto;
   padding: 10px 10px;
   text-align: left;
 }
@@ -1008,7 +1009,7 @@ div.feed {
 .comment-wrap {
   display: inherit;
   overflow: auto;
-  height: 40%;
+  height: 50%;
 }
 
 .comment {
@@ -1115,29 +1116,87 @@ div.feed {
   height: 80%;
 }
 
+/* ========== qna 검색하는 부분 ============*/
+
+.qna-search-panel {
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  /* margin: 10px 5% auto; */
+}
+
+.qna-search-panel select {
+  border: none;
+  position: absolute;
+  outline: none;
+  background-color: rgb(240, 240, 240);
+  margin-top: 5px;
+  width: 80px;
+  padding-left: 5px;
+  font-size: 13px;
+}
+
+.qna-search-panel option {
+  border: none;
+  margin: 4px 2px auto;
+  font-size: 13px;
+}
+
+.qna-search-panel input {
+  width: calc(90% - 95px);
+  height: 30px;
+  border: none;
+  border-radius: 5px;
+  outline: none;
+  background-color: rgb(240, 240, 240);
+  padding-left: 100px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.qna-search-panel button {
+  position: absolute;
+  right: 10%;
+  margin-top: 5px;
+  width: 20px;
+  height: 25px;
+  border: none;
+  outline: none;
+  background-color: rgb(240, 240, 240);
+}
+
+.qna-search-panel button img {
+  width: 20px;
+  height: 20px;
+}
+
+
+/* ========== qna 검색하는 부분 ============*/
+
+
 /* ----- qna 내용 자세히 보기 모달창 코드 -----  */
 
 .post .qna-wrapper {
   margin: 15px 0px 15px 0px;
-  height: 100%;
+  height: 95%;
   overflow: auto;
 }
 
 .qna-header {
   text-align: left;
   padding-left: 5%;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .qna-header .title strong {
-  font-size: 30px;
+  font-size: 20px;
 }
 
 .qna-header .nickname {
   font-size: 15px;
-  position: relative;
-  margin: 10px;
-  left: 70%;
+  /* position: relative; */
+  /* margin: 10px; */
+  left: 60%;
 }
 
 .qna-header .time {
@@ -1148,9 +1207,9 @@ div.feed {
 }
 
 .qna-photo-wrap {
-  width: 90%;
+  width: 100%;
   /* height: 40%; */
-  margin: 0 auto;
+  /* margin: 0 auto; */
   margin-top: 10px;
   margin-bottom: 10px;
 }
@@ -1180,7 +1239,7 @@ div.feed {
 .qna-tag-wrap .disease-tag {
   background-color: rgb(0, 171, 132);
   color: white;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   border: none;
   border-radius: 5px;
@@ -1220,6 +1279,10 @@ div.feed {
   text-overflow: unset;
   -webkit-transition: all 0.3s linear 0s;
   transition: all 0.3s linear 0s;
+}
+
+.post:nth-child(1) {
+  background-color: red;
 }
 
 .qna-comment-wrap {

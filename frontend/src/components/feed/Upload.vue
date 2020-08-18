@@ -186,6 +186,7 @@ export default {
         ServiceKey:
           "hhU4fvLXqUtlijp+SQxnotQgI7A4yLrBASX3GMofY45xyks9LOe05UKyCfH5gkyN1U+7YKFfujffwflXy4TzfA==",
       };
+      console.log(params);
       axios
         .request({
           // 서버에 마운트하면서 바꿔야 할 부분 :
@@ -421,10 +422,18 @@ export default {
   outline: none;
 }
 
+.tutorial-select-wrap {
+  margin-bottom: 2px;
+}
+
+.tutorial-show-wrap {
+  margin-bottom: 5px;
+}
+
 .custom-tag-wrap {
   width: 100%;
-  margin-top : 8px;
-  margin-bottom: 3px;
+  margin-top: 3px;
+  /* margin-bottom: 3px; */
   /* margin: 7px 0 7px 0;  */
 }
 

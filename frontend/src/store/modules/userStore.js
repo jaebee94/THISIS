@@ -2,10 +2,8 @@ import axios from 'axios'
 import router from '@/router'
 import SERVER from '@/api/RestApi.js'
 import cookies from 'vue-cookies'
-// import https from 'https';
-// const agent = new https.Agent({  
-//   rejectUnauthorized: false
-// });
+import db from "../../firebaseInit";
+
 const userStore = {
   namespaced: true,
 
@@ -39,7 +37,6 @@ const userStore = {
   actions: {
     getAccessData({ commit }, info) {
       axios.get(SERVER.URL + info.location, {
-        //httpsAgent: agent,
         params: {
           email: info.params.email,
           password: info.params.password
@@ -57,7 +54,7 @@ const userStore = {
 
         })
         .catch(() => {
-          alert("로그인에 실패하였습니다.")
+          alert("회원이 아니거나 로그인 정보가 일치하지 않습니다.")
         })
     },
     login({ dispatch }, loginData) {
@@ -74,17 +71,43 @@ const userStore = {
       window.localStorage.clear();
       router.push({ name: 'Login' })
     },
-    withdraw({ rootGetters, dispatch }) {
+    signup(signupData) {
+      axios.post(SERVER.URL + SERVER.ROUTES.signup, signupData)
+        .then((res) => {
+          var id = res.data.object;
+          let instance = {
+            notification: 0,
+            request: 0
+          }
+          db
+            .collection("notification")
+            .doc(String(id))
+            .set(instance);
+
+          alert('회원가입이 완료되었습니다.')
+          router.push({ name: 'Login' })
+        })
+        .catch(err => console.log(err))
+    },
+    withdraw({ state,rootGetters, dispatch }) {
       var con = confirm("탈퇴하시겠습니까?");
       if (con) {
         axios.delete(SERVER.URL + SERVER.ROUTES.user, rootGetters.config)
           .then((res) => {
             console.log("회원 탈퇴", res)
+
+            //firebase 삭제 로직
+            db.collection("notification").doc(String(state.loginData.user_id)).delete().then(function () {
+              console.log("Document successfully deleted!");
+            }).catch(function (error) {
+              console.error("Error removing document: ", error);
+            });
+            dispatch("logout");
           })
           .catch(
             err => console.log('회원 탈퇴 에러: ', err)
           )
-        dispatch("logout");
+        
       }
     },
     async changeUserInfo({ rootGetters, dispatch, state }, changeInfo) {
