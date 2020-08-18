@@ -46,7 +46,7 @@
 
     <!--모달 시작 (의사 업로드) -->
     <div class="doctor-wrap" v-if="!this.isDoctorHidden"> 
-      <div>
+      <div class="doctor-title">
         <a id="doctor1">의료진 인증 화면입니다.</a><br>
         <a id="doctor2">증빙 자료를 첨부해주세요</a>
       </div>
@@ -552,7 +552,7 @@ export default {
 
 .doctor-modify-image{
   width: 100%;
-  height: 330px;
+  height: 350px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -562,16 +562,21 @@ export default {
 
 .doctor-modify-image img{
   width:100%;
-  max-height: 330px;
+  max-height: 350px;
   object-fit: cover;
 }
 
 .doctor-photo{
   width: 100%;
-  height: 380px;
+  height: 420px;
 }
 
 #doctor1{
   font-size: 20px;
+  font-weight: bold;
+}
+
+.doctor-title{
+  padding : 10px;
 }
 </style>
