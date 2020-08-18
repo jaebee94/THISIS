@@ -142,7 +142,7 @@ export default {
   },
 
   methods: {
-    ...mapActions('userStore', ["goProfile"]),
+    ...mapActions('profileStore', ["goProfile"]),
     ...mapActions('postStore', [
       "fetchComments",
       "health",
@@ -349,7 +349,7 @@ export default {
 }
 
 
-.feed-footer table tr td:nth-child(2) a {
+.feed-footer table a {
   font-size: 10px;
   font-weight: 600;
 }
