@@ -111,6 +111,7 @@ const userStore = {
           commit('SET_PROFILE_INFO', res.data)
           router.push({ name: 'Profile' })
         })
+        .then(() => { router.go() })
       // console.log('라우터 푸시 프로필')
       // router.push({ name: 'Profile' }) 
     },
