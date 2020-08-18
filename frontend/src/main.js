@@ -2,6 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import VueAnalytics from 'vue-analytics'
 import Post from './components/feed/Post.vue'
 import Feed from './components/feed/Feed.vue'
 import Modal from './components/feed/Modal.vue'
@@ -20,5 +21,9 @@ new Vue({
   render: h => h(App)
 }).$mount('#app')
 
+Vue.use(VueAnalytics,{
+  id: 'UA-175653164-1', // 콘솔에서 본인의 키를 확인하세요!
+  router // 원활한 트래킹을 위해 router를 꼭 바인드 해 주어야 합니다!
+})
 
 
