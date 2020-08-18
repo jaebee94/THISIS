@@ -87,7 +87,9 @@
 		userimage, role, disabled
 		from UserInfo
 		where username LIKE
-		concat('%',#{nickname}, '%')
+		concat('%',#{keyword}, '%') 
+		or nickname LIKE
+		concat('%',#{keyword}, '%') 
 	</select>
 
 	<!-- 회원 아이디 가져오기 -->
