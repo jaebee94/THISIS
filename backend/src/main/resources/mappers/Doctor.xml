@@ -43,6 +43,12 @@
 		where user_id = #{user_id}
 	</select>
 	
+	<select id="selectMyDoctorID" resultType="Doctor">
+		select *
+		from doctor
+		where doctor_id=#{doctor_id}
+	</select>
+
 	<select id="selectMyDoctor" resultType="Doctor">
 		select *
 		from doctor
@@ -60,13 +66,13 @@
 	<update id="updateDoctorAuth">
 		update doctor
 		set doctorauth = "accept"
-		where user_id = #{user_id}
+		where doctor_id = #{doctor_id}
 	</update>
 	
 	<update id="updateDoctorAuthFail">
 		update doctor
 		set doctorauth = "fail"
-		where user_id = #{user_id}
+		where doctor_id = #{doctor_id}
 	</update>
 
 </mapper>
