@@ -3,6 +3,7 @@
     <div class="logo wrap">
       <!-- <img src="../../assets/images/icon/logo_green.png" /> -->
       <span>ADMIN</span>
+      <router-link to="/main/feed">MAIN</router-link>
     </div>
 
     <div class="feed wrap">
@@ -53,6 +54,9 @@
             ref="infiniteLoading"
             @infinite="infiniteHandler"
           ></infinite-loading> -->
+          <div v-if="doctorList.length == 0">
+            인증을 요청한 회원이 없습니다.
+          </div>
         </div>
       </div>
     </div>
@@ -89,7 +93,7 @@ export default {
       page: 0,
       postList: [],
       userList: [],
-      doctorList: []
+      doctorList: [],
     };
   },
   watch: {

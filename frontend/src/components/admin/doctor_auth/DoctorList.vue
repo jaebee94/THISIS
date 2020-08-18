@@ -53,7 +53,7 @@ export default {
     onClickDicideButton(check) {
       var requestdoctor = {
         check: check,
-        user_id: this.doctor.userinfo.user_id
+        doctor_id: this.doctor.doctor.doctor_id
       }
       this.decideDoctorauth(requestdoctor)
     }

@@ -40,7 +40,11 @@ export default {
 
     // admin
     reportedPosts: '/admin/post',
+    managePost: '/admin/post',
+
     reportedUsers: '/admin/user',
+    manageUser: '/admin/user',
+    
     doctors: '/admin/doctor-auth/check',
     doctorauth: '/admin/doctor-auth',
 
