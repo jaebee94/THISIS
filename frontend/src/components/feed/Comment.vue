@@ -24,7 +24,7 @@
                 <a class="time">{{timeForToday(comment.comment.comment_date)}}</a>
             </div>
             <div class="comment-module-modify">
-                <input v-model="comment.comment.comment_main" placeholder="수정할 댓글 내용을 적어주세요">
+                <input v-model="comment.comment.comment_main" placeholder="수정할 댓글 내용을 적어주세요" v-on:keyup.enter="modifyComment(comment)">
                 <button @click="modifyComment(comment)">수정</button>
             </div>
         </div>
@@ -94,12 +94,21 @@ export default {
         },
         deleteCheckComment(comment){
             //확인 부분
-            var modalInfo={
-                msg : "댓글을 정말 지우시겠습니까?",
-                data : comment
-            }
-            this.$emit("check-delete",modalInfo)
-            console.log(comment)
+            
+            var result = confirm('댓글을 지우시겠습니까?');
+            if(result) {
+                this.deleteComment(comment);
+                alert('삭제했습니다')
+            } 
+
+            // var modalInfo={
+            //     msg : "댓글을 정말 지우시겠습니까?",
+            //     data : comment
+            // }
+            // this.$emit("check-delete",modalInfo)
+            // console.log(comment)
+
+
             //this.deleteComment(comment)
         }
     }
@@ -108,9 +117,10 @@ export default {
 
 <style scoped>
     .comment-module-wrap {
+        /* height: 60px; */
         width: 99%;
-        height: 60px;
         background-color: white;
+
         border-bottom: 1px slategray solid;
     }
 
@@ -124,7 +134,7 @@ export default {
 
     .comment-module-header .name {
         margin-right: 10px;
-        font-size : 18px;
+        font-size : 14px;
     }
 
     .comment-module-header .time {
@@ -135,6 +145,7 @@ export default {
     .comment-module-modify {
         width: 100%;
         margin-top: 5px;
+        margin-bottom: 10px;
     }
 
     .comment-module-modify input {
@@ -165,10 +176,10 @@ export default {
 
     .comment-module-content {
         text-align: left;
-        width: 80%;
+        width: 70%;
         padding-left: 5%;
         padding-right: 5%;
-        font-size: 15px;
+        font-size: 12px;
         margin-bottom: 5px;
     }
 
@@ -180,8 +191,8 @@ export default {
     }
 
      .comment-module-footer img{
-       width : 25px;
-       height: 25px;
+       width : 20px;
+       height: 20px;
     }
     
     .comment-module-health {

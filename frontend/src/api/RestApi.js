@@ -48,6 +48,7 @@ export default {
     qnastitle : '/articles/qna/title',
     qnasdisease : '/articles/qna/disease',
 
-    police : '/police'
+    police : '/police',
+    UploadDoctorAuth : '/doctor/register'
   }
 }

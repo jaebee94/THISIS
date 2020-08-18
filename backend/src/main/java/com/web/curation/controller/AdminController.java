@@ -226,11 +226,20 @@ public class AdminController {
 	// doctor-auth
 	@ApiOperation(value = "모든 의사를 반환한다.", response = List.class)
 	@GetMapping("doctor-auth")
-	public ResponseEntity<List<Doctor>> selectDoctor(HttpServletRequest request) throws Exception {
+	public ResponseEntity<List<DoctorResponse>> selectDoctor(HttpServletRequest request) throws Exception {
 		if (check(request) == 1) {
-			return new ResponseEntity<List<Doctor>>(doctorService.selectDoctor(), HttpStatus.OK);
+			List<DoctorResponse> doctorResponse = new ArrayList<>();
+			List<Doctor> doctor = doctorService.selectDoctor();
+			for (int i = 0; i < doctor.size(); i++) {
+				DoctorResponse response = new DoctorResponse();
+				response.doctor = doctor.get(i);
+				response.userinfo = userInfoService.selectUserInfoByUserid(doctor.get(i).getUser_id());
+				doctorResponse.add(response);
+				System.out.println(response.toString());
+			}
+			return new ResponseEntity<List<DoctorResponse>>(doctorResponse, HttpStatus.OK);
 		} else {
-			return new ResponseEntity<List<Doctor>>(HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<List<DoctorResponse>>(HttpStatus.UNAUTHORIZED);
 		}
 	}
 
