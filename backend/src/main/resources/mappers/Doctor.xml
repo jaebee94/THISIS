@@ -59,7 +59,7 @@
 
 	<update id="updateDoctorAuth">
 		update doctor
-		set doctorauth = "allowance"
+		set doctorauth = "accept"
 		where user_id = #{user_id}
 	</update>
 	
