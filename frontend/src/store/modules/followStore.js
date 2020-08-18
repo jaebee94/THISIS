@@ -6,6 +6,8 @@ const followStore = {
 
   state: {
     followee_list: false,
+    follower:[],
+    follwing:[]
   },
 
   getters: {
@@ -14,6 +16,12 @@ const followStore = {
   mutations: {
     SET_FOLLOWEE(state, followee) {
       state.followee_list = followee;
+    },
+    SET_FOLLOWER(state, follower) {
+      state.followeer = follower;
+    },
+    SET_FOLLOWING(state, following) {
+      state.following = following;
     },
   },
 
@@ -51,14 +59,18 @@ const followStore = {
       },
     //팔로우 끊기
     deleteFollow({ rootGetters }, params){
-      axios.delete(SERVER.URL + SERVER.ROUTES.follow, { data: params , headers : rootGetters.config.headers })
-      .then((res) => {
-        console.log(res);
-        console.log(params);
-      })
-      .catch(err => {
-        console.log(err)
-      })
+      var conf = confirm("정말 팔로우를 끊으시겠습니까?");
+      if(conf){
+        axios.delete(SERVER.URL + SERVER.ROUTES.follow, { data: params , headers : rootGetters.config.headers })
+        .then((res) => {
+          console.log(res);
+          console.log(params);
+        })
+        .catch(err => {
+          console.log(err)
+        })
+      }
+     
     },
     // 프로필 유저를 내가 팔로우 한 상태인지 확인하기 위해 그 사람을 팔로우 하는 유저 목록 조회
     getFollowee({rootGetters, commit }, params) {
@@ -79,6 +91,26 @@ const followStore = {
           console.log(err)
         })
     },
+    getFollowing({rootGetters, commit }, id){
+      axios.get(SERVER.URL + SERVER.ROUTES.followee + id, rootGetters.config.headers)
+        .then((res) => {
+          console.log("팔로잉목록", res)
+          commit('SET_FOLLOWING', res.data);
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    },
+    getFollower({rootGetters, commit }, id){
+      axios.get(SERVER.URL + SERVER.ROUTES.follower + id, rootGetters.config.headers)
+      .then((res) => {
+        console.log("팔로워 목록", res)
+        commit('SET_FOLLOWER', res.data);
+      })
+      .catch(err => {
+        console.log(err)
+      })
+    }
   },
 }
 
