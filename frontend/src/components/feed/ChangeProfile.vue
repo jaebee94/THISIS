@@ -97,8 +97,8 @@
             <img src="../../assets/images/icon/icon_doctor.png">
             <div><a @click="showDoctor">의료진 인증하기</a></div>
           </div>
-          <div class="signout-wrap">
-            <img src="../../assets/images/icon/icon_signout.png">
+          <div class="signout-wrap" >
+            <img src="../../assets/images/icon/icon_signout.png" @click="withdraw">
             <div><a>THISIS 떠나기</a></div>
           </div>
         </div>

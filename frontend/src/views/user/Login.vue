@@ -64,15 +64,8 @@ export default {
     this.$parent.isLoaded = false;
   },
   methods: {
-    ...mapActions('userStore', [
-      'login'
-    ]),
-    // ,login(loginData){
-    //   this.$store.dispatch("login",loginData);
-    // }
+    ...mapActions('userStore', ['login']),
   },
-  created() {
-  }
 };
 </script>
 
