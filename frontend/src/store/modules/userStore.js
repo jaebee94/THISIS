@@ -18,7 +18,7 @@ const userStore = {
   },
 
   mutations: {
-    SET_TOKEN(state,token) {
+    SET_TOKEN(state, token) {
       cookies.set('access-token', token)
     },
     SET_LOGIN_DATA(state, loginData) {
@@ -46,15 +46,15 @@ const userStore = {
         }
       })
         .then(res => {
-          console.log("로그인",res)
+          console.log("로그인", res)
           commit('SET_TOKEN', res.data.accessToken)
           commit('SET_LOGIN_DATA', res.data)
-          if(res.data.subscribeCount > 0){
+          if (res.data.subscribeCount > 0) {
             router.push({ name: 'Feed' })
-          }else{
-            router.push({name: 'Tutorial'})
+          } else {
+            router.push({ name: 'Tutorial' })
           }
-          
+
         })
         .catch(() => {
           alert("로그인에 실패하였습니다.")
@@ -74,9 +74,22 @@ const userStore = {
       window.localStorage.clear();
       router.push({ name: 'Login' })
     },
-    async changeUserInfo({ rootGetters, dispatch,state }, changeInfo) {
+    withdraw({ rootGetters, dispatch }) {
+      var con = confirm("탈퇴하시겠습니까?");
+      if (con) {
+        axios.delete(SERVER.URL + SERVER.ROUTES.user, rootGetters.config)
+          .then((res) => {
+            console.log("회원 탈퇴", res)
+          })
+          .catch(
+            err => console.log('회원 탈퇴 에러: ', err)
+          )
+        dispatch("logout");
+      }
+    },
+    async changeUserInfo({ rootGetters, dispatch, state }, changeInfo) {
       console.log(changeInfo)
-      await axios.put(SERVER.URL + SERVER.ROUTES.updateProfile, changeInfo.userInfo, {headers: { accessToken:  cookies.get('access-token') }})
+      await axios.put(SERVER.URL + SERVER.ROUTES.user, changeInfo.userInfo, { headers: { accessToken: cookies.get('access-token') } })
         .then(() => {
           console.log('소개 변경 완료')
           alert('변경이 완료되었습니다.')
@@ -84,19 +97,19 @@ const userStore = {
         })
         .catch(err => console.log('프로필 변경 에러: ', err))
       if (changeInfo.formData) {
-        let config = { headers: {} }  
+        let config = { headers: {} }
         config.headers = rootGetters.config.headers
         config.headers['Accept'] = 'application/json'
         //config.headers['Content-Type'] = 'multipart/form-data'
         await axios.post(SERVER.URL + SERVER.ROUTES.uploadProfile, changeInfo.formData, config)
-        .then(async (res) => {
-          console.log('사진 변경 완료')
-          state.loginData.userimage=res.data;
-          console.log(res)
-          dispatch('goProfile', changeInfo.userInfo.user_id)
-          // router.push({ name: 'Profile' })
-        })
-        .catch(err => console.log('사진 변경 에러: ', err))
+          .then(async (res) => {
+            console.log('사진 변경 완료')
+            state.loginData.userimage = res.data;
+            console.log(res)
+            dispatch('goProfile', changeInfo.userInfo.user_id)
+            // router.push({ name: 'Profile' })
+          })
+          .catch(err => console.log('사진 변경 에러: ', err))
       }
     },
     async goProfile({ state, commit }, userId) {
@@ -104,16 +117,14 @@ const userStore = {
         userId = state.loginData.user_id
         console.log('userId == null')
       }
-      await axios.get(SERVER.URL + SERVER.ROUTES.user + userId, {headers: { accessToken:  cookies.get('access-token') }})
+      await axios.get(SERVER.URL + SERVER.ROUTES.user + `/${userId}`, { headers: { accessToken: cookies.get('access-token') } })
         .then(res => {
           console.log('유저인포 요청완료')
-          console.log(res.data) 
+          console.log(res.data)
           commit('SET_USER_INFO', res.data)
-            // .then(() => router.push({ name: 'Profile' }))
-          // setTimeout(() => commit('SET_USER_INFO', res.data), 10000)
         })
         .catch(err => console.log(err))
-      await axios.get(SERVER.URL + SERVER.ROUTES.profile + userId, {headers: { accessToken:  cookies.get('access-token') }})
+      await axios.get(SERVER.URL + SERVER.ROUTES.profile + userId, { headers: { accessToken: cookies.get('access-token') } })
         .then(res => {
           console.log('프로필인포 요청 완료')
           console.log(res.data)

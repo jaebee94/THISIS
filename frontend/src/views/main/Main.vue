@@ -120,6 +120,7 @@ export default {
       this.selectPage.home = require("../../assets/images/icon/icon_home_unselect.png");
       this.selectPage.search = require("../../assets/images/icon/icon_search_unselect.png");
       this.selectPage.notify = require("../../assets/images/icon/icon_bell_unselect.png");
+      console.log(this.loginData)
       this.getNoti(this.loginData.user_id);
       this.goProfile(this.loginData.user_id);
       this.getUserScraps(this.loginData.user_id);

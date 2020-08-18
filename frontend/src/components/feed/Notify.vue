@@ -246,8 +246,8 @@ export default {
   border-radius: 70%;
   padding: 3px 3px;
   position: absolute;
-  margin-top: -40px;
-  margin-left: 25px;
+  /* margin-top: -40px;
+  margin-left: 25px; */
 }
 
 .notifications {

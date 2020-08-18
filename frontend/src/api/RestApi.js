@@ -3,15 +3,12 @@ export default {
   //  URL: 'http://localhost:8089/THISIS',
   ROUTES: {
     myprofile: '/account/0',
-    user: '/account/',
-    updateProfile: '/account',
+    user: '/account',
     profile: '/account/profile/',
     signup: '/account/signup',
     email: '/account/email',
     nickname: '/account/nickname',
     login: '/account/login',
-    logout: '/account/',
-    withdrawal: '/account/{user_id}',
     search : '/account/search',
     uploadProfile: '/account/upload',
 

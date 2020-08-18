@@ -423,6 +423,7 @@ export default {
 
 .custom-tag-wrap {
   width: 100%;
+  margin-top : 8px;
   margin-bottom: 3px;
   /* margin: 7px 0 7px 0;  */
 }

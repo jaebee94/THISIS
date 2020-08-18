@@ -6,7 +6,7 @@
     <div class="tutorial-main-wrap"> 
         <div class="tutorial-input-wrap">
             <div>
-                <a>3개 이상 구독을 눌러주세요!</a>
+                <a>관심있는 질병을 검색하여 3개 이상 구독을 눌러주세요!</a>
             </div>
             <input list="disease-list" id="keyword" v-model="keyword" v-on:keyup.enter="getDisease(keyword)">
         </div>

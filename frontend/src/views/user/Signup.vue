@@ -151,13 +151,11 @@ export default {
       //     this.isSubmit = false;
       //   }
       // })
-      console.log(this.error);
       let isSubmit = true;
       Object.values(this.error).map((v) => {
         if (v) isSubmit = false;
       });
       this.isSubmit = isSubmit;
-      console.log(this.isSubmit)
       if (this.isSubmit) {
         this.signupData.username = this.username;
         this.signupData.email = this.email;
