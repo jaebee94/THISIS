@@ -66,7 +66,7 @@
           ></comment>
         </div>
         <div class="qna-comment-write-wrap">
-          <input v-model="commentData.comment_main" placeholder="내용을 입력하세요" />
+          <input v-on:keyup.enter="commentInfo(qnaInfo), createComment(commentData), clearCommentData()" v-model="commentData.comment_main" placeholder="내용을 입력하세요" />
           <button @click="commentInfo(qnaInfo), createComment(commentData), clearCommentData()">댓글</button>
         </div>
         <div class="post-footer">
@@ -118,7 +118,7 @@
         ></comment>
       </div>
       <div class="qna-comment-write-wrap">
-        <input v-model="commentData.comment_main" placeholder="내용을 입력하세요" />
+        <input v-on:keyup.enter="commentInfo(postInfo), createComment(commentData), clearCommentData()" v-model="commentData.comment_main" placeholder="내용을 입력하세요" />
         <button @click="commentInfo(postInfo), createComment(commentData), clearCommentData()">댓글</button>
       </div>
       <div class="post-footer">

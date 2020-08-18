@@ -22,13 +22,13 @@
                 <table>
                   <td
                     v-if="noti.notification.approval === 0"
-                  >{{noti.userInfo.nickname}}님에게 팔로우 요청하셨습니다.</td>
+                  >{{noti.userInfo.nickname}}님에게 팔로우 요청하셨습니다</td>
                   <td
                     v-if="noti.notification.approval === 1"
-                  >{{noti.userInfo.nickname}}님이 팔로우 요청을 승인하셨습니다.</td>
+                  >{{noti.userInfo.nickname}}님이 팔로우 요청을 승인하셨습니다</td>
                   <td
                     v-if="noti.notification.approval === 2"
-                  >{{noti.userInfo.nickname}}님이 팔로우 요청을 거절하셨습니다.</td>
+                  >{{noti.userInfo.nickname}}님이 팔로우 요청을 거절하셨습니다</td>
                 </table>
               </div>
             </div>
@@ -106,6 +106,7 @@ export default {
       this.$store.dispatch("followStore/createFollow", params);
       this.save(noti);
       this.deleteFromFirebase(noti);
+      this.req_count -= 1;
     },
     rejectFollow(noti) {
       noti.notification.approval = 2;
@@ -115,6 +116,7 @@ export default {
       );
       this.save(noti);
       this.deleteFromFirebase(noti);
+      this.req_count -= 1;
     },
     save(noti) {
       let instance = {
@@ -186,6 +188,8 @@ export default {
     },
   },
   created() {
+     if(this.loginData == null) router.push({ name: 'Landing' })
+    // window.addEventListener('beforeunload', this.clickNoti(0))
     const noti = db.collection("notification").doc(String(this.loginData.user_id));
     if (this.loginData == null) router.push({ name: "Landing" });
     window.addEventListener("beforeunload", this.clickNoti(0));
@@ -263,12 +267,13 @@ export default {
 .notify-num {
   background-color: red;
   color: white;
-  font-size: 10px;
+  font-size: 11px;
   border-radius: 70%;
-  padding: 3px 3px;
+  padding: 1px 4px;
+  padding-right: 5px;
   position: absolute;
-  /* margin-top: -40px;
-  margin-left: 25px; */
+  margin-top: 3px;
+  /* margin-left: 25px; */
 }
 
 .notifications {
@@ -276,8 +281,9 @@ export default {
   width: 92%;
   margin: 2% 3%;
   margin-bottom: 10px;
-  background-color: rgb(174, 171, 171);
+  background-color: rgb(240, 240, 240);
   color: black;
+  font-size: 15px;
   font-weight: 500;
   border: none;
   border-radius: 5px;
@@ -285,8 +291,9 @@ export default {
 
 .notification {
   display: flex;
-  background-color: rgb(230, 229, 229);
+  background-color: rgb(240, 240, 240);
   text-align: left;
+  font-size: 15px;
   width: 100%;
   height: 40px;
   border: none;
@@ -296,7 +303,7 @@ export default {
 
 .new {
   color: white;
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 500;
   background-color: rgb(0, 171, 132);
 }
@@ -307,20 +314,31 @@ export default {
 }
 
 .notification table tr td {
-  height: 40px;
+  height: 30px;
 }
 
 .notification table tr td:nth-child(2) {
-  text-align: left;
+  text-align: right;
+}
+
+.notification table tr td:nth-child(2) button {
+  color: rgb(0, 171, 132);
 }
 
 .notification table tr td:nth-child(3) {
   padding-right: 10px;
-  text-align: right;
+  text-align: center;
 }
+
+.notification table tr td:nth-child(3) button {
+  color: red;
+}
+
+
 .notification table button {
-  background-color: rgb(0, 171, 132);
-  border: none;
+  background-color: rgb(240,240,240);
+  font-weight: 600;
+  border : none;
   border-radius: 5px;
 }
 .profile-image {
