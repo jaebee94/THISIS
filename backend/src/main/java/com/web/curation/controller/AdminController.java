@@ -180,7 +180,7 @@ public class AdminController {
 		if (check(request) == 1) {
 			int user_id = checkuser.getUser_id();
 			String check = checkuser.getCheck();
-			if (check.equals("hide")) {
+			if (check.equals("disable")) {
 				if (userInfoService.updateDisable(user_id) == 1) {
 					postservice.updatehiddenuser(user_id);
 					return new ResponseEntity<String>("success", HttpStatus.OK);
@@ -193,7 +193,7 @@ public class AdminController {
 				} else {
 					return new ResponseEntity<String>(HttpStatus.NO_CONTENT);
 				}
-			} else if (check.equals("show")) {
+			} else if (check.equals("able")) {
 				if (userInfoService.updateable(user_id) == 1) {
 					postservice.updateshownuser(user_id);
 					return new ResponseEntity<String>("success", HttpStatus.OK);
