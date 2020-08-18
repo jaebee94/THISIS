@@ -43,6 +43,30 @@
         </div>
       </div>
       <div v-show="profileTab == 1">
+
+    <!--모달 시작 (의사 업로드) -->
+    <div class="doctor-wrap" v-if="!this.isDoctorHidden"> 
+      <div class="doctor-title">
+        <a id="doctor1">의료진 인증 화면입니다.</a><br>
+        <a id="doctor2">증빙 자료를 첨부해주세요</a>
+      </div>
+      <div class="doctor-content">
+        <div class="doctor-photo">
+            <div class="doctor-modify-image" v-if="this.Doctorimgsrc != null">
+              <img :src="Doctorimgsrc" />
+            </div>
+            <div class="doctor-image-button">
+              <button @click="onClickDoctorImageUpload">사진 첨부하기</button>
+            </div>
+            <input ref="DoctorImg" type="file" hidden @change="onChangeDoctorImages" />
+        </div>
+      </div>
+      <button class="doctor-submit-button" @click="doctorSubmit">인증 제출하기</button>
+      <div class="doctor-footer">
+        <img @click="close()" src="../../assets/images/icon/icon_close.png" />
+      </div>
+    </div> <!--모달 끝-->
+
         <div class="input-with-label">
           <input
             v-model="password"
@@ -71,10 +95,10 @@
         <div class="important-auth-wrap">
           <div class="doctor-auth-wrap">
             <img src="../../assets/images/icon/icon_doctor.png">
-            <div><a>의료진 인증하기</a></div>
+            <div><a @click="showDoctor">의료진 인증하기</a></div>
           </div>
-          <div class="signout-wrap">
-            <img src="../../assets/images/icon/icon_signout.png">
+          <div class="signout-wrap" >
+            <img src="../../assets/images/icon/icon_signout.png" @click="withdraw">
             <div><a>THISIS 떠나기</a></div>
           </div>
         </div>
@@ -141,6 +165,7 @@ export default {
           userimage: "",
         },
       },
+      DoctorFormData : null,
       confirm: {
         email: false,
         nickname: false,
@@ -159,8 +184,9 @@ export default {
         require("../../assets/images/icon/icon_info.png"),
         require("../../assets/images/icon/icon_key.png"),
       ],
-      
-      imgsrc:require('../../assets/user2.png')
+      isDoctorHidden: true,
+      imgsrc:require('../../assets/user2.png'),
+      Doctorimgsrc:null,
     };
   },
 
@@ -179,7 +205,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions("userStore", ["changeUserInfo", "getAccessData"]),
+    ...mapActions("userStore", ["changeUserInfo", "getAccessData","UploadDoctorAuth"]),
     checkFormInfo() {
       if (this.nickname.length == 0) {
         this.error.nickname = false;
@@ -263,7 +289,6 @@ export default {
       this.changeInfo.formData = formData;
       console.log("changeInfo : ", this.changeInfo);
       this.imgsrc = URL.createObjectURL(file);
-      
     },
     signOut() {
       var res = confirm("정말로 탈퇴하시겠습니까?");
@@ -272,6 +297,32 @@ export default {
       } else {
         alert("그래요 잘 생각했어요")
       }
+    },
+    showDoctor(){
+      this.$parent.$parent.isHidden = true;
+      this.isDoctorHidden = false;
+    },
+    close(){
+      this.$parent.$parent.isHidden = false;
+      this.isDoctorHidden = true;    
+    },
+    onChangeDoctorImages(e) {
+      const file = e.target.files[0];
+      var formData = new FormData();
+      formData.append("upload_file", file);
+      //console.log('formData', formData)
+      //console.log("file",formData)
+      this.DoctorFormData = formData;
+      //console.log("DoctorFormData : ", this.DoctorFormData);
+      this.Doctorimgsrc = URL.createObjectURL(file);
+    },
+    onClickDoctorImageUpload() {
+      this.$refs.DoctorImg.click();
+    },
+    doctorSubmit(){
+      this.UploadDoctorAuth(this.DoctorFormData);
+      alert("성공적으로 서버에 등록되었습니다.")
+      this.close();
     }
   },
 };
@@ -466,4 +517,66 @@ export default {
   background-color: rgb(200, 200, 200);
 }
 
+.doctor-wrap {
+  position: fixed;
+  z-index: 98;
+  top: 10%;
+  width: 92%;
+  height: 70%;
+  background-color: white;
+  border-radius: 5px;
+  margin : auto 4%;
+}
+
+.doctor-footer {
+  position: absolute;
+  width: 100%;
+  height: 10%;
+  bottom: -12%;
+}
+
+.doctor-footer img {
+  height: 80%;
+}
+
+.doctor-submit-button{
+  width: 90%;
+  height: 40px;
+  border: none;
+  background-color: rgb(0, 171, 132);
+  color: white;
+  font-size: 20px;
+  font-weight: 600;
+  border-radius: 5px;
+}
+
+.doctor-modify-image{
+  width: 100%;
+  height: 350px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.doctor-modify-image img{
+  width:100%;
+  max-height: 350px;
+  object-fit: cover;
+}
+
+.doctor-photo{
+  width: 100%;
+  height: 420px;
+}
+
+#doctor1{
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.doctor-title{
+  padding : 10px;
+}
 </style>

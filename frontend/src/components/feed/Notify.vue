@@ -20,34 +20,41 @@
             <div class="notifications" :class="{new : index < noti_count}">
               <div :class="{new : index < noti_count}">
                 <table>
-                  <td v-if="noti.notification.approval === 0">{{noti.userInfo.nickname}}님에게 팔로우 요청하셨습니다</td>
-                  <td v-if="noti.notification.approval === 1">{{noti.userInfo.nickname}}님이 팔로우 요청을 승인하셨습니다</td>
-                  <td v-if="noti.notification.approval === 2">{{noti.userInfo.nickname}}님이 팔로우 요청을 거절하셨습니다</td>
+                  <td
+                    v-if="noti.notification.approval === 0"
+                  >{{noti.userInfo.nickname}}님에게 팔로우 요청하셨습니다</td>
+                  <td
+                    v-if="noti.notification.approval === 1"
+                  >{{noti.userInfo.nickname}}님이 팔로우 요청을 승인하셨습니다</td>
+                  <td
+                    v-if="noti.notification.approval === 2"
+                  >{{noti.userInfo.nickname}}님이 팔로우 요청을 거절하셨습니다</td>
                 </table>
               </div>
             </div>
           </div>
         </div>
         <div v-show="currentTab == 1">
-          <div  v-for="(noti, index) in this.requests" v-bind:key="noti.notification.id">
-          <div
-            class="notifications" :class="{new : index < req_count} "
-            v-if="noti.notification.approval === 0"
-          >
-            <div class="notification" :class="{new : index < req_count} " >
-              <table>
-                <tr >
-                <td >{{noti.userInfo.nickname}}님의 팔로우 요청</td>
-                <td>
-                  <button @click="accessFollow(noti)">승낙</button>
-                </td>
-                <td>
-                  <button @click="rejectFollow(noti)">거절</button>
-                </td>
-                </tr>
-              </table>
+          <div v-for="(noti, index) in this.requests" v-bind:key="noti.notification.id">
+            <div
+              class="notifications"
+              :class="{new : index < req_count} "
+              v-if="noti.notification.approval === 0"
+            >
+              <div class="notification" :class="{new : index < req_count} ">
+                <table>
+                  <tr>
+                    <td>{{noti.userInfo.nickname}}님의 팔로우 요청</td>
+                    <td>
+                      <button @click="accessFollow(noti)">승낙</button>
+                    </td>
+                    <td>
+                      <button @click="rejectFollow(noti)">거절</button>
+                    </td>
+                  </tr>
+                </table>
+              </div>
             </div>
-          </div>
           </div>
         </div>
       </div>
@@ -59,14 +66,13 @@
 import db from "../../firebaseInit";
 import { mapActions, mapState } from "vuex";
 import firebase from "firebase";
-import router from '@/router'
-
+import router from "@/router";
 const increment = firebase.firestore.FieldValue.increment(1);
 //const decrement = firebase.firestore.FieldValue.increment(-1);
 export default {
   computed: {
-    ...mapState('notificationStore', ['notification','requests']),
-    ...mapState('userStore', ['loginData', 'profileData']),
+    ...mapState("notificationStore", ["notification", "requests"]),
+    ...mapState("userStore", ["loginData", "profileData"]),
   },
   data() {
     return {
@@ -75,43 +81,48 @@ export default {
       noti_count: 0,
       req_count: 0,
       tab1: 0,
-      tab2: 0
+      tab2: 0,
     };
   },
   methods: {
-    ...mapActions('followStore', [
-      'createFollow',
-    ]),
-    ...mapActions('notificationStore', [
-      'fetchNotification',
-      'putNotification',
-      'fetchRequests',
+    ...mapActions("followStore", ["createFollow"]),
+    ...mapActions("notificationStore", [
+      "fetchNotification",
+      "putNotification",
+      "fetchRequests",
     ]),
 
     accessFollow(noti) {
-      console.log('noti', noti)
+      console.log("noti", noti);
       noti.notification.approval = 1;
       let params = {
         follower: noti.notification.follower_id,
-        followee: noti.notification.followee_id
+        followee: noti.notification.followee_id,
       };
-      this.$store.dispatch("notificationStore/putNotification", noti.notification);
-      this.$store.dispatch("followStore/createFollow",params);
+      this.$store.dispatch(
+        "notificationStore/putNotification",
+        noti.notification
+      );
+      this.$store.dispatch("followStore/createFollow", params);
       this.save(noti);
       this.deleteFromFirebase(noti);
+      this.req_count -= 1;
     },
     rejectFollow(noti) {
       noti.notification.approval = 2;
-      this.$store.dispatch("notificationStore/putNotification", noti.notification);
+      this.$store.dispatch(
+        "notificationStore/putNotification",
+        noti.notification
+      );
       this.save(noti);
       this.deleteFromFirebase(noti);
+      this.req_count -= 1;
     },
     save(noti) {
       let instance = {
         notification: increment, //1올려줌
       };
-      db
-        .collection("notification")
+      db.collection("notification")
         .doc(String(noti.notification.follower_id)) //승낙했을 때 상대방 알림count+1
         .update(instance)
         .then(function (docRef) {
@@ -120,60 +131,59 @@ export default {
         .catch(function (error) {
           console.error("Error setting document: ", error);
         });
-      
     },
-    deleteFromFirebase(noti) { //내가 승낙했을 시 나의 doc에 팔로우 건 아이디 필드 삭제
+    deleteFromFirebase(noti) {
+      //내가 승낙했을 시 나의 doc에 팔로우 건 아이디 필드 삭제
       let instance = {};
-      instance[noti.notification.follower_id] = firebase.firestore.FieldValue.delete();
-      db
-      .collection("notification")
-      .doc(String(noti.notification.followee_id))
-      .update(instance)
-      .then(()=>{console.log("FIREBASE DELETION COMPLETE")})
-      .catch(()=>{console.error("FIREBASE DELETION UNEXECUTED")})
+      instance[
+        noti.notification.follower_id
+      ] = firebase.firestore.FieldValue.delete();
+      db.collection("notification")
+        .doc(String(noti.notification.followee_id))
+        .update(instance)
+        .then(() => {
+          console.log("FIREBASE DELETION COMPLETE");
+        })
+        .catch(() => {
+          console.error("FIREBASE DELETION UNEXECUTED");
+        });
     },
     clickNoti(idx) {
-      console.log("click")
+      console.log("click");
       this.currentTab = idx;
-      if(idx == 0) this.tab1++;
-      if(idx == 1) this.tab2++;
-      
-      if(idx == 0) {
-        if(this.tab1 > 0)
-        this.initNoti();
+      if (idx == 0) this.tab1++;
+      if (idx == 1) this.tab2++;
+
+      if (idx == 0) {
+        if (this.tab1 > 0) this.initNoti();
       } else {
-        if(this.tab2 > 1)
-        this.initRequest();
+        if (this.tab2 > 1) this.initRequest();
       }
     },
-    initNoti() { 
-      db
-      .collection("notification")
-      .doc(String(this.loginData.user_id))
-      .update({
-        notification: 0
-      })
-      .then(function (doc) {
-        console.log(doc);
-      })
-      .catch(function (err) {
-        console.error(err);
-      })
+    initNoti() {
+      db.collection("notification").doc(String(this.loginData.user_id))
+        .update({
+          notification: 0,
+        })
+        .then(function (doc) {
+          console.log(doc);
+        })
+        .catch(function (err) {
+          console.error(err);
+        });
       this.noti_count = 0;
     },
     initRequest() {
-      db
-      .collection("notification")
-      .doc(String(this.loginData.user_id))
-      .update({
-        request: 0
-      })
-      .then(function (doc) {
-        console.log(doc);
-      })
-      .catch(function (err) {
-        console.error(err);
-      })
+      db.collection("notification").doc(String(this.loginData.user_id))
+        .update({
+          request: 0,
+        })
+        .then(function (doc) {
+          console.log(doc);
+        })
+        .catch(function (err) {
+          console.error(err);
+        });
       this.req_count = 0;
     },
   },
@@ -181,23 +191,38 @@ export default {
      if(this.loginData == null) router.push({ name: 'Landing' })
     // window.addEventListener('beforeunload', this.clickNoti(0))
     const noti = db.collection("notification").doc(String(this.loginData.user_id));
+    if (this.loginData == null) router.push({ name: "Landing" });
+    window.addEventListener("beforeunload", this.clickNoti(0));
     let vueInstance = this;
-    noti
-      .get()
-      .then(function (doc) {
-        if (doc.exists) {
-          vueInstance.noti_count = doc.data().notification;
-          vueInstance.req_count = doc.data().request;
-          console.log("Document data:", doc.data().notification);
-        } else {
-          console.log("No such document!");
-        }
-      })
-      .catch(function (error) {
-        console.log("Error getting document:", error);
-      });
-    this.fetchNotification(this.loginData.user_id)
-    this.fetchRequests(this.loginData.user_id)
+    
+    noti.onSnapshot(
+      {
+        // Listen for document metadata changes
+        includeMetadataChanges: true,
+      },
+      function (doc) {
+        //이벤트 발생시 카운트 재정립
+        vueInstance.fetchNotification(vueInstance.loginData.user_id);
+        vueInstance.fetchRequests(vueInstance.loginData.user_id);
+        noti
+          .get()
+          .then(function (doc) {
+            if (doc.exists) {
+              vueInstance.noti_count = doc.data().notification;
+              vueInstance.req_count = doc.data().request;
+              console.log("Document data:", doc.data().notification);
+            } else {
+              console.log("No such document!");
+            }
+          })
+          .catch(function (error) {
+            console.log("Error getting document:", error);
+          });
+        console.log("이벤트 발생", doc);
+      }
+    );
+
+    
     // this.$store.dispatch("fetchNotification", this.loginData.user_id); //내가 요청한 것
     // this.$store.dispatch("fetchRequests", this.loginData.user_id); //내가 요청 받은것 followee
   },
@@ -263,7 +288,6 @@ export default {
   border: none;
   border-radius: 5px;
 }
-
 
 .notification {
   display: flex;

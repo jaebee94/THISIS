@@ -80,7 +80,8 @@
         <table>
           <tr>
             <td>
-              <img class="profile-image" src="../../assets/images/icon/icon_default_image.png" />
+              <img v-if="postInfo.userinfo.userimage==''" class="profile-image" src="../../assets/images/icon/icon_default_image.png" />
+              <img v-else class="profile-image" :src="postInfo.userinfo.userimage" />
             </td>
             <td>
               <a class="name">{{ postInfo.userinfo.nickname }}</a>
@@ -849,6 +850,9 @@ div.feed {
 .profile-image {
   background-color: white;
   border-radius: 70%;
+  width : 30px;
+  height: 30px;
+  object-fit: cover;
 }
 
 .feed-footer {
