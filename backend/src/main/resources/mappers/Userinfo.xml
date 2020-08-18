@@ -50,7 +50,7 @@
 	</update>
 
 	<!-- 회원정보 삭제 -->
-	<delete id="deleteUserInfo" parameterType="String">
+	<delete id="deleteUserInfo" parameterType="Integer">
 		delete
 		from UserInfo
 		where user_id = #{user_id}

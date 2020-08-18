@@ -133,7 +133,7 @@ export default {
             })
         },
         readNews(link) {
-            window.open(link);
+            window.open(link,"_parent");
         }
     },
     created(){
