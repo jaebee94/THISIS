@@ -21,6 +21,8 @@ public interface UserInfoService {
 	public int updateImage(UserInfo userinfo);
 	public int updatePassword(UserInfo userinfo);
 	public int updateDisable(int user_id);
+	public int updateable(int user_id);
 	public int updateRole(int user_id);
 	public String selectSaltByUserId(int user_id);
+	public int deleteRole(int user_id);
 }

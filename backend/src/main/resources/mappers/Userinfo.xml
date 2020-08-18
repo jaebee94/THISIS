@@ -50,7 +50,7 @@
 	</update>
 
 	<!-- 회원정보 삭제 -->
-	<delete id="deleteUserInfo" parameterType="String">
+	<delete id="deleteUserInfo" parameterType="Integer">
 		delete
 		from UserInfo
 		where user_id = #{user_id}
@@ -126,10 +126,22 @@
 		set disabled = 1
 		where user_id = #{user_id}
 	</update>
+	
+	<update id="updateable">
+		update UserInfo
+		set disabled = 0
+		where user_id = #{user_id}
+	</update>
 
 	<update id="updateRole">
 		update UserInfo
 		set role = "doctor"
+		where user_id = #{user_id}
+	</update>
+	
+	<update id="deleteRole">
+		update UserInfo
+		set role = "user"
 		where user_id = #{user_id}
 	</update>
 	

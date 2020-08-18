@@ -99,4 +99,15 @@ public class UserInfoServiceImpl implements UserInfoService {
 		return userInfoDao.selectUserInfoPolice();
 	}
 
+	@Override
+	public int updateable(int user_id) {
+		return userInfoDao.updateable(user_id);
+	}
+
+	@Override
+	public int deleteRole(int user_id) {
+		return userInfoDao.deleteRole(user_id);
+		
+	}
+
 }

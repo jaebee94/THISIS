@@ -158,6 +158,24 @@ const userStore = {
       // console.log('라우터 푸시 프로필')
       // router.push({ name: 'Profile' }) 
     },
+    async UploadDoctorAuth({ rootGetters,state }, Doctorimgsrc) {
+      console.log(Doctorimgsrc)
+      if (Doctorimgsrc) {
+        let config = { headers: {} }  
+        config.headers = rootGetters.config.headers
+        config.headers['Accept'] = 'application/json'
+        //config.headers['Content-Type'] = 'multipart/form-data'
+        await axios.post(SERVER.URL + SERVER.ROUTES.UploadDoctorAuth, Doctorimgsrc, config)
+        .then(async (res) => {
+          console.log('사진 변경 완료')
+          state.loginData.userimage=res.data;
+          console.log(res)
+          //dispatch('goProfile', state.user_id)
+          // router.push({ name: 'Profile' })
+        })
+        .catch(err => console.log('사진 변경 에러: ', err))
+      }
+    },//upload
   },
 }
 
