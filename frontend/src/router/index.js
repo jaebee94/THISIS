@@ -31,6 +31,8 @@ import ChangeProfile from '../components/feed/ChangeProfile.vue'
 import DiseaseTest from '../views/main/DiseaseTest.vue'
 import NewsTest from '../views/main/NewsTest.vue'
 
+import Admin from '../views/admin/Admin.vue'
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -132,6 +134,13 @@ const routes = [
     name: 'NewsTest',
     component: NewsTest
   },
+
+  // Admin
+  {
+    path: '/admin',
+    name: 'Admin',
+    component: Admin,
+  }
 ]
 
 

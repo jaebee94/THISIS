@@ -38,6 +38,11 @@ export default {
     disease: '/disease/user',
     subscribe: '/subscribe',
 
+    // admin
+    reportedPosts: '/admin/post',
+    reportedUsers: '/admin/user',
+    doctors: '/admin/doctor-auth/check',
+
     qnasmain : '/articles/qna/main',
     qnastitle : '/articles/qna/title',
     qnasdisease : '/articles/qna/disease',
