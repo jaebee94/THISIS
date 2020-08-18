@@ -51,18 +51,23 @@ public class DoctorServiceImpl implements DoctorService {
 	}
 
 	@Override
-	public int updateDoctorAuth(int user_id) {
-		return doctordao.updateDoctorAuth(user_id);
+	public int updateDoctorAuth(int doctor_id) {
+		return doctordao.updateDoctorAuth(doctor_id);
 	}
 
 	@Override
-	public int updateDoctorAuthFail(int user_id) {
-		return doctordao.updateDoctorAuthFail(user_id);
+	public int updateDoctorAuthFail(int doctor_id) {
+		return doctordao.updateDoctorAuthFail(doctor_id);
 	}
 
 	@Override
 	public Doctor selectMyDoctor(int user_id) {
 		return doctordao.selectMyDoctor(user_id);
+	}
+
+	@Override
+	public Doctor selectMyDoctorID(int doctor_id) {
+		return doctordao.selectMyDoctorID(doctor_id);
 	}
 
 }

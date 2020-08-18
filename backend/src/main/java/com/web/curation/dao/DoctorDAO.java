@@ -16,6 +16,7 @@ public interface DoctorDAO {
 	public Doctor selectDoctorByUserid(int user_id);
 	public Doctor selectMyDoctor(int user_id);
 	public int updateDoctorImg(String img);
-	public int updateDoctorAuth(int user_id);
-	public int updateDoctorAuthFail(int user_id);
+	public int updateDoctorAuth(int doctor_id);
+	public int updateDoctorAuthFail(int doctor_id);
+	public Doctor selectMyDoctorID(int doctor_id);
 }
