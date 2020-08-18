@@ -34,9 +34,9 @@
         </div>
       </div>
 
-      <!-- <div v-show="currentTab == 1">
+      <div v-show="currentTab == 1">
         <div>
-          <UserList></UserList>
+          <UserList v-for="user in userList" :key="user.user_id" :user="user"></UserList>
           <infinite-loading
             v-if="this.currentTab == 1"
             ref="infiniteLoading"
@@ -47,14 +47,14 @@
 
       <div v-show="currentTab == 2">
         <div>
-          <DoctorList></DoctorList>
-          <infinite-loading
+          <DoctorList v-for="doctor in doctorList" :key="doctor.doctor_id" :doctor="doctor"></DoctorList>
+          <!-- <infinite-loading
             v-if="this.currentTab == 2"
             ref="infiniteLoading"
             @infinite="infiniteHandler"
-          ></infinite-loading>
+          ></infinite-loading> -->
         </div>
-      </div> -->
+      </div>
     </div>
   </div>
 </template>
@@ -67,32 +67,37 @@ import axios from "axios"
 import cookies from "vue-cookies"
 
 import PostList from "@/components/admin/post/PostList.vue";
-// import UserList from "@/components/admin/user/UserList.vue";
-// import DoctorList from "@/components/admin/doctor_auth/DoctorList.vue";
+import UserList from "@/components/admin/user/UserList.vue";
+import DoctorList from "@/components/admin/doctor_auth/DoctorList.vue";
 
 export default {
   name: "Admin",
   components: {
     PostList,
-    // UserList,
-    // DoctorList,
+    UserList,
+    DoctorList,
   },
 
   data() {
     return {
       tabs: [
         require("../../assets/images/icon/icon_post.png"),
-        require("../../assets/images/icon/icon_qna.png"),
-        require("../../assets/images/icon/icon_news.png"),
+        require("../../assets/images/icon/icon_default_image.png"),
+        require("../../assets/images/icon/icon_cert.png"),
       ],
       currentTab: 0,
       page: 0,
       postList: [],
+      userList: [],
+      doctorList: []
     };
   },
   watch: {
-    // currentTab: function () {
-    // },
+    currentTab: function () {
+      this.page = 0
+      this.postList = []
+      this.userList = []
+    },
   },
 
   computed: {
@@ -132,19 +137,37 @@ export default {
       };
 
       //통신부분
-
-      axios.get(SERVER.URL + SERVER.ROUTES.reportedPosts, params)
-        .then(({data}) => {
-          console.log(data)
-          if (data.length) {
-            this.page += 1;
-            this.postList.push(...data);
-            console.log(this.postList)
-            $state.loaded();
-          } else {
-            $state.complete();
-          }
-        })
+      if (this.currentTab == 0) {
+        axios.get(SERVER.URL + SERVER.ROUTES.reportedPosts, params)
+          .then(({data}) => {
+            console.log(data)
+            if (data.length) {
+              this.page += 1;
+              this.postList.push(...data);
+              console.log(this.postList)
+              $state.loaded();
+            } else {
+              $state.complete();
+            }
+          })
+      } else if (this.currentTab == 1) {
+        axios.get(SERVER.URL + SERVER.ROUTES.reportedUsers, params)
+          .then(({data}) => {
+            console.log(data)
+            if (data.length) {
+              this.page += 1;
+              this.userList.push(...data);
+              $state.loaded();
+            } else {
+              $state.complete();
+            }
+          })
+      } else {
+        axios.get(SERVER.URL + SERVER.ROUTES.doctors, params)
+          .then(({data}) => {
+            this.doctorList = data
+          })
+      }
         
 
     },
