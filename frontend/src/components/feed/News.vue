@@ -1,12 +1,12 @@
 <template>
   <div class="news-wrap">
     <div class="news-search-input">
-        <input v-model="keyword" placeholder="키워드를 입력하세요" v-on:keyup.enter="findNews">
+        <input v-model="keyword" placeholder="키워드를 입력하세요" v-on:keyup.enter="findNews(keyword)">
         <span><img @click="findNews(keyword)" src="../../assets/images/icon/icon_search_unselect.png"></span>
         <!-- <button >검색</button> -->
     </div>
     <div class="tutorial-show-wrap">
-        <span  :selected="!disease.isSelected" :class="{selected : disease.isSelected}" 
+        <span :selected="!disease.isSelected" :class="{selected : disease.isSelected}" 
         v-for="disease in this.diseases" v-bind:key="disease.diseasecode" 
         @click="findNews(disease.diseasename) ">{{disease.diseasename}}</span>
     </div>
@@ -33,7 +33,8 @@ export default {
      computed: {
     ...mapState("userStore", ["loginData"]),
     ...mapState('diseaseStore', ['diseases']),
-  },data() {
+    },
+    data() {
         return {
             keyword: "",
             items: [],
@@ -48,6 +49,7 @@ export default {
          ...mapActions("diseaseStore", ["getFolloingwDisease"]),
         async findNews(keyword) {
             console.log(keyword);
+            this.$parent.$parent.$parent.isLoaded = false;
             this.selectedDisease = keyword
             this.diseases.forEach(disease => {
                 disease.isSelected = false;
@@ -78,8 +80,17 @@ export default {
             })
             .then((res) => {
                 console.log(res.data.items[0].link);
-                this.sample_images.one = res.data.items[0].link;
-                this.sample_images.two = res.data.items[1].link;
+                console.log(res);
+                if(res.data.items.length == 0) {
+                    this.sample_images.one = null;
+                    this.sample_images.two = null;
+                } else if(res.data.items.length == 1) {
+                    this.sample_images.one = res.data.items[0].link;
+                    this.sample_images.two = null;
+                } else {
+                    this.sample_images.one = res.data.items[0].link;
+                    this.sample_images.two = res.data.items[1].link;
+                }
             })
             await axios.request({
                 url: proxyurl + 'https://openapi.naver.com/v1/search/news.json',
@@ -101,9 +112,11 @@ export default {
                 });
                 this.items = res.data.items;
                 console.log(res);
+                this.$parent.$parent.$parent.isLoaded = true;
             })
             .catch((err) => {
                 console.error(err);
+                this.$parent.$parent.$parent.isLoaded = true;
             })
         },
         readNews(link) {
@@ -187,25 +200,25 @@ export default {
 
     .tutorial-show-wrap {
         width: 100%;
+        margin-top: 3px;
         display: inline-block;
     }
 
     .tutorial-show-wrap span {
-        background-color: rgb(0, 171, 132);
-        padding: 5px 15px;
-        border: 10px;
-        font-size: 15px;
+        background-color: rgb(200, 200, 200);
+        color: black;
+        font-size: 13px;
         font-weight: 600;
-        height: 20px;
-        border-radius: 20px;
-        margin: 5px 10px 5px 10px ;
-        color: white;
+        padding: 4px 8px;
+        border: none;
+        border-radius: 5px;
         display: inline-block;
+        margin: 3px 5px auto;
     }
 
     .tutorial-show-wrap span.selected {
-        background-color: rgb(238, 241, 36);
-        color:black;
-        
+        background-color: rgb(0, 171, 132);
+        color: white;
     }
+
 </style>

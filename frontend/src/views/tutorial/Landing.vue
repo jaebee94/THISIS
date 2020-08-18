@@ -11,9 +11,11 @@
 <script>
 export default {
     beforeCreate() {
+        this.$parent.isLoaded = false;
         document.body.className = "greenbody";
     },
     created () {
+        this.$parent.isLoaded = true;
         // document.querySelector('html').addEventListener('click', function () {
         //     // console.log("!!!!");
         //     // this.$router.push('/account/join');

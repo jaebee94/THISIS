@@ -9,7 +9,7 @@
           v-bind:class="{active: currentTab === index}"
           @click="clickNoti(index)"
         >
-          <h2>{{tab}}</h2>
+          <a>{{tab}}</a>
           <span class="notify-num" v-if="index == 0 && noti_count != 0">{{noti_count}}</span>
           <span class="notify-num" v-if="index == 1 && req_count != 0">{{req_count}}</span>
         </div>
@@ -208,14 +208,12 @@ export default {
 .notify {
   text-align: center;
   background-color: white;
-  padding: 20px 20px 60px 20px;
+  /* padding: 20px 20px 60px 20px; */
 }
 .notify-panel {
   width: 100%;
-  height: 600px;
-  border-bottom-left-radius: 15px;
-  border-bottom-right-radius: 15px;
-  background-color: rgb(247, 247, 247);
+  /* height: 600px; */
+  /* background-color: rgb(247, 247, 247); */
 }
 .tabs {
   width: 100%;
@@ -226,18 +224,19 @@ export default {
 }
 .tab {
   width: 50%;
-  height: 50px;
+  height: 40px;
   vertical-align: middle;
   background-color: rgb(247, 247, 247);
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  border-bottom: 3px rgb(247, 247, 247) solid;
 }
-.tab h2 {
-  margin-top: 10px;
+.tab a {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 2;
   height: 20px;
 }
 .tab.active {
-  background-color: rgb(0, 171, 132);
+  border-bottom: 3px rgb(0, 171, 132) solid;
 }
 
 .notify-num {

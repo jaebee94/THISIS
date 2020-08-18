@@ -234,8 +234,12 @@ export default {
       params["approval"] = 1;
       this.$store.dispatch("followStore/deleteFollowing", params);
     },
-    followingCancel() {
-      //팔로우 끊기
+    followingCancel() { //팔로우 끊기
+      var res = confirm("팔로우를 끊으시겠어요?");
+      if(!res) {
+        alert("팔로잉 상태를 유지할게요~");
+        return;
+      }
       this.isFollowing = false;
       this.followee_list = false;
       let params = {
@@ -243,6 +247,11 @@ export default {
         followee: this.profileData.userInfo.user_id, //상대방
       };
       this.$store.dispatch("followStore/deleteFollow", params);
+      params = {
+        follower : this.loginData.user_id, //본인
+        followee : this.profileData.userInfo.user_id //상대방
+      };
+      this.getFollowee(params);
     },
     logout() {
       var result = confirm("로그아웃하시겠습니까?");
