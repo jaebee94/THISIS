@@ -2,7 +2,7 @@
     <div class="comment-module-wrap">
         <div v-if="!isModify">
             <div class="comment-module-header">
-                <a class="name">{{comment.userinfo.nickname}}</a>
+                <a class="name" @click="goProfile(comment.userinfo.user_id)"><strong>{{comment.userinfo.nickname}}</strong></a>
                 <a class="time">{{timeForToday(comment.comment.comment_date)}}</a>
             </div>
             <div class="comment-module-content">
@@ -13,6 +13,9 @@
                 <!-- <img class="comment-module-health" v-if="true" :src="isHealth" @click="clickHealth()">
                 <img class="comment-module-health" v-if="true == false" :src="isNotHealth" @click="clickHealth()">
                 <span class="comment-health-count">12</span> -->
+            </span>
+            <span class="comment-module-footer">
+                <img @click="deleteCheckComment(comment.comment)" class="comment-module-health" v-if="comment.userinfo.user_id == loginData.user_id" :src="deleteImage"/>
             </span>
         </div>
         <div v-if="isModify">
@@ -40,7 +43,8 @@ export default {
             isModify: false,
             isHealth: require("../../assets/images/icon/icon_like_select.png"),
             isNotHealth: require("../../assets/images/icon/icon_like_unselect.png"),
-            modifyImage: require("../../assets/images/icon/icon_edit_unselect.png")
+            modifyImage: require("../../assets/images/icon/icon_edit_unselect.png"),
+            deleteImage: require("../../assets/images/icon/icon_eraser.png")
         }
     },
     props: {
@@ -49,7 +53,8 @@ export default {
         },
     },
     methods: {
-        ...mapActions('postStore', ['updateComment']),
+        ...mapActions('userStore', ["goProfile"]),
+        ...mapActions('postStore', ['updateComment','deleteComment']),
         timeForToday(time) {
             const today = new Date();
             var timeValue = new Date(time);
@@ -86,6 +91,16 @@ export default {
             console.log('commentData', commentData);
             this.updateComment(commentData)
             this.isModify = !this.isModify;
+        },
+        deleteCheckComment(comment){
+            //확인 부분
+            var modalInfo={
+                msg : "댓글을 정말 지우시겠습니까?",
+                data : comment
+            }
+            this.$emit("check-delete",modalInfo)
+            console.log(comment)
+            //this.deleteComment(comment)
         }
     }
 }
@@ -100,6 +115,7 @@ export default {
     }
 
     .comment-module-header {
+        margin : 7px 0px 7px 0px;
         background-color : white;
         text-align: left;
         padding-left: 5%;
@@ -108,6 +124,7 @@ export default {
 
     .comment-module-header .name {
         margin-right: 10px;
+        font-size : 18px;
     }
 
     .comment-module-header .time {
@@ -151,16 +168,21 @@ export default {
         width: 80%;
         padding-left: 5%;
         padding-right: 5%;
-        font-size: 13px;
+        font-size: 15px;
         margin-bottom: 5px;
     }
 
     .comment-module-footer {
+        margin : 8px;
         position: relative;
         top: -30px;
-        right: -40%;
+        right: -35%;
     }
 
+     .comment-module-footer img{
+       width : 25px;
+       height: 25px;
+    }
     
     .comment-module-health {
         height: 20px;

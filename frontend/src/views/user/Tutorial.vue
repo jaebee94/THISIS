@@ -32,7 +32,8 @@
 </template>
 <script>
 import axios from 'axios';
-import { mapActions } from "vuex";
+import { mapState, mapActions } from "vuex";
+import router from '@/router'
 const proxyurl = "https://cors-anywhere.herokuapp.com/";
 export default {
     data() {
@@ -45,7 +46,11 @@ export default {
             checkedItems : [],
         }
     },
+    computed: {
+    ...mapState('userStore', ['loginData']),
+    },
     created() {
+        if(this.loginData == null) router.push({ name: 'Landing' })
         document.body.className = "greenbody";
     },
     watch : {
@@ -153,9 +158,6 @@ export default {
         height: 60%;
     }
 
-    .tutorial-input-wrap { 
-        margin-bottom: 10px;
-    }
 
     .tutorial-input-wrap div a {
         color : white;
@@ -165,7 +167,6 @@ export default {
     .tutorial-select-wrap {
         width: 100%;
         height: 100%;
-        margin-bottom: 10px;
         text-align:left;
     }
 
@@ -202,11 +203,12 @@ export default {
 
     .tutorial-show-wrap {
         width: 100%;
+        margin: 7px 0 0 0; 
     }
 
     .tutorial-show-wrap div {
-        margin: 5px auto;
-        height: 30px;
+        
+        height: 100%;
     }
 
     .tutorial-show-wrap div span {
@@ -219,6 +221,7 @@ export default {
         border-radius: 5px;
         color: rgb(0, 171, 132);
         display: inline-block;
+        text-align: center;
     }
 
     .tutorial-show-wrap div img {

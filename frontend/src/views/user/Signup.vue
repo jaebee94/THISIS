@@ -151,11 +151,13 @@ export default {
       //     this.isSubmit = false;
       //   }
       // })
+      console.log(this.error);
       let isSubmit = true;
       Object.values(this.error).map((v) => {
         if (v) isSubmit = false;
       });
       this.isSubmit = isSubmit;
+      console.log(this.isSubmit)
       if (this.isSubmit) {
         this.signupData.username = this.username;
         this.signupData.email = this.email;
@@ -163,8 +165,8 @@ export default {
         this.signupData.password = this.password;
       }
     },
-    checkEmail() {
-      axios.get(SERVER.URL + SERVER.ROUTES.email, {
+    async checkEmail() {
+       await axios.get(SERVER.URL + SERVER.ROUTES.email, {
         params: {
           email: this.email
         }
@@ -174,14 +176,17 @@ export default {
           alert("사용가능한 E-mail 입니다.")
         })
         .catch(err => {
+          console.log(err.response)
           if (err.response.data.data == "wrong email") {
             this.confirm.email = true;
             alert("이미 사용중인 E-mail 입니다.")
           }
         })
+
+        this.checkForm();
     },
-    checkNickname() {
-      axios.get(SERVER.URL + SERVER.ROUTES.nickname, {
+    async checkNickname() {
+      await axios.get(SERVER.URL + SERVER.ROUTES.nickname, {
         params: {
           nickname: this.nickname
         }
@@ -196,8 +201,10 @@ export default {
             alert("이미 사용중인 닉네임 입니다.")
           }
         })
+
+        this.checkForm();
     },
-    // ...mapActions(['signup'])
+
     signup(signupData) {
       const info = {
         data: signupData,

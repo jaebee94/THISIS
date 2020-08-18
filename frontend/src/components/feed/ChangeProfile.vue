@@ -15,7 +15,7 @@
       <div v-show="profileTab == 0">
         <div class="profile-photo">
           <div class="profile-modify-image">
-            <img :src="imgsrc + ''" />
+            <img :src="imgsrc" />
           </div>
           <div class="profile-image-button">
             <button @click="onClickImageUpload">프로필 사진 변경</button>
@@ -45,7 +45,7 @@
       <div v-show="profileTab == 1">
         <div class="input-with-label">
           <input
-            v-model="changeInfo.password"
+            v-model="password"
             id="password"
             type="password"
             placeholder="비밀번호를 입력해주세요"
@@ -68,11 +68,21 @@
             :class="{disabled: !isSubmitPassword}"
           >비밀번호 변경</button>
         </div>
-        <div class="signout-wrap">
+        <div class="important-auth-wrap">
+          <div class="doctor-auth-wrap">
+            <img src="../../assets/images/icon/icon_doctor.png">
+            <div><a>의료진 인증하기</a></div>
+          </div>
+          <div class="signout-wrap">
+            <img src="../../assets/images/icon/icon_signout.png">
+            <div><a>THISIS 떠나기</a></div>
+          </div>
+        </div>
+        <!-- <div class="signout-wrap">
           <button @click="signOut()">
             회원탈퇴
           </button>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
@@ -82,10 +92,12 @@
 import PV from "password-validator";
 import axios from "axios";
 import SERVER from "@/api/RestApi.js";
+import router from '@/router'
 import { mapState, mapActions } from "vuex";
 
 export default {
   created() {
+    if(this.loginData == null) router.push({ name: 'Landing' })
     this.passwordSchema
       .is()
       .min(8)
@@ -96,18 +108,11 @@ export default {
       .has()
       .letters();
 
-    // this.changeInfo.email = this.loginData.email;
-    // this.changeInfo.introduction = this.profileData.userInfo.introduction;
-    // this.changeInfo.nickname = this.loginData.nickname;
-    // this.changeInfo.password = this.loginData.password;
-    // this.changeInfo.user_id = this.loginData.user_id;
-    // this.changeInfo.username = this.loginData.username;
-    // this.changeInfo.userInfo = this.loginData
     console.log("프로필 데이터" ,this.profileData)
     this.email = this.profileData.userInfo.email;
     this.nickname = this.profileData.userInfo.nickname;
     this.introduction = this.profileData.userInfo.introduction;
-    this.imgsrc = this.profileData.userInfo.userimage;
+    if(this.profileData.userInfo.userimage!=null) this.imgsrc = this.profileData.userInfo.userimage;
   },
 
   computed: {
@@ -155,7 +160,7 @@ export default {
         require("../../assets/images/icon/icon_key.png"),
       ],
       
-      imgsrc: ''
+      imgsrc:require('../../assets/user2.png')
     };
   },
 
@@ -223,6 +228,7 @@ export default {
       }
       if (!this.error.password && !this.error.passwordConfirm) {
         this.isSubmitPassword = true;
+        this.changeInfo.userInfo.password = this.passwordConfirm;
       } else {
         this.isSubmitPassword = false;
       }
@@ -257,6 +263,7 @@ export default {
       this.changeInfo.formData = formData;
       console.log("changeInfo : ", this.changeInfo);
       this.imgsrc = URL.createObjectURL(file);
+      
     },
     signOut() {
       var res = confirm("정말로 탈퇴하시겠습니까?");
@@ -401,21 +408,62 @@ export default {
   border-radius: 5px;
 }
 
-.signout-wrap {
-  position: absolute;
+.important-auth-wrap {
   width: 100%;
-  bottom: 50px;
+  height: 120px;
+  margin-top: 10%;
+  display: flex;
+  font-size: 13px;
+  font-weight: 600;
 }
 
-.signout-wrap button {
-  width: 90%;
-  height: 40px;
+.important-auth-wrap .doctor-auth-wrap img {
+  /* width: 50%; */
+  height: 80px;
+}
+
+.important-auth-wrap .signout-wrap img {
+  height: 70px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.important-auth-wrap .doctor-auth-wrap {
+  width: 40%;
+  height: 100%;
+  margin-left: 5%;
+  padding-top: 5%;
   border: none;
-  background-color: rgb(220, 0, 27);
-  color: white;
-  font-size: 20px;
-  font-weight: 600;
-  border-radius: 5px;
+  border-radius: 15px;
+  outline: none;
+  color: rgb(0, 171, 132);
+  background-color: rgb(247, 247, 247);
+  transition-duration: 300ms;
+  /* color: white;
+  background-color: rgb(79, 158, 129); */
+}
+
+.important-auth-wrap .doctor-auth-wrap:hover {
+  background-color: rgb(200, 200, 200);
+}
+
+.important-auth-wrap .signout-wrap {
+  width: 40%;
+  height: 100%;
+  margin-left: 10%;
+  padding-top: 5%;
+  border: none;
+  border-radius: 15px;
+  outline: none;
+  color: rgb(220, 0, 27);
+  background-color: rgb(247, 247, 247);
+  transition-duration: 300ms;
+  /* color: white;
+  background-color: rgb(220, 0, 27); */
+}
+
+.important-auth-wrap .signout-wrap:hover {
+  background-color: rgb(200, 200, 200);
 }
 
 </style>

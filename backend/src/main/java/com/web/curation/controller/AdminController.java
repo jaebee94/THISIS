@@ -22,11 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.web.curation.model.Auth;
 import com.web.curation.model.BasicResponse;
 import com.web.curation.model.Doctor;
-import com.web.curation.model.Follow;
+import com.web.curation.model.DoctorResponse;
 import com.web.curation.model.Police;
 import com.web.curation.model.PoliceJoin;
-import com.web.curation.model.Post;
-import com.web.curation.model.PostResponse;
 import com.web.curation.model.Postpolice;
 import com.web.curation.model.PostpoliceResponse;
 import com.web.curation.model.RequestDoctor;
@@ -238,11 +236,20 @@ public class AdminController {
 
 	@ApiOperation(value = "체크하지 않은 사람들을 반환한다.", response = List.class)
 	@GetMapping("doctor-auth/check")
-	public ResponseEntity<List<Doctor>> selectCheckDoctor(HttpServletRequest request) throws Exception {
+	public ResponseEntity<List<DoctorResponse>> selectCheckDoctor(HttpServletRequest request) throws Exception {
 		if (check(request) == 1) {
-			return new ResponseEntity<List<Doctor>>(doctorService.selectCheckDoctor(), HttpStatus.OK);
+			List<DoctorResponse> doctorResponse = new ArrayList<>();
+			List<Doctor> doctor = doctorService.selectCheckDoctor();
+			for (int i = 0; i < doctor.size(); i++) {
+				DoctorResponse response = new DoctorResponse();
+				response.doctor = doctor.get(i);
+				response.userinfo = userInfoService.selectUserInfoByUserid(doctor.get(i).getUser_id());
+				doctorResponse.add(response);
+				System.out.println(response.toString());
+			}
+			return new ResponseEntity<List<DoctorResponse>>(doctorResponse, HttpStatus.OK);
 		} else {
-			return new ResponseEntity<List<Doctor>>(HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<List<DoctorResponse>>(HttpStatus.UNAUTHORIZED);
 		}
 	}
 
