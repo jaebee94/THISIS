@@ -1,6 +1,6 @@
 export default {
-  // URL: 'http://i3a301.p.ssafy.io:8089/THISIS', // 서버 포트
-  URL: 'https://93edf289b3ba.ngrok.io/THISIS',
+  URL: 'http://i3a301.p.ssafy.io:8089/THISIS', // 서버 포트
+  // URL: 'https://93edf289b3ba.ngrok.io/THISIS',
   //URL: 'https://41fa72ea95de.ngrok.io/THISIS',
   //  URL: 'http://localhost:8088/THISIS',
   ROUTES: {
