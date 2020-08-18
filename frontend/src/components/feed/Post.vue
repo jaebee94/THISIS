@@ -109,7 +109,6 @@
     </div>
   </div>
 </template>
-
 <script>
 import { mapActions, mapState } from "vuex";
 import SERVER from "@/api/RestApi.js";

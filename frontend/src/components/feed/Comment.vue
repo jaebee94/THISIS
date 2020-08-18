@@ -1,22 +1,19 @@
 <template>
     <div class="comment-module-wrap">
+        <div v-if="isDelete" @click="isDelete = !isDelete" class="black-layer"></div>
         <div v-if="!isModify">
             <div class="comment-module-header">
                 <a class="name" @click="goProfile(comment.userinfo.user_id)"><strong>{{comment.userinfo.nickname}}</strong></a>
                 <a class="time">{{timeForToday(comment.comment.comment_date)}}</a>
+                <img class="dropmenu" v-if="loginData.user_id == comment.userinfo.user_id" @click="isDelete = !isDelete"  src="../../assets/images/icon/icon_3dots.png" />
+                <div v-show="isDelete" class="dropdown-content">
+                    <a href="#" v-if="loginData.user_id == comment.userinfo.user_id" @click="modifyComment(comment)">수정</a>
+                    <a href="#" v-if="loginData.user_id == comment.userinfo.user_id" @click="deleteCheckComment(comment.comment)">삭제</a>
+                </div>
             </div>
             <div class="comment-module-content">
                 {{comment.comment.comment_main}}
             </div>
-            <span class="comment-module-footer">
-                <img @click="isModify = !isModify" class="comment-module-health" v-if="comment.userinfo.user_id == loginData.user_id" :src="modifyImage">
-                <!-- <img class="comment-module-health" v-if="true" :src="isHealth" @click="clickHealth()">
-                <img class="comment-module-health" v-if="true == false" :src="isNotHealth" @click="clickHealth()">
-                <span class="comment-health-count">12</span> -->
-            </span>
-            <span class="comment-module-footer">
-                <img @click="deleteCheckComment(comment.comment)" class="comment-module-health" v-if="comment.userinfo.user_id == loginData.user_id" :src="deleteImage"/>
-            </span>
         </div>
         <div v-if="isModify">
             <div class="comment-module-header">
@@ -44,7 +41,8 @@ export default {
             isHealth: require("../../assets/images/icon/icon_like_select.png"),
             isNotHealth: require("../../assets/images/icon/icon_like_unselect.png"),
             modifyImage: require("../../assets/images/icon/icon_edit_unselect.png"),
-            deleteImage: require("../../assets/images/icon/icon_eraser.png")
+            deleteImage: require("../../assets/images/icon/icon_eraser.png"),
+            isDelete: false,
         }
     },
     props: {
@@ -75,6 +73,7 @@ export default {
             return `${Math.floor(betweenTimeDay / 365)}년전`;
         },
         modifyComment(comment) {
+            this.isDelete = false;
             console.log('현재의 코멘트', comment);
             if(comment.comment.comment_main.length == 0) {
                 alert("수정 내용을 입력하세요!");
@@ -183,17 +182,7 @@ export default {
         margin-bottom: 5px;
     }
 
-    .comment-module-footer {
-        margin : 8px;
-        position: relative;
-        top: -30px;
-        right: -35%;
-    }
-
-     .comment-module-footer img{
-       width : 20px;
-       height: 20px;
-    }
+    
     
     .comment-module-health {
         height: 20px;
@@ -210,4 +199,53 @@ export default {
         border-radius: 70%;
         padding:1px 3px;
     }
+
+    /* ======= dropdown css ======= */
+    .dropdown {
+        position: relative;
+        display: inline-block;
+        padding-top: 8px;
+    }
+
+    .dropmenu {
+        width: 18px;
+        float: right;
+    }
+
+    .black-layer {
+        position: fixed;
+        /* background-color: black;
+        opacity: 0.1; */
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 54;
+    }
+
+    .dropdown-content {
+        position: relative;
+        left: calc(100% - 100px);
+        background-color: rgb(247, 247, 247);
+        outline: none;
+        width: 100px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 55;
+        display: block;
+
+    }
+
+    .dropdown-content a{
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+    
+    }
+
+
+    .dropdown-content a:hover{
+        background-color:rgb(191, 181, 181);
+    }
+/* ======= dropdown css ======= */
 </style>

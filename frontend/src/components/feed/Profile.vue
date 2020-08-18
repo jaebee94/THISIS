@@ -333,9 +333,13 @@ export default {
   font-size: 20px;
   font-weight: 600;
 }
+.profile-name img {
+  width: 15px;
+  height: 15px;
+}
 
 .profile-intro a {
-  font-size: 15px;
+  font-size: 12px;
 }
 .right-content {
   float: right;
