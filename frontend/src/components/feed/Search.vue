@@ -14,6 +14,9 @@
           <div><strong>{{item.title}}</strong></div>
           <div><img v-show="item.thumbnail != null" :src="item.thumbnail"></div>
           <div><a>{{item.description}}</a></div>
+          <div class="morebtn">  
+            <a @click="openLink(item.link)"><i style="color:skyblue">더보기 </i></a>
+            <img src="../../assets/images/icon/icon_search_select.png"></div>
         </slide>
       </carousel>
       </div>
@@ -29,15 +32,16 @@
         v-for="(tab, index) in tabs"
         v-bind:key="tab"
         v-bind:class="{active: currentTab === index}"
-        @click="currentTab = index"
+        @click="switchTab(index)"
       >
         <a>{{tab}}</a>
       </div>
     </div>
 
     <div class="search-panel">
-      <div @click="getSearchList(keyword)">
+      <div>
         <input type="text" v-model="keyword" placeholder="검색어를 입력하세요" v-on:keyup.enter="getSearchList(keyword)"/>
+        <img id="search" @click="getSearchList(keyword)" src="../../assets/images/icon/icon_search_unselect.png">
       </div>
     </div>
     <div id="search-main">
@@ -51,12 +55,12 @@
         </div>
       </div>
       <div v-show="currentTab == 1">
-        <div class="search" v-for="user in this.users" v-bind:key="user.user_id">
-          <div class="search-item" v-if="user.nickname.includes(keyword) || user.username.includes(keyword) || user.introduction.includes(keyword)" @click="goProfile(user.user_id)">
+        <div class="searchU" v-for="user in this.users" v-bind:key="user.user_id">
+          <div class="search-itemU" v-if="user.nickname.includes(keyword) || user.username.includes(keyword) || user.introduction.includes(keyword)" @click="goProfile(user.user_id)">
             <div class="search-img">
               <img :src="user.userimage" style="height:50px" />
             </div>
-            <div class="search-text2">
+            <div class="search-textU">
               <div class="search-nickname">
                 <span v-for="char in user.nickname" :key="char">
                   <strong v-if="keyword.includes(char)">{{ char }}</strong>
@@ -84,6 +88,7 @@ import axios from "axios";
 import SERVER from "@/api/RestApi.js";
 import cookies from "vue-cookies";
 import {Carousel, Slide} from 'vue-carousel';
+import router from '@/router'
 const proxyurl = "https://cors-anywhere.herokuapp.com/";
 export default {
   name: "Search",
@@ -92,6 +97,7 @@ export default {
   },
   computed: {
     ...mapState('diseaseStore', ['diseases']),
+    ...mapState("userStore", ["loginData"]),
   },
   data() {
     return {
@@ -112,13 +118,13 @@ export default {
     };
   },
   watch: {
-    keyword: function () {
-      if (this.currentTab == 0) {
-        this.getDisease(this.keyword);
-      } else {
-        this.getUsers(this.keyword);
-      }
-    },
+    // keyword: function () {
+    //   if (this.currentTab == 0) {
+    //     this.getDisease(this.keyword);
+    //   } else {
+    //     this.getUsers(this.keyword);
+    //   }
+    // },
     items: function () {
       this.checkout(this.items);
     },
@@ -127,6 +133,7 @@ export default {
     }
   },
   created(){
+    if(this.loginData == null) router.push({ name: 'Landing' })
     this.$store.dispatch("diseaseStore/getFollowingDisease");
   },
   methods: {
@@ -140,6 +147,7 @@ export default {
       }
     },
     getUsers(keyword) {
+      this.$parent.$parent.isLoaded = false;
       axios
         .get(
           SERVER.URL + SERVER.ROUTES.search,
@@ -153,10 +161,12 @@ export default {
         .then((res) => {
           this.users = res.data;
           console.log(res.data);
+          this.$parent.$parent.isLoaded = true;
         })
         .catch((err) => console.log(err));
     },
     getDisease(keyword) {
+      this.$parent.$parent.isLoaded = false;
       // API에서 질병을 검색하고 셀렉트 박스로 보여줌
       var params = {
         pageNo: 1,
@@ -193,6 +203,7 @@ export default {
           } else if (len == 1) this.items.push(items);
           else this.items = items;
           this.isSearched = true;
+          this.$parent.$parent.isLoaded = true;
         })
         .catch((err) => {
           this.isSearched = false;
@@ -221,15 +232,10 @@ export default {
       this.selectedDisease.name = disease.sickNm;
       this.findDisease(disease.sickNm)
     },
-    // create(item){
-    //   this.createDisease(item);
-    // },
-    // delete(item){
-    //   this.createDisease(item);
-    // },
     async findDisease(disease){
       this.searchedItems = [];
       this.selectedDisease.description=""
+      this.$parent.$parent.isLoaded = false;
       var params = {
           query: disease,
           display: 10,
@@ -253,6 +259,7 @@ export default {
               item.title = String(item.title).replace(/<br\/>/ig, "\n");
               item.title = String(item.title).replace(/&quot;/ig, "");
               item.title = String(item.title).replace(/<(\/)?([a-zA-Z]*)(\s[a-zA-Z]*=[^>]*)?(\s)*(\/)?>/ig, "");
+
               this.searchedItems.push(item);
               // this.selectedDisease.description += item.description+"\n";
               // item.title = String(item.title).replace(/<br\/>/ig, "\n");
@@ -262,16 +269,24 @@ export default {
           //this.selectedDisease.description = res.data.items;
 
           // console.log(res);
+          this.$parent.$parent.isLoaded = true;
       })
       .catch((err) => {
           console.error(err);
+          this.$parent.$parent.isLoaded = true;
       })
       console.log(this.searchedItems)
     },
-    
+    switchTab(index){
+      this.currentTab=index;
+      this.keyword = "";
+    },
     close(){
       this.$parent.$parent.isHidden = false;
       this.isDiseaseHidden = true;    
+    },
+    openLink(link) {
+            window.open(link,"_parent");
     }
   },
 };
@@ -286,7 +301,20 @@ export default {
 .search-panel {
   width: 100%;
   height: 35px;
+  margin-bottom: 10px;
 }
+
+.search-panel #search {
+  height: 20px;
+  position: absolute;
+  margin-top: 10px;
+  margin-left: -30px;
+  /* left: -30px; */
+  /* top: 3px;
+  left: -40px;
+  top: 3px; */
+}
+
 .tab {
   width: 50%;
   height: 40px;
@@ -296,7 +324,7 @@ export default {
   border-bottom: 3px rgb(247, 247, 247) solid;
 }
 .tab a {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
   line-height: 2;
   height: 20px;
@@ -307,7 +335,7 @@ export default {
 }
 .disease-wrap {
   position: fixed;
-  z-index: 99;
+  z-index: 98;
   top: 10%;
   width: 92%;
   height: 70%;
@@ -318,6 +346,7 @@ export default {
 
 .post-content {
   width: 100%;
+  max-height: 100%;
 }
 
 .post-content .carousel.wrap {
@@ -334,9 +363,17 @@ export default {
   font-weight: 600;
 }
 
+.VueCarousel-wrapper{
+  height: 70%;
+}
 
 
 .myslide div:nth-child(3) {
+  padding-left: 10%;
+  padding-right: 10%;
+}
+
+.myslide div:nth-child(4) {
   padding-left: 10%;
   padding-right: 10%;
 }
@@ -366,20 +403,17 @@ export default {
   height: 80%;
 }
 
-.search:last-child {
-  margin-bottom: 100px;
-}
-
 .search-panel input {
-  background-image: url("../../assets/images/icon/icon_search_unselect.png");
+  /* background-image: url("../../assets/images/icon/icon_search_unselect.png");
   background-size: 20px;
   background-repeat: no-repeat;
-  background-position: 95% center;
+  background-position: 95% center; */
 
   background-color: rgb(247, 247, 247);
-  padding-left: 15px;
+  padding-left: 3%;
+  padding-right: 3%;
   margin-top: 5px;
-  width: 90%;
+  width: 84%;
   font-size: 15px;
   font-weight: 600;
   height: 30px;
@@ -438,6 +472,7 @@ ul {
   float: left;
   height: 80%;
   width: 60px;
+  margin-left: 10px;
   margin-right: 10px;
   display: flex;
   align-items: center;
@@ -456,6 +491,7 @@ ul {
 .search-item {
   margin: 10px;
   clear: both;
+  height: auto;
 }
 .search-text2 {
   padding: 10px;
@@ -463,12 +499,15 @@ ul {
   width : 70%;
   float: left;
   height : inherit;
+  word-break:break-all;
 }
 .search-nickname {
-  font-size: 20px;
+  font-size: 18px;
 }
+
 .search-Introduction {
-  font-size: 14px;
+  font-size: 12px;
+  color: slategray;
 }
 
 button {
@@ -481,4 +520,42 @@ button {
   margin-top : 10px;
   margin-bottom : 10px;
 }
+
+
+.searchU {
+  width: 90%;
+  margin-left: 5%;
+  margin-top: 10px;
+  height: 65px;
+  border: none;
+  border-radius: 5px;
+  background-color: rgb(247, 247, 247);
+}
+
+.searchU:hover {
+  background-color: rgb(0, 171, 132);
+  color:white;
+}
+
+.searchU:hover .search-Introduction {
+  color: rgb(247, 247, 247);
+}
+
+.searchU:last-child {
+  margin-bottom: 30px;
+}
+
+.search-textU {
+  padding: 10px;
+  text-align: left;
+  width : 70%;
+  float: left;
+  height : inherit;
+  word-break:break-all;
+}
+.morebtn{
+  height: 30px;
+  float: right;
+}
+
 </style>

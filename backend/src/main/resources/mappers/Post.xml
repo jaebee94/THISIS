@@ -65,9 +65,10 @@
 	<update id="modifyPost">
 		update posts
 		set posts_title=#{posts_title},
-		posts_main = #{posts_main}
-		where posts_id
-		= #{posts_id}
+		posts_main = #{posts_main},
+		diseasecode=#{diseasecode},
+		imgsrc = #{imgsrc}
+		where posts_id = #{posts_id}
 	</update>
 
 	<update id="hiddenupdate">
@@ -81,6 +82,7 @@
 		(posts.user_id in (select followee from followers_following where
 		follower = #{user_id})
 		OR posts.user_id = #{user_id}
+		OR posts.user_id = 1
 		OR
 		posts.diseasecode in (select diseasecode from disease where
 		disease.diseasecode in (select diseasecode from subscribe where
@@ -107,6 +109,22 @@
 		where
 		posts.category = 1
 		AND posts.posts_main LIKE concat('%',#{keyword}, '%')
+		order by post_date desc
+	</select>
+	
+	<select id="selectQnAByTitle" resultType="Post">
+		select * from posts
+		where
+		posts.category = 1
+		AND posts.posts_title LIKE concat('%',#{keyword}, '%')
+		order by post_date desc
+	</select>
+	
+	<select id="selectQnAByDisease" resultType="Post">
+		select * from posts
+		where
+		posts.category = 1
+		AND posts.diseasecode in (select disease.diseasecode from disease where disease.diseasename LIKE concat('%',#{keyword}, '%'))
 		order by post_date desc
 	</select>
 </mapper>

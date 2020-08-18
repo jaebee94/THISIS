@@ -22,7 +22,7 @@
 import axios from 'axios'
 // import SERVER from '@/api/RestApi.js'
 
-const api = 'http://i3a301.p.ssafy.io:8089/THISIS/email'
+const api = 'https://i3a301.p.ssafy.io:8089/THISIS/email'
 
 export default {
   data() {

@@ -9,14 +9,14 @@
           v-bind:class="{active: currentTab === index}"
           @click="clickNoti(index)"
         >
-          <h2>{{tab}}</h2>
+          <a>{{tab}}</a>
           <span class="notify-num" v-if="index == 0 && noti_count != 0">{{noti_count}}</span>
           <span class="notify-num" v-if="index == 1 && req_count != 0">{{req_count}}</span>
         </div>
       </div>
       <div class="notify-panel">
         <div v-show="currentTab == 0">
-          <div v-for="(noti, index) in this.notification" v-bind:key="noti.id">
+          <div v-for="(noti, index) in this.notification" v-bind:key="noti.notification.id">
             <div class="notifications" :class="{new : index < noti_count}">
               <div :class="{new : index < noti_count}">
                 <table>
@@ -29,7 +29,7 @@
           </div>
         </div>
         <div v-show="currentTab == 1">
-          <div  v-for="(noti, index) in this.requests" v-bind:key="noti.id">
+          <div  v-for="(noti, index) in this.requests" v-bind:key="noti.notification.id">
           <div
             class="notifications" :class="{new : index < req_count} "
             v-if="noti.notification.approval === 0"
@@ -59,7 +59,7 @@
 import db from "../../firebaseInit";
 import { mapActions, mapState } from "vuex";
 import firebase from "firebase";
-
+import router from '@/router'
 
 const increment = firebase.firestore.FieldValue.increment(1);
 //const decrement = firebase.firestore.FieldValue.increment(-1);
@@ -67,7 +67,6 @@ export default {
   computed: {
     ...mapState('notificationStore', ['notification','requests']),
     ...mapState('userStore', ['loginData', 'profileData']),
-    // ...mapState('profileStore', ['profileData'])
   },
   data() {
     return {
@@ -130,8 +129,8 @@ export default {
       .collection("notification")
       .doc(String(noti.notification.followee_id))
       .update(instance)
-      .then(console.log("FIREBASE DELETION COMPLETE"))
-      .catch(console.error("FIREBASE DELETION UNEXECUTED"))
+      .then(()=>{console.log("FIREBASE DELETION COMPLETE")})
+      .catch(()=>{console.error("FIREBASE DELETION UNEXECUTED")})
     },
     clickNoti(idx) {
       console.log("click")
@@ -179,6 +178,7 @@ export default {
     },
   },
   created() {
+     if(this.loginData == null) router.push({ name: 'Landing' })
     window.addEventListener('beforeunload', this.clickNoti(0))
     const noti = db.collection("notification").doc(String(this.loginData.user_id));
     let vueInstance = this;
@@ -208,14 +208,12 @@ export default {
 .notify {
   text-align: center;
   background-color: white;
-  padding: 20px 20px 60px 20px;
+  /* padding: 20px 20px 60px 20px; */
 }
 .notify-panel {
   width: 100%;
-  height: 600px;
-  border-bottom-left-radius: 15px;
-  border-bottom-right-radius: 15px;
-  background-color: rgb(247, 247, 247);
+  /* height: 600px; */
+  /* background-color: rgb(247, 247, 247); */
 }
 .tabs {
   width: 100%;
@@ -226,18 +224,19 @@ export default {
 }
 .tab {
   width: 50%;
-  height: 50px;
+  height: 40px;
   vertical-align: middle;
   background-color: rgb(247, 247, 247);
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  border-bottom: 3px rgb(247, 247, 247) solid;
 }
-.tab h2 {
-  margin-top: 10px;
+.tab a {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 2;
   height: 20px;
 }
 .tab.active {
-  background-color: rgb(0, 171, 132);
+  border-bottom: 3px rgb(0, 171, 132) solid;
 }
 
 .notify-num {
