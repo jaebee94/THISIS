@@ -175,7 +175,7 @@ export default {
 
     .comment-module-content {
         text-align: left;
-        width: 70%;
+        width: 90%;
         padding-left: 5%;
         padding-right: 5%;
         font-size: 12px;
