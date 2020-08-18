@@ -12,6 +12,15 @@ public class Postpolice {
 	private String diseasecode;
 	private String imgsrc;
 	private int count;
+	private int hidden;
+	
+	public int getHidden() {
+		return hidden;
+	}
+
+	public void setHidden(int hidden) {
+		this.hidden = hidden;
+	}
 
 	public int getPosts_id() {
 		return posts_id;
@@ -89,7 +98,7 @@ public class Postpolice {
 	}
 
 	public Postpolice(int posts_id, int user_id, String posts_title, String posts_main, String post_date, int category,
-			String diseasecode, String imgsrc, int count) {
+			String diseasecode, String imgsrc, int count, int hidden) {
 		this.posts_id = posts_id;
 		this.user_id = user_id;
 		this.posts_title = posts_title;
@@ -99,6 +108,9 @@ public class Postpolice {
 		this.diseasecode = diseasecode;
 		this.imgsrc = imgsrc;
 		this.count = count;
+		this.hidden = hidden;
 	}
+
+	
 
 }
