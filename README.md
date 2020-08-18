@@ -32,7 +32,7 @@ Backend Ace : 채지은
 
 # ⌛ 프로젝트 개발 일정
 
-<img src="https://ifh.cc/g/3TOn0Y.png" height = "350px" width="600px"></img>
+<img src="https://ifh.cc/g/eEQC6V.png" height = "350px" width="800px"></img>
 
 # 🤝 Branch Rule
 
@@ -233,15 +233,20 @@ AWS 활용한 서버 연동
 ##### 회원 테이블
 ``` sql
 drop table IF EXISTS `THISIS`.`Userinfo`;
-CREATE TABLE  `THISIS`.`tag_relation` (
+CREATE TABLE IF NOT EXISTS `THISIS`.`UserInfo` (
   `user_id` INT NOT NULL AUTO_INCREMENT,
-  `username` VARCHAR(45),
-  `nickname` VARCHAR(45),
+  `username` VARCHAR(45) NOT NULL,
+  `nickname` VARCHAR(45) NOT NULL,
   `email` VARCHAR(45) NOT NULL,
-  `password` VARCHAR(45) NOT NULL,
-  `introduction` VARCHAR(200) NOT NULL,
+  `password` VARCHAR(150) NOT NULL,
+  `introduction` VARCHAR(300) NULL,
   `userimage` VARCHAR(300) NULL,
-  PRIMARY KEY (`user_id`))
+  `role` VARCHAR(10) DEFAULT "user",
+  `disabled` INT DEFAULT 0,
+  `salt` VARCHAR(100) NULL,
+  PRIMARY KEY (`user_id`),
+  UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE,
+  UNIQUE INDEX `nickname_UNIQUE` (`nickname` ASC) VISIBLE)
 ENGINE = InnoDB;
 
 ```
@@ -249,32 +254,48 @@ ENGINE = InnoDB;
 ##### 인증 테이블
 ```sql
 drop table IF EXISTS `THISIS`.`auth`;
-CREATE TABLE  `THISIS`.`auth` (
+CREATE TABLE IF NOT EXISTS `THISIS`.`auth` (
   `user_id` INT NOT NULL,
-  `refresh_token` VARCHAR(500) NULL,
-  `access_token` VARCHAR(500) NULL,
-  PRIMARY KEY (`user_id`))
+  `refresh_token` VARCHAR(700) NULL,
+  `access_token` VARCHAR(700) NULL,
+  PRIMARY KEY (`user_id`),
+  CONSTRAINT `fk_auth_userinfo`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `THISIS`.`UserInfo` (`user_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 ```
 
 ##### 알람/요청 테이블
 ``` sql
 drop table IF EXISTS `THISIS`.`notification`;
-CREATE TABLE  `THISIS`.`notification` (
+CREATE TABLE IF NOT EXISTS `THISIS`.`notification` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `follower_id` INT,
-  `followee_id` INT,
-  `newtofollower` INT,
-  `newtofollowee` INT,
-  `approval` INT,
-  `time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`))
+  `newtofollower` INT NOT NULL,
+  `newtofollowee` INT NOT NULL,
+  `approval` INT NOT NULL,
+  `time` TIMESTAMP NOT NULL,
+  `follower_id` INT NOT NULL,
+  `followee_id` INT NOT NULL,
+  PRIMARY KEY (`id`, `follower_id`, `followee_id`),
+  CONSTRAINT `fk_notification_userinfo1`
+    FOREIGN KEY (`follower_id`)
+    REFERENCES `THISIS`.`UserInfo` (`user_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_notification_userinfo2`
+    FOREIGN KEY (`followee_id`)
+    REFERENCES `THISIS`.`UserInfo` ( `user_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+    )
 ENGINE = InnoDB;
 ```
 ##### 게시글 테이블
 ``` sql
-drop table IF EXISTS `THISIS`.`posts`;
-CREATE TABLE  `THISIS`.`posts` (
+drop table IF EXISTS `THISIS`.`post`;
+CREATE TABLE IF NOT EXISTS `THISIS`.`posts` (
   `posts_id` INT NOT NULL AUTO_INCREMENT,
   `user_id` INT NOT NULL,
   `posts_title` TEXT NULL,
@@ -283,61 +304,115 @@ CREATE TABLE  `THISIS`.`posts` (
   `category` INT NULL,
   `diseasecode` VARCHAR(45) NULL,
   `imgsrc` VARCHAR(300) NULL,
-  PRIMARY KEY (`posts_id`))
+  `hidden` INT DEFAULT 0,
+  PRIMARY KEY (`posts_id`),
+  CONSTRAINT `fk_posts_userinfo1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `THISIS`.`UserInfo` (`user_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+)
 ENGINE = InnoDB;
 ```
 
 ##### 댓글 테이블
 ``` sql
 drop table IF EXISTS `THISIS`.`comment`;
-CREATE TABLE  `THISIS`.`comment` (
-  `user_id` INT NOT NULL,
+CREATE TABLE IF NOT EXISTS `THISIS`.`comment` (
   `posts_id` INT NOT NULL,
   `comment_main` TEXT NULL,
   `hide` TINYINT(1) NULL,
   `comment_id` INT NOT NULL AUTO_INCREMENT,
   `comment_date` DATETIME DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`comment_id`))
-ENGINE = InnoDB;
+  `user_id` INT NOT NULL,
+  PRIMARY KEY (`comment_id`),
+  CONSTRAINT `fk_comment_posts`
+    FOREIGN KEY (`posts_id`)
+    REFERENCES `THISIS`.`posts` (`posts_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_comment_userinfo1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `THISIS`.`UserInfo` (`user_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB
+COMMENT = '   ';
 ```
 
 ##### 팔로워/팔로잉 테이블
 ``` sql
-drop table IF EXISTS `THISIS`.`followers_following` ;
+drop table IF EXISTS `THISIS`.`followers_following`;
 CREATE TABLE IF NOT EXISTS `THISIS`.`followers_following` (
   `follower` INT NOT NULL,
   `followee` INT NOT NULL,
-  PRIMARY KEY (`follower`, `followee`))
+  PRIMARY KEY (`follower`, `followee`),
+  CONSTRAINT `fk_follower_followering_userinfo1`
+    FOREIGN KEY (`follower`)
+    REFERENCES `THISIS`.`UserInfo` (`user_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+     CONSTRAINT `fk_follower_followering_userinfo2`
+    FOREIGN KEY (`followee`)
+    REFERENCES `THISIS`.`UserInfo` (`user_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+    )
 ENGINE = InnoDB;
 ```
 
 ##### 건강해요 테이블
 ```sql
-drop table IF EXISTS `THISIS`.`health` ;
+drop table IF EXISTS `THISIS`.`health`;
 CREATE TABLE IF NOT EXISTS `THISIS`.`health` (
   `posts_id` INT NOT NULL,
   `user_id` INT NOT NULL,
-  PRIMARY KEY (`posts_id`, `user_id`))
+  PRIMARY KEY (`posts_id`, `user_id`),
+  CONSTRAINT `fk_health_posts1`
+    FOREIGN KEY (`posts_id`)
+    REFERENCES `THISIS`.`posts` (`posts_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_health_userinfo1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `THISIS`.`UserInfo` (`user_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 ```
 
 #### 스크랩 테이블    
 ``` sql
-drop table IF EXISTS `THISIS`.`scrap` ;
+drop table IF EXISTS `THISIS`.`scrap`;
 CREATE TABLE IF NOT EXISTS `THISIS`.`scrap` (
   `user_id` INT NOT NULL,
   `posts_id` INT NOT NULL,
-  PRIMARY KEY (`user_id`, `posts_id`))
+  PRIMARY KEY (`user_id`, `posts_id`),
+  CONSTRAINT `fk_scrap_userinfo1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `THISIS`.`UserInfo` (`user_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_scrap_posts`
+    FOREIGN KEY (`posts_id`)
+    REFERENCES `THISIS`.`posts` (`posts_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 ```
 
 ####  질병 테이블    
 ``` sql
-drop table IF EXISTS `THISIS`.`disease`;
-CREATE TABLE  `THISIS`.`disease` (
+drop table IF EXISTS `THISIS`.`subscribe`;
+CREATE TABLE IF NOT EXISTS `THISIS`.`subscribe` (
   `diseasecode` VARCHAR(45) NOT NULL,
-  `diseasename` VARCHAR(300) NOT NULL,
-  PRIMARY KEY (`diseasecode`, `diseasename`))
+  `user_id` INT NOT NULL,
+  PRIMARY KEY (`user_id`, `diseasecode`),
+  CONSTRAINT `fk_subscribe_userinfo1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `THISIS`.`UserInfo` (`user_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 ```
 
@@ -354,9 +429,9 @@ ENGINE = InnoDB;
 ####  태그 테이블    
 ``` sql
 drop table IF EXISTS `THISIS`.`tag`;
-CREATE TABLE  `THISIS`.`tag` (
-  `tagid` INT NOT NULL AUTO_INCREMENT ,
-  `tagname` VARCHAR(45) NOT NULL,
+CREATE TABLE IF NOT EXISTS `THISIS`.`tag` (
+  `tagid` INT NOT NULL AUTO_INCREMENT,
+  `tagname` VARCHAR(45) NULL,
   PRIMARY KEY (`tagid`))
 ENGINE = InnoDB;
 ```
@@ -364,23 +439,81 @@ ENGINE = InnoDB;
 ####  태그 관계 테이블    
 ``` sql
 drop table IF EXISTS `THISIS`.`tag_relation`;
-CREATE TABLE  `THISIS`.`tag_relation` (
+CREATE TABLE IF NOT EXISTS `THISIS`.`tag_relation` (
   `tagid` INT NOT NULL,
   `posts_id` INT NOT NULL,
-  PRIMARY KEY (`tagid`, `posts_id`))
+  PRIMARY KEY (`tagid`, `posts_id`),
+  CONSTRAINT `fk_tag_has_posts_tag1`
+    FOREIGN KEY (`tagid`)
+    REFERENCES `THISIS`.`tag` (`tagid`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_tag_has_posts_posts1`
+    FOREIGN KEY (`posts_id`)
+    REFERENCES `THISIS`.`posts` (`posts_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 ```
 
 ####  댓글 건강해요 테이블    
 ``` sql
 drop table IF EXISTS `THISIS`.`comment_health`;
-CREATE TABLE  `THISIS`.`comment_health` (
+CREATE TABLE IF NOT EXISTS `THISIS`.`comment_health` (
   `comment_id` INT NOT NULL,
   `user_id` INT NOT NULL,
-  PRIMARY KEY (`comment_id`, `user_id`))
+  PRIMARY KEY (`comment_id`, `user_id`),
+  CONSTRAINT `fk_comment_health_comment1`
+    FOREIGN KEY (`comment_id`)
+    REFERENCES `THISIS`.`comment` (`comment_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_comment_health_userinfo1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `THISIS`.`UserInfo` (`user_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 ```
 
+#### 신고해요 테이블
+``` sql
+drop table IF EXISTS `THISIS`.`police`;
+CREATE TABLE IF NOT EXISTS `THISIS`.`police` (
+  `posts_id` INT NOT NULL,
+  `user_id` INT NOT NULL,
+  `reason` VARCHAR(100) NULL,
+  `police_id` INT NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`police_id`),
+  CONSTRAINT `fk_police_posts1`
+    FOREIGN KEY (`posts_id`)
+    REFERENCES `THISIS`.`posts` (`posts_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_police_userinfo1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `THISIS`.`UserInfo` (`user_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+```
+
+#### 의사 인증 테이블
+``` sql
+drop table IF EXISTS `THISIS`.`doctor`;
+CREATE TABLE IF NOT EXISTS `THISIS`.`doctor` (
+  `user_id` INT NOT NULL,
+  `doctorimg` VARCHAR(45) NULL,
+  `doctorauth` VARCHAR(45) NULL,
+  `doctor_id` INT NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`doctor_id`),
+  CONSTRAINT `fk_doctor_userinfo1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `THISIS`.`UserInfo` (`user_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+```
 
 
 ## Rest API
@@ -423,20 +556,21 @@ ENGINE = InnoDB;
 |댓글|숨김 설정|PUT|/comment/hidden/{comment_id}|
 |회원관리|모든 회원 정보를 반환한다|GET|/account|
 |회원관리|유저 ID에 해당하는 회원 정보를 반환한다|GET|/account/{user_id}|
-|회원관리|	유저 ID에 해당하는 회원 정보를 수정한다|PUT|/account/{user_id}|
-|회원관리|	회원 탈퇴 시 회원 정보를 삭제한다|DELETE|	/account/{user_id}|
-|회원관리|	이메일 중복 테스트|	GET|/account/email|
-|회원관리|	회원 email과 password로 로그인 가능 여부| 	GET|	/account/login|
-|회원관리|	닉네임 중복 테스트|	GET|/account/nickname|
-|회원관리|	유저 id에 해당하는 프로필 정보를 반환|	GET|	/account/profile/{user_id}|
-|회원관리|	accesstoken 재생성 테스트	|POST|	/account/refreshAccessToken|
-|회원관리|	검색에어 해당하는 회원 정보 반환|	GET|/account/search|
-|회원관리|	유저 회원가입 시 회원 정보 등록|	POST|/account/signup|
-|태그|태그 추가|	POST|/tag|
-|태그|태그 불러오기|GET|	/tag/{tagid}|
-|태그|태그 삭제|	DELETE|	/tag/{tagid}|
-|태그 릴레이션|태그 릴레이션 추가|	POST|	/tag-relation|
-|태그 릴레이션|태그 릴레이션 삭제|	DELETE|	/tag-relation/{tagid}/{posts_id}|
+|회원관리|유저 ID에 해당하는 회원 정보를 수정한다|PUT|/account/{user_id}|
+|회원관리|회원 탈퇴 시 회원 정보를 삭제한다|DELETE|/account/{user_id}|
+|회원관리|이메일 중복 테스트|GET|/account/email|
+|회원관리|회원 email과 password로 로그인 가능 여부| 	GET|	/account/login|
+|회원관리|닉네임 중복 테스트|GET|/account/nickname|
+|회원관리|유저 id에 해당하는 프로필 정보를 반환|GET|	/account/profile/{user_id}|
+|회원관리|accesstoken 재생성 테스트|POST|	/account/refreshAccessToken|
+|회원관리|검색에어 해당하는 회원 정보 반환|GET|/account/search|
+|회원관리|유저 회원가입 시 회원 정보 등록|POST|/account/signup|
+|회원관리|이미지 주소 입력|POST|/account/upload|
+|태그|태그 추가|POST|/tag|
+|태그|태그 불러오기|GET|/tag/{tagid}|
+|태그|태그 삭제|DELETE|/tag/{tagid}|
+|태그 릴레이션|태그 릴레이션 추가|POST|/tag-relation|
+|태그 릴레이션|태그 릴레이션 삭제|DELETE|/tag-relation/{tagid}/{posts_id}|
 |태그 릴레이션|태그 릴레이션 불러오기(게시글)|	GET|/tag-relation/post/{posts_id}|
 |태그 릴레이션|태그 릴레이션 불러오기(태그)|GET|/tag-relation/tag/{tagid}|
 |댓글 건강해요|댓글 건강해요 추가|POST|/comment-health/{comment_id}|
@@ -451,7 +585,21 @@ ENGINE = InnoDB;
 |구독하기|유저의 질병 구독 여부를 저장한다|POST|/subscribe|
 |구독하기|유저가 질병 구독을 취소한다| 	DELETE|	/subscribe|
 |구독하기|유저 아이디에 해당하는 구독 정보를 반환한다|	GET|/subscribe/user|
-
+|신고하기|신고한다 생성|POST|/subscribe/user|
+|관리자 기능|신고 많이 받은 순으로 게시글 반환|POST|/admin/post|
+|관리자 기능|게시글 숨김|	POST|/admin/post/{posts_id}|
+|관리자 기능|게시글 삭제|	DELETE|/admin/post/{posts_id}|
+|관리자 기능|신고 많이 받은 순으로 유저 반환|POST|/admin/user|
+|관리자 기능|계정사용정지|POST|/admin/user/disable|
+|관리자 기능|유저가 신고받은 수를 반환한다.|GET|/admin/police/user/{user_id}|
+|관리자 기능|게시글에 해당하는 신고한다 수를 반환한다|GET|/admin/police/post/{posts_id}|
+|관리자 기능|게시글에 해당하는 모든 신고한다를 반환|GET|	/admin/police/post/{posts_id}|
+|관리자 기능|유저에 해당하는 모든 신고 자료를 반환한다|GET|	/admin/police/users/{user_id}|
+|관리자 기능|모든 의사를 반환한다|GET|/admin/doctor-auth|
+|관리자 기능|체크하지 않은 사람들을 반환한다|GET|/admin/doctor-auth/check|
+|관리자 기능|의사 결정|PUT|/admin/doctor-auth|
+|의사신청|의사 정보를 신청한다|POST|/doctor/register|
+|의사신청|내 신청 결과를 반환한다|GET|/doctor/result|
 
 
 ## Browser Support
@@ -516,7 +664,5 @@ ENGINE = InnoDB;
 
 * 공유 - 복제, 배포, 포맷 변경, 전송, 전시, 공연, 방송할 수 있습니다.
 * 변경 - 리믹스, 변형, 2차적 저작물 작성 및 영리목적의 이용이 가능합니다. 
-
-
 
 
