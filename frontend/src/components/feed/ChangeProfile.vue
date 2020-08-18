@@ -46,7 +46,7 @@
 
     <!--모달 시작 (의사 업로드) -->
     <div class="doctor-wrap" v-if="!this.isDoctorHidden"> 
-      <div class="doctor-title">
+      <div>
         <a id="doctor1">의료진 인증 화면입니다.</a><br>
         <a id="doctor2">증빙 자료를 첨부해주세요</a>
       </div>
@@ -93,12 +93,12 @@
           >비밀번호 변경</button>
         </div>
         <div class="important-auth-wrap">
-          <div class="doctor-auth-wrap">
+          <div @click="showDoctor" class="doctor-auth-wrap">
             <img src="../../assets/images/icon/icon_doctor.png">
-            <div><a @click="showDoctor">의료진 인증하기</a></div>
+            <div><a>의료진 인증하기</a></div>
           </div>
-          <div class="signout-wrap" >
-            <img src="../../assets/images/icon/icon_signout.png" @click="withdraw">
+          <div class="signout-wrap">
+            <img src="../../assets/images/icon/icon_signout.png">
             <div><a>THISIS 떠나기</a></div>
           </div>
         </div>
@@ -552,7 +552,7 @@ export default {
 
 .doctor-modify-image{
   width: 100%;
-  height: 350px;
+  height: 330px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -562,21 +562,16 @@ export default {
 
 .doctor-modify-image img{
   width:100%;
-  max-height: 350px;
+  max-height: 330px;
   object-fit: cover;
 }
 
 .doctor-photo{
   width: 100%;
-  height: 420px;
+  height: 380px;
 }
 
 #doctor1{
   font-size: 20px;
-  font-weight: bold;
-}
-
-.doctor-title{
-  padding : 10px;
 }
 </style>
