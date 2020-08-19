@@ -36,7 +36,6 @@
 <script>
 import axios from 'axios';
 import { mapActions,mapState } from "vuex";
-import router from '@/router'
 const proxyurl = "https://cors-anywhere.herokuapp.com/";
 
 export default {
@@ -137,7 +136,6 @@ export default {
         }
     },
     created(){
-    if(this.loginData == null) router.push({ name: 'Landing' })
     this.$store.dispatch("diseaseStore/getFollowingDisease");
     this.selectedDisease == this.diseases[0].diseasename //안됨
     this.findNews(this.diseases[0].diseasename)
