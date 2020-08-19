@@ -1,27 +1,55 @@
 <template>
   <div class="qna wrap">
-    <div class="qna-header">
-      <div class="qna-title">
-        <a>{{ post.postpolice.posts_title }}</a>
-      </div>
-      <div class="qna-tag">
-        <a>#{{ post.diseasename }}</a>
-      </div>
+    <table>
+      <tr>
+        <td>이름: </td>
+        <td>{{ post.userinfo.username }}</td>
+      </tr>
+      <tr>
+        <td>닉네임: </td>
+        <td>{{ post.userinfo.nickname }}</td>
+      </tr>
+      <tr>
+        <td>E-mail: </td>
+        <td>{{ post.userinfo.email }}</td>
+      </tr>
+    </table>
+    <table>
+      <tr>
+        <td>게시글 제목: </td>
+        <td>{{ post.postpolice.posts_title }}</td>
+      </tr>
+      <tr>
+        <td>작성일: </td>
+        <td>{{ post.postpolice.post_date }}</td>
+      </tr>
+      <tr>
+        <td>게시글 내용: </td>
+        <td>{{ post.postpolice.posts_main }}</td>
+      </tr>
+      <tr>
+        <td>신고받은 횟수: </td>
+        <td>{{ post.postpolice.count }}</td>
+      </tr>
+    </table>
+    <div v-if="post.postpolice.hidden == 1">
+      <strong>블라인드 처리된 게시글입니다.</strong>
     </div>
-    <div class="qna-footer">
-      <span>
-        <strong class="qna-writer">{{post.userinfo.nickname}}</strong>
-        <a class="qna-time">{{timeForToday(post.postpolice.post_date) }}</a>
-        <img @click="changeSelectpost(post, 'comment')" src="@/assets/images/icon/icon_talk.png" />
-        <a class="qna-reply">{{post.comments.length}}</a>
-        <a href="">{{ post.postpolice.count }}</a>
-      </span>
-    </div>
+    <form class="post-manage-panel" v-on:submit.prevent="onClickSubmit">
+      <select name="post-option" id="post-option" v-model="postOption">
+        <option value="" hidden></option>
+        <option value="delete">삭제</option>
+        <option value="hide">블라인드</option>
+        <option value="show">블라인드 해제</option>
+      </select>
+      <button type="submit">확인</button>
+    </form>
+    <hr>
   </div>
 </template>
 
 <script>
-// import { mapActions, mapState } from "vuex";
+import { mapActions } from "vuex";
 // import PostListItem from './PostListItem'
 
 export default {
@@ -36,9 +64,19 @@ export default {
   },
   computed: {},
   data() {
-    return {};
+    return {
+      postOption: null,
+    };
   },
   methods: {
+    ...mapActions("adminStore", ["managePost"]),
+    onClickSubmit() {
+      var data = {
+        check: this.postOption,
+        posts_id: this.post.postpolice.posts_id
+      }
+      this.managePost(data)
+    },
     timeForToday(time) {
       const today = new Date();
       var timeValue = new Date(time);
