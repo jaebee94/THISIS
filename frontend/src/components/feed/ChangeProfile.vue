@@ -12,7 +12,7 @@
           <img :src="tab" />
         </div>
       </div>
-      <div v-show="profileTab == 0">
+      <div v-if="profileTab == 0">
         <div class="profile-photo">
           <div class="profile-modify-image">
             <img :src="imgsrc" />
@@ -42,7 +42,7 @@
           >프로필 변경</button>
         </div>
       </div>
-      <div v-show="profileTab == 1">
+      <div v-else-if="profileTab == 1">
 
     <!--모달 시작 (의사 업로드) -->
     <div class="doctor-wrap" v-if="!this.isDoctorHidden"> 
@@ -93,20 +93,15 @@
           >비밀번호 변경</button>
         </div>
         <div class="important-auth-wrap">
-          <div class="doctor-auth-wrap">
+          <div class="doctor-auth-wrap" @click="showDoctor">
             <img src="../../assets/images/icon/icon_doctor.png">
-            <div><a @click="showDoctor">의료진 인증하기</a></div>
+            <div><a>의료진 인증하기</a></div>
           </div>
-          <div class="signout-wrap" >
-            <img src="../../assets/images/icon/icon_signout.png" @click="withdraw">
+          <div class="signout-wrap" @click="signOut">
+            <img src="../../assets/images/icon/icon_signout.png">
             <div><a>THISIS 떠나기</a></div>
           </div>
         </div>
-        <!-- <div class="signout-wrap">
-          <button @click="signOut()">
-            회원탈퇴
-          </button>
-        </div> -->
       </div>
     </div>
   </div>
