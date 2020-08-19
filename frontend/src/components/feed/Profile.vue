@@ -372,6 +372,7 @@ export default {
 .profile-name img {
   width: 15px;
   height: 15px;
+  margin-left : 2px
 }
 
 .profile-intro a {

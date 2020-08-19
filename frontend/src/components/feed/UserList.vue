@@ -16,6 +16,7 @@
               <strong v-if="keyword.includes(char)">{{ char }}</strong>
               <span v-if="!keyword.includes(char)">{{ char }}</span>
             </span>
+            <img class ="doctor-image" v-if ="user.role == 'doctor'" src='../../assets/images/icon/icon_doctor_mark.png'/> 
           </div>
           <div class="search-Introduction" v-if="user.introduction != null">{{user.introduction}}</div>
           <div class="search-Introduction" v-if="user.introduction == null">
@@ -44,4 +45,9 @@ export default {
 </script>
 
 <style>
+
+.doctor-image {
+  width: 15px;
+  height: 15px;
+}
 </style>

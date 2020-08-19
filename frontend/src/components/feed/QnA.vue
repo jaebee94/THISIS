@@ -36,6 +36,7 @@
       /> -->
       <span>
         <strong class="qna-writer">{{qnaInfo.userinfo.nickname}}</strong>
+        <img class = "doctor-image" v-if ="qnaInfo.userinfo.role == 'doctor'" src='../../assets/images/icon/icon_doctor_mark.png'/> 
         <a class="qna-time">{{timeForToday(qnaInfo.post.post_date) }}</a>
         <img src="../../assets/images/icon/icon_talk.png" />
         <a class="qna-reply">{{qnaInfo.comments.length}}</a>
@@ -258,7 +259,10 @@ a {
   object-fit: cover;
 }
 
-
+.doctor-image {
+  width: 15px;
+  height: 15px;
+}
 
 /* ======= dropdown css ======= */
 .dropdown {
