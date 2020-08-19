@@ -739,6 +739,7 @@ export default {
     },
     policeCancel() {
       this.$parent.$parent.isHidden = false;
+      this.$parent.$parent.$parent.isHidden = false;
       this.isReportHidden = false;
       /*------ 피드 스크롤 unlock ------*/
       document.body.className = "";

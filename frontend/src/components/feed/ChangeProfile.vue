@@ -89,14 +89,14 @@
           >비밀번호 변경</button>
         </div>
         <div class="important-auth-wrap">
-          <div class="doctor-auth-wrap">
+          <div @click="showDoctor" class="doctor-auth-wrap">
             <img src="../../assets/images/icon/icon_doctor.png" />
             <div>
-              <a @click="showDoctor">의료진 인증하기</a>
+              <a>의료진 인증하기</a>
             </div>
           </div>
-          <div class="signout-wrap">
-            <img src="../../assets/images/icon/icon_signout.png" @click="signOut" />
+          <div @click="signOut" class="signout-wrap">
+            <img src="../../assets/images/icon/icon_signout.png"/>
             <div>
               <a>THISIS 떠나기</a>
             </div>
@@ -568,7 +568,7 @@ export default {
 
 .doctor-modify-image {
   width: 100%;
-  height: 350px;
+  height: 330px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -584,7 +584,7 @@ export default {
 
 .doctor-photo {
   width: 100%;
-  height: 420px;
+  height: 380px;
 }
 
 #doctor1 {
