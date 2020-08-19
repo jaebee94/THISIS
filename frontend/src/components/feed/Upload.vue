@@ -83,7 +83,6 @@
 <script>
 import axios from "axios";
 import { mapState, mapActions } from "vuex";
-import router from '@/router'
 const proxyurl = "https://cors-anywhere.herokuapp.com/";
 
 export default {
@@ -280,7 +279,6 @@ export default {
     },
   },
   created() {
-    if(this.loginData == null) router.push({ name: 'Landing' })
     console.log(this.post);
     if (this.post != null) {
       

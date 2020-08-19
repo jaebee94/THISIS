@@ -21,6 +21,7 @@ import Search from '../components/feed/Search.vue'
 import Upload from '../components/feed/Upload.vue'
 import Notify from '../components/feed/Notify.vue'
 import Profile from '../components/feed/Profile.vue'
+import FollowList from '../components/feed/FollowList.vue'
 
 import PostDetail from '../components/feed/PostDetail.vue'
 
@@ -33,7 +34,16 @@ import NewsTest from '../views/main/NewsTest.vue'
 
 import Admin from '../views/admin/Admin.vue'
 
+import store from '@/store'
+
 Vue.use(VueRouter)
+
+const requireAuth =(to, from, next) => {
+  console.log(store.getters.config)
+  if (store.getters.config.headers!=null) return next()
+  else return next('/')
+}
+
 
 const routes = [
   {
@@ -50,38 +60,52 @@ const routes = [
       {
         path: 'feed',
         name: 'Feed',
-        component: Feed
+        component: Feed,
+        beforeEnter: requireAuth
       },
       {
         path: 'detail',
         name: 'Detail',
         component: PostDetail,
-        props: true
+        props: true,
+        beforeEnter: requireAuth
       },
       {
         path: 'search',
         name: 'Search',
-        component: Search
+        component: Search,
+        beforeEnter: requireAuth
       },
       {
         path: 'upload',
         name: 'Upload',
-        component: Upload
+        component: Upload,
+        beforeEnter: requireAuth
       },
       {
         path: 'notify',
         name: 'Notify',
-        component: Notify
+        component: Notify,
+        beforeEnter: requireAuth
       },
       {
         path: 'profile',
         name: 'Profile',
-        component: Profile
+        component: Profile,
+        beforeEnter: requireAuth
+      },
+      {
+        path: 'followlist',
+        name: 'FollowList',
+        component: FollowList,
+        beforeEnter: requireAuth,
+        props:true
       },
       {
         path: 'change',
         name: 'ChangeProfile',
-        component: ChangeProfile
+        component: ChangeProfile,
+        beforeEnter: requireAuth
       }
     ]
   },
@@ -103,7 +127,8 @@ const routes = [
   {
     path: '/account/logout',
     name: 'Logout',
-    component: Logout
+    component: Logout,
+    beforeEnter: requireAuth
   },
   {
     path: '/account/findPassword',
@@ -145,7 +170,6 @@ const routes = [
 
 
 const router = new VueRouter({
-  mode: 'history',
   base: process.env.BASE_URL,
   routes
 })

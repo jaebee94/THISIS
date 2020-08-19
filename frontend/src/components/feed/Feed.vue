@@ -27,6 +27,7 @@
             <strong>{{qnaInfo.post.posts_title}}</strong>
           </div>
           <span class="nickname">{{qnaInfo.userinfo.nickname}}</span>
+          <img class="doctor-image" v-if ="qnaInfo.userinfo.role == 'doctor'" src='../../assets/images/icon/icon_doctor_mark.png'/> 
           <span class="time">{{ timeForToday(qnaInfo.post.post_date) }}</span>
         </div>
         <div v-if="qnaInfo.post.imgsrc != null" class="qna-photo-wrap">
@@ -85,6 +86,7 @@
             </td>
             <td>
               <a class="name">{{ postInfo.userinfo.nickname }}</a>
+              <img class="doctor-image" v-if ="postInfo.userinfo.role == 'doctor'" src='../../assets/images/icon/icon_doctor_mark.png'/> 
             </td>
             <td>
               <a class="time">{{timeForToday(postInfo.post.post_date)}}</a>
@@ -745,7 +747,7 @@ export default {
     },
   },
   created() {
-    if (this.loginData == null) this.$router.push({ name: "Landing" });
+
     this.$refs.infiniteLoadingPost.stateChanger.reset();
     this.$refs.infiniteLoadingQnA.stateChanger.reset();
     this.$store.dispatch("getCheckScrap");
@@ -1446,6 +1448,12 @@ div.feed {
 }
 .radio input[type="radio"] + .radio-label:empty:before {
   margin-right: 0;
+}
+
+.post .doctor-image {
+  width: 15px;
+  height: 15px;
+  margin-left : 2px;
 }
 
 /* ======================= radio button css ============================ */

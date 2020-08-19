@@ -6,7 +6,7 @@
     <div class="tutorial-main-wrap"> 
         <div class="tutorial-input-wrap">
             <div>
-                <a>관심있는 질병을 검색하여 3개 이상 구독을 눌러주세요!</a>
+                <a>관심있는 질병을 검색하여 1개 이상 구독을 눌러주세요!</a>
             </div>
             <input list="disease-list" id="keyword" v-model="keyword" v-on:keyup.enter="getDisease(keyword)">
             <img src="../../assets/images/icon/icon_search_unselect.png" @click="getDisease(keyword)">
@@ -34,7 +34,6 @@
 <script>
 import axios from 'axios';
 import { mapState, mapActions } from "vuex";
-import router from '@/router'
 const proxyurl = "https://cors-anywhere.herokuapp.com/";
 export default {
     data() {
@@ -51,7 +50,6 @@ export default {
     ...mapState('userStore', ['loginData']),
     },
     created() {
-        if(this.loginData == null) router.push({ name: 'Landing' })
         document.body.className = "greenbody";
     },
     watch : {
@@ -67,7 +65,7 @@ export default {
         ...mapActions("diseaseStore", ["createDisease"]),
         checkForm() {
             // 현재 선택한 구독 질병의 갯수로 다음으로 넘어갈 수 있는지 체크
-            if(this.checkedItems.length >= 3) {
+            if(this.checkedItems.length >= 1) {
                 this.isSelected = true;
             } else {
                 this.isSelected = false;

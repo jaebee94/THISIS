@@ -116,12 +116,10 @@
 import PV from "password-validator";
 import axios from "axios";
 import SERVER from "@/api/RestApi.js";
-import router from '@/router'
 import { mapState, mapActions } from "vuex";
 
 export default {
   created() {
-    if(this.loginData == null) router.push({ name: 'Landing' })
     this.passwordSchema
       .is()
       .min(8)

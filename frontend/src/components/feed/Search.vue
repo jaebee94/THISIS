@@ -46,10 +46,10 @@
     </div>
     <div id="search-main">
       <div v-show="currentTab == 0">
-        <div class="search" v-for="item in this.items" v-bind:key="item.sickCd" :value="item.sickCd + ':' + item.sickNm">
+        <div class="search" v-for="(item,index) in this.items" v-bind:key="index" v-bind:disease="diseases" :value="item.sickCd + ':' + item.sickNm">
           <div class="search-item" >
              <div class="search-text2" @click="selectDisease(item)" >{{item.sickNm}}</div> 
-             <button v-if="item.check"  @click="deleteDisease(item.sickCd)"  > 팔로우 취소</button>
+             <button v-if="item.check"   @click="deleteFollow(index)"  > 팔로우 취소</button>
              <button v-else @click="createDisease({diseasename : item.sickNm,diseasecode : item.sickCd})">팔로우</button>
           </div>         
         </div>
@@ -71,6 +71,7 @@
                   <strong v-if="keyword.includes(char)">{{ char }}</strong>
                   <span v-if="!keyword.includes(char)">{{ char }}</span>
                 </span>
+                <img class = "doctor-image" v-if ="user.role == 'doctor'" src='../../assets/images/icon/icon_doctor_mark.png'/> 
               </div>
               <div class="search-Introduction" v-if="user.introduction != null">{{user.introduction}}</div>
               <div class="search-Introduction" v-if="user.introduction == null"><br></div>
@@ -88,7 +89,6 @@ import axios from "axios";
 import SERVER from "@/api/RestApi.js";
 import cookies from "vue-cookies";
 import {Carousel, Slide} from 'vue-carousel';
-import router from '@/router'
 const proxyurl = "https://cors-anywhere.herokuapp.com/";
 export default {
   name: "Search",
@@ -133,7 +133,6 @@ export default {
     }
   },
   created(){
-    if(this.loginData == null) router.push({ name: 'Landing' })
     this.$store.dispatch("diseaseStore/getFollowingDisease");
   },
   methods: {
@@ -289,6 +288,18 @@ export default {
     },
     openLink(link) {
             window.open(link,"_parent");
+    },
+    // createFollow(idx){
+    //   var item = this.items[idx]
+    //   console.log(item)
+    //   this.createDisease()
+    //   this.items[idx].check=true;
+    //   
+    // },
+    deleteFollow(idx){
+      var item = this.items[idx]
+      this.deleteDisease(item.sickCd)
+      this.items[idx].check=false;
     }
   },
 };
@@ -560,4 +571,9 @@ button {
   float: right;
 }
 
+
+.doctor-image {
+  width: 15px;
+  height: 15px;
+}
 </style>

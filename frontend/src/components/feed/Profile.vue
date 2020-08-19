@@ -23,14 +23,18 @@
             <td>게시물</td>
             <td>{{ profileData.profileInfo.postnum }}</td>
           </tr>
+          
           <tr>
-            <td>팔로워</td>
-            <td>{{ profileData.profileInfo.followernum }}</td>
+            <td><router-link :to="{ name: 'FollowList', params: { tab: 0 }}" >팔로워</router-link></td>
+            <td><router-link :to="{ name: 'FollowList', params: { tab: 0 }}" >{{ profileData.profileInfo.followernum }}</router-link></td>
           </tr>
+
+         
           <tr>
-            <td>팔로잉</td>
-            <td>{{ profileData.profileInfo.followeenum }}</td>
+            <td> <router-link :to="{ name: 'FollowList', params: { tab: 1 }}">팔로잉 </router-link></td>
+            <td> <router-link :to="{ name: 'FollowList', params: { tab: 1 }}">{{ profileData.profileInfo.followeenum }} </router-link></td>
           </tr>
+         
         </table>
         <button
           v-if="loginData.user_id == profileData.userInfo.user_id"
@@ -368,6 +372,7 @@ export default {
 .profile-name img {
   width: 15px;
   height: 15px;
+  margin-left : 2px
 }
 
 .profile-intro a {
@@ -382,17 +387,22 @@ export default {
   margin-top: 20%;
   height: 60%;
 }
-.right-content table tr td:nth-child(1) {
+.right-content table tr td:nth-child(1), td:nth-child(1) a {
   font-size: 15px;
   font-weight: 500;
   width: 60%;
+  color:black;
 }
 
-.right-content table tr td:nth-child(2) {
+.right-content table tr td:nth-child(2), td:nth-child(2) a {
   font-size: 20px;
   font-weight: 600;
   color: rgb(0, 171, 132);
   text-align: left;
+}
+
+td a{
+  text-decoration: none;
 }
 .profile-modify {
   width: 90%;
@@ -734,4 +744,7 @@ export default {
 .modify-footer img {
   height: 80%;
 }
+
+
+
 </style>

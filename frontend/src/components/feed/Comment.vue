@@ -3,7 +3,10 @@
         <div v-if="isDelete" @click="isDelete = !isDelete" class="black-layer"></div>
         <div v-if="!isModify">
             <div class="comment-module-header">
-                <a class="name" @click="goProfile(comment.userinfo.user_id)"><strong>{{comment.userinfo.nickname}}</strong></a>
+                <a class="name" @click="goProfile(comment.userinfo.user_id)">
+                    <strong>{{comment.userinfo.nickname}}</strong>
+                    <img class = "doctor-image" v-if ="comment.userinfo.role == 'doctor'" src='../../assets/images/icon/icon_doctor_mark.png'/> 
+                    </a>
                 <a class="time">{{timeForToday(comment.comment.comment_date)}}</a>
                 <img class="dropmenu" v-if="loginData.user_id == comment.userinfo.user_id" @click="isDelete = !isDelete"  src="../../assets/images/icon/icon_3dots.png" />
                 <div v-show="isDelete" class="dropdown-content">
@@ -247,5 +250,11 @@ export default {
     .dropdown-content a:hover{
         background-color:rgb(191, 181, 181);
     }
+
+    
+.doctor-image {
+  width: 15px;
+  height: 15px;
+}
 /* ======= dropdown css ======= */
 </style>

@@ -1,4 +1,5 @@
 import axios from "axios"
+import router from '@/router'
 import SERVER from '@/api/RestApi.js'
 
 const adminStore = {
@@ -58,11 +59,32 @@ const adminStore = {
           
         })
     },
+    managePost({ rootGetters }, decidepost) {
+      axios.post(SERVER.URL + SERVER.ROUTES.managePost, decidepost, rootGetters.config)
+        .then(() => {
+          alert('요청이 처리되었습니다.')
+          router.go()
+        })
+    },
     fetchReportedUsers({ rootGetters }) {
       axios.get(SERVER.URL + SERVER.ROUTES.reportedUsers, rootGetters.config)
     },
+    manageUser({ rootGetters }, decideaccount) {
+      axios.post(SERVER.URL + SERVER.ROUTES.manageUser, decideaccount, rootGetters.config)
+        .then(() => {
+          alert('요청이 처리되었습니다.')
+          router.go()
+        })
+    },
     fetchDoctors({ rootGetters }) {
       axios.get(SERVER.URL + SERVER.ROUTES.doctors, rootGetters.config)
+    },
+    decideDoctorauth({ rootGetters }, requestdoctor) {
+      console.log(requestdoctor)
+      axios.put(SERVER.URL + SERVER.ROUTES.doctorauth, requestdoctor, rootGetters.config)
+        .then(res => {
+          console.log(res)
+        })
     }
   },
 }
