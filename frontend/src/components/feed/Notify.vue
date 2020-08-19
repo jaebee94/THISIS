@@ -188,8 +188,6 @@ export default {
     },
   },
   created() {
-     if(this.loginData == null) router.push({ name: 'Landing' })
-    // window.addEventListener('beforeunload', this.clickNoti(0))
     const noti = db.collection("notification").doc(String(this.loginData.user_id));
     if (this.loginData == null) router.push({ name: "Landing" });
     window.addEventListener("beforeunload", this.clickNoti(0));

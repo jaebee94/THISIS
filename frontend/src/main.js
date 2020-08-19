@@ -17,6 +17,8 @@ Vue.component('Feed', Feed)
 Vue.component('UserList', UserList)
 Vue.component('Modal', Modal)
 
+
+
 new Vue({
   router,
   store,
@@ -27,5 +29,6 @@ Vue.use(VueAnalytics,{
   id: 'UA-175653164-1', // 콘솔에서 본인의 키를 확인하세요!
   router // 원활한 트래킹을 위해 router를 꼭 바인드 해 주어야 합니다!
 })
+
 
 

@@ -744,7 +744,7 @@ export default {
     },
   },
   created() {
-    if (this.loginData == null) this.$router.push({ name: "Landing" });
+
     this.$refs.infiniteLoadingPost.stateChanger.reset();
     this.$refs.infiniteLoadingQnA.stateChanger.reset();
     this.$store.dispatch("getCheckScrap");

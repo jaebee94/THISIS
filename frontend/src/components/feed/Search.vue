@@ -88,7 +88,6 @@ import axios from "axios";
 import SERVER from "@/api/RestApi.js";
 import cookies from "vue-cookies";
 import {Carousel, Slide} from 'vue-carousel';
-import router from '@/router'
 const proxyurl = "https://cors-anywhere.herokuapp.com/";
 export default {
   name: "Search",
@@ -133,7 +132,6 @@ export default {
     }
   },
   created(){
-    if(this.loginData == null) router.push({ name: 'Landing' })
     this.$store.dispatch("diseaseStore/getFollowingDisease");
   },
   methods: {
