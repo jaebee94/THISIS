@@ -73,8 +73,8 @@ const followStore = {
 
     },
     // 프로필 유저를 내가 팔로우 한 상태인지 확인하기 위해 그 사람을 팔로우 하는 유저 목록 조회
-    getFollowee({ rootGetters, commit }, params) {
-      axios.get(SERVER.URL + SERVER.ROUTES.followee + params.follower_id, rootGetters.config.headers)
+    async getFollowee({ rootGetters, commit }, params) {
+      await axios.get(SERVER.URL + SERVER.ROUTES.followee + params.follower_id, rootGetters.config.headers)
         .then((res) => {
           var flag = false;
           res.data.object.forEach((element) => {
@@ -91,9 +91,9 @@ const followStore = {
           console.log(err)
         })
     },
-    getFollowing({ rootGetters, commit }, id) {
+    async getFollowing({ rootGetters, commit }, id) {
       var followingArray = [];
-      axios.get(SERVER.URL + SERVER.ROUTES.followee + id, rootGetters.config.headers)
+      await axios.get(SERVER.URL + SERVER.ROUTES.followee + id, rootGetters.config.headers)
         .then((res) => {
           console.log("팔로잉목록", res)
           //팔로이 아이디 통해서 유저정보 획득
@@ -113,9 +113,9 @@ const followStore = {
           console.log(err)
         })
     },
-    getFollower({ rootGetters, commit }, id) {
+    async getFollower({ rootGetters, commit }, id) {
       var followerArray = [];
-      axios.get(SERVER.URL + SERVER.ROUTES.follower + id, rootGetters.config.headers)
+      await axios.get(SERVER.URL + SERVER.ROUTES.follower + id, rootGetters.config.headers)
       .then((res) => {
         console.log("팔로잉목록", res)
         //팔로이 아이디 통해서 유저정보 획득

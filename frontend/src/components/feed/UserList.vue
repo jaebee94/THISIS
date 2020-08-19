@@ -107,7 +107,6 @@ clear: both;
   width :80%;
   
   padding : 5px;
-  margin-top : 25%;
 }
 .morebtn{
   height: 30px;
@@ -120,7 +119,6 @@ clear: both;
   height: 100%;
   vertical-align: middle;
   margin-left: 10px;
-  margin-right: 10px;
   /* transform: translate(0,25%); */
 }
 
