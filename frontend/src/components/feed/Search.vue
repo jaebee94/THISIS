@@ -46,10 +46,10 @@
     </div>
     <div id="search-main">
       <div v-show="currentTab == 0">
-        <div class="search" v-for="item in this.items" v-bind:key="item.sickCd" :value="item.sickCd + ':' + item.sickNm">
+        <div class="search" v-for="(item,index) in this.items" v-bind:key="index" v-bind:disease="diseases" :value="item.sickCd + ':' + item.sickNm">
           <div class="search-item" >
              <div class="search-text2" @click="selectDisease(item)" >{{item.sickNm}}</div> 
-             <button v-if="item.check"  @click="deleteDisease(item.sickCd)"  > 팔로우 취소</button>
+             <button v-if="item.check"   @click="deleteFollow(index)"  > 팔로우 취소</button>
              <button v-else @click="createDisease({diseasename : item.sickNm,diseasecode : item.sickCd})">팔로우</button>
           </div>         
         </div>
@@ -287,6 +287,18 @@ export default {
     },
     openLink(link) {
             window.open(link,"_parent");
+    },
+    // createFollow(idx){
+    //   var item = this.items[idx]
+    //   console.log(item)
+    //   this.createDisease()
+    //   this.items[idx].check=true;
+    //   
+    // },
+    deleteFollow(idx){
+      var item = this.items[idx]
+      this.deleteDisease(item.sickCd)
+      this.items[idx].check=false;
     }
   },
 };
