@@ -142,7 +142,7 @@ export default {
   },
 
   methods: {
-    ...mapActions('profileStore', ["goProfile"]),
+    ...mapActions("userStore", ["goProfile"]),
     ...mapActions('postStore', [
       "fetchComments",
       "health",
