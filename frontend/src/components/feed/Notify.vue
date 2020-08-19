@@ -22,13 +22,13 @@
                 <table>
                   <td
                     v-if="noti.notification.approval === 0"
-                  >{{noti.userInfo.nickname}}님에게 팔로우 요청하셨습니다</td>
+                  ><strong>{{noti.userInfo.nickname}}</strong>님에게 팔로우 요청하셨습니다</td>
                   <td
                     v-if="noti.notification.approval === 1"
-                  >{{noti.userInfo.nickname}}님이 팔로우 요청을 승인하셨습니다</td>
+                  ><strong>{{noti.userInfo.nickname}}</strong>님이 팔로우 요청을 승인하셨습니다</td>
                   <td
                     v-if="noti.notification.approval === 2"
-                  >{{noti.userInfo.nickname}}님이 팔로우 요청을 거절하셨습니다</td>
+                  ><strong>{{noti.userInfo.nickname}}</strong>님이 팔로우 요청을 거절하셨습니다</td>
                 </table>
               </div>
             </div>
@@ -44,7 +44,7 @@
               <div class="notification" :class="{new : index < req_count} ">
                 <table>
                   <tr>
-                    <td>{{noti.userInfo.nickname}}님의 팔로우 요청</td>
+                    <td><strong>{{noti.userInfo.nickname}}</strong>님의 팔로우 요청</td>
                     <td>
                       <button @click="accessFollow(noti)">승낙</button>
                     </td>

@@ -23,6 +23,7 @@
               class="name"
               @click="goProfile(postInfo.post.user_id)"
             >{{ postInfo.userinfo.nickname }}</a>
+            <img class="doctor-image" v-if ="postInfo.userinfo.role == 'doctor'" src='../../assets/images/icon/icon_doctor_mark.png'/> 
           <a v-if="postInfo.post.category != 0">Q&A 게시물</a>
           </td>
           <td>
@@ -351,5 +352,12 @@ export default {
 .feed-footer table a {
   font-size: 10px;
   font-weight: 600;
+}
+
+.article-header .doctor-image {
+  width: 15px;
+  height: 15px;
+  margin-top: 0px;
+  margin-left : 2px;
 }
 </style>
