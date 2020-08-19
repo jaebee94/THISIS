@@ -8,7 +8,7 @@
 		select*
 		from posts
 		order by
-		post_date desc
+		post_date desc 
 	</select>
 
 	<select id="selectAllPostpolice" resultType="Postpolice">
