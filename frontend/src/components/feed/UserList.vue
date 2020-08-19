@@ -53,10 +53,14 @@ export default {
 .searchU {
   width: 90%;
   margin-top: 10px;
-  display: inline-block;
   border: none;
   border-radius: 5px;
   background-color: rgb(247, 247, 247);
+clear: both;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin:10px auto 0 auto;
 }
 
 .searchU:hover {
@@ -80,7 +84,12 @@ export default {
   height : inherit;
   word-break:break-all;
 }
-
+.search-itemU{
+  width : 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .search-itemU .following-state{
   margin: 0 auto;
   text-align: center;
@@ -108,22 +117,20 @@ export default {
 .searchU .search-img {
   float: left;
   width: 60px;
-  margin-top: 6px;
+  height: 100%;
   vertical-align: middle;
   margin-left: 10px;
   margin-right: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   /* transform: translate(0,25%); */
 }
 
-.search-img img {
-  margin-top:auto;
-  margin-bottom: auto;
+.searchU .search-img img {
+
   width: 80%;
+  height:80%;
   border-radius: 70%;
   object-fit: cover;
+  vertical-align: middle;
   /* background-size: cover; */
 }
 

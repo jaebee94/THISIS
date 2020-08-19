@@ -64,7 +64,7 @@
     <div id="search-main">
       <div v-show="currentTab == 0">
         <div
-          class="search"
+          class="search-disease"
           v-for="(item,index) in this.items"
           v-bind:key="index"
           v-bind:disease="diseases"
@@ -72,48 +72,18 @@
         >
           <div class="search-item">
             <div class="search-text2" @click="selectDisease(item)">{{item.sickNm}}</div>
-            <button v-if="item.check" @click="deleteFollow(index)">팔로우 취소</button>
-            <button
-              v-else
-              @click="createDisease({diseasename : item.sickNm,diseasecode : item.sickCd})"
-            >팔로우</button>
+            <div class="following-button">
+              <button v-if="item.check" @click="deleteFollow(index)">팔로우 취소</button>
+              <button
+                v-else
+                @click="createDisease({diseasename : item.sickNm,diseasecode : item.sickCd})"
+              >팔로우</button>
+            </div>
           </div>
         </div>
       </div>
       <div v-show="currentTab == 1">
         <user-list v-bind:users="this.users" v-bind:sort="2" v-bind:keyword="this.keyword"></user-list>
-        <!-- <div class="searchU" v-for="user in this.users" v-bind:key="user.user_id">
-          <div class="search-itemU" @click="goProfile(user.user_id)">
-            <div class="search-img">
-              <img :src="user.userimage" style="height:50px" />
-            </div>
-            <div class="search-textU">
-              <div class="search-nickname">
-                <span v-for="char in user.nickname" :key="char">
-                  <strong v-if="keyword.includes(char)">{{ char }}</strong>
-                  <span v-if="!keyword.includes(char)">{{ char }}</span>
-                </span>
-                <span>-</span>
-                <span v-for="char in user.username" :key="char">
-                  <strong v-if="keyword.includes(char)">{{ char }}</strong>
-                  <span v-if="!keyword.includes(char)">{{ char }}</span>
-                </span>
-                <img
-                  class="doctor-image"
-                  v-if="user.role == 'doctor'"
-                  src="../../assets/images/icon/icon_doctor_mark.png"
-                />
-              </div>
-              <div
-                class="search-Introduction"
-                v-if="user.introduction != null"
-              >{{user.introduction}}</div>
-              <div class="search-Introduction" v-if="user.introduction == null">
-                <br />
-              </div>
-            </div>
-          </div>
-        </div> -->
       </div>
     </div>
   </div>
@@ -361,7 +331,6 @@ export default {
 .search.wrap {
   text-align: center;
   background-color: white;
-  padding-bottom: 20px;
 }
 .search-panel {
   width: 100%;
@@ -485,11 +454,24 @@ export default {
   outline: none;
   border-radius: 3px;
 }
+
 .search-item {
+  width: 90%;
   background-color: rgb(247, 247, 247);
   border-radius: 5px;
   border: none;
   transition-duration: 300ms;
+  margin:10px auto 0 auto;
+  clear: both;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-item:hover {
+  background-color: rgb(0, 171, 132);
+  color: white;
 }
 
 /* .search-user-panel:hover {
@@ -504,11 +486,6 @@ export default {
   width: 70%;
   height: 20px;
   background-color: orange;
-}
-
-.search-item:hover {
-  background-color: rgb(0, 171, 132);
-  color: white;
 }
 
 .search-item-user {
@@ -552,18 +529,21 @@ ul {
   /* background-size: cover; */
 }
 
-.search-item {
-  margin: 10px;
-  clear: both;
-  height: auto;
-}
 .search-text2 {
   padding: 10px;
   text-align: left;
-  width: 70%;
+  width: 60%;
   float: left;
   height: inherit;
   word-break: break-all;
+}
+
+.following-button {
+  width:30%;
+  text-align: center;
+  
+   float:right;
+  
 }
 .search-nickname {
   font-size: 18px;
@@ -574,17 +554,16 @@ ul {
   color: slategray;
 }
 
-button {
+
+.search-item button {
   background-color: rgb(0, 171, 132);
   border: none;
   border-radius: 5px;
   width: 80px;
 
   padding: 5px;
-  margin-top: 10px;
-  margin-bottom: 10px;
+  margin: 0 auto;
 }
-
 .searchU {
   width: 90%;
   margin-left: 5%;
