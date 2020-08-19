@@ -56,7 +56,7 @@
       </div>
       <div v-show="currentTab == 1">
         <div class="searchU" v-for="user in this.users" v-bind:key="user.user_id">
-          <div class="search-itemU" v-if="user.nickname.includes(keyword) || user.username.includes(keyword) || user.introduction.includes(keyword)" @click="goProfile(user.user_id)">
+          <div class="search-itemU" @click="goProfile(user.user_id)">
             <div class="search-img">
               <img :src="user.userimage" style="height:50px" />
             </div>
@@ -88,7 +88,6 @@ import axios from "axios";
 import SERVER from "@/api/RestApi.js";
 import cookies from "vue-cookies";
 import {Carousel, Slide} from 'vue-carousel';
-import router from '@/router'
 const proxyurl = "https://cors-anywhere.herokuapp.com/";
 export default {
   name: "Search",
@@ -133,7 +132,6 @@ export default {
     }
   },
   created(){
-    if(this.loginData == null) router.push({ name: 'Landing' })
     this.$store.dispatch("diseaseStore/getFollowingDisease");
   },
   methods: {
@@ -199,6 +197,7 @@ export default {
           var items = res.data.response.body.items.item;
           if (len == 0) { //찾은게 있음
             this.isSearched = false;
+            this.$parent.$parent.isLoaded = true;
             return;
           } else if (len == 1) this.items.push(items);
           else this.items = items;
@@ -207,6 +206,7 @@ export default {
         })
         .catch((err) => {
           this.isSearched = false;
+          this.$parent.$parent.isLoaded = true;
           console.log(err);
         });
     },

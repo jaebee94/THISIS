@@ -45,12 +45,18 @@
 <script>
 import db from "../../firebaseInit";
 import { mapState, mapActions } from "vuex";
-import router from '@/router'
 export default {
   created() {
-    if(this.loginData == null) router.push({ name: 'Landing' })
     document.body.className = "whitebody";
-    this.getNoti(this.loginData.user_id);
+    var vueInstance = this;
+    db.collection("notification").doc(String(this.loginData.user_id))
+    .onSnapshot({
+        // Listen for document metadata changes
+        includeMetadataChanges: true
+    }, function(doc) {
+        vueInstance.getNoti(String(vueInstance.loginData.user_id))
+        console.log("이벤트 발생", doc)
+    });
   },
   data() {
     return {
@@ -63,11 +69,6 @@ export default {
         notify: require("../../assets/images/icon/icon_bell_unselect.png"),
       },
     };
-  },
-  watch: {
-    noti: function () {
-      this.getNoti(this.loginData.user_id);
-    }
   },
   computed: {
     ...mapState('userStore', ['loginData', 'profileData']),
@@ -95,32 +96,28 @@ export default {
       this.selectPage.home = require("../../assets/images/icon/icon_home_select.png");
       this.selectPage.search = require("../../assets/images/icon/icon_search_unselect.png");
       this.selectPage.notify = require("../../assets/images/icon/icon_bell_unselect.png");
-      this.getNoti(this.loginData.user_id);
     },
     checkSearch() {
       this.selectPage.home = require("../../assets/images/icon/icon_home_unselect.png");
       this.selectPage.search = require("../../assets/images/icon/icon_search_select.png");
       this.selectPage.notify = require("../../assets/images/icon/icon_bell_unselect.png");
-      this.getNoti(this.loginData.user_id);
     },
     checkUpload() {
       this.selectPage.home = require("../../assets/images/icon/icon_home_unselect.png");
       this.selectPage.search = require("../../assets/images/icon/icon_search_unselect.png");
       this.selectPage.notify = require("../../assets/images/icon/icon_bell_unselect.png");
       this.setPost(null);
-      this.getNoti(this.loginData.user_id);
     },
     checkNotify() {
       this.selectPage.home = require("../../assets/images/icon/icon_home_unselect.png");
       this.selectPage.search = require("../../assets/images/icon/icon_search_unselect.png");
       this.selectPage.notify = require("../../assets/images/icon/icon_bell_select.png");
-      this.noti = 0;
+
     },
     checkProfile() {
       this.selectPage.home = require("../../assets/images/icon/icon_home_unselect.png");
       this.selectPage.search = require("../../assets/images/icon/icon_search_unselect.png");
       this.selectPage.notify = require("../../assets/images/icon/icon_bell_unselect.png");
-      this.getNoti(this.loginData.user_id);
       this.goProfile(this.loginData.user_id);
       this.getUserScraps(this.loginData.user_id);
     },
@@ -139,7 +136,7 @@ export default {
   background-color: rgb(240, 240, 240);
 }
 .logo.wrap img {
-  margin: 5px 5px auto;
+  margin: 8px 5px 8px 5px;
   width: 20%;
 }
 .footer.wrap {
@@ -167,7 +164,7 @@ export default {
 }
 
 .notify-num {
-  padding: 2px 2px;
+  padding: 1px 4px;
   position: fixed;
   margin-left: -5px;
   text-decoration: none;

@@ -5,7 +5,7 @@
         <div class="profile-image" v-if="this.profileData.userInfo.userimage != null">
           <img :src="profileData.userInfo.userimage" />
         </div>
-         <div class="profile-image" v-else>
+        <div class="profile-image" v-else>
           <img src="../../assets/user2.png" />
         </div>
         <div class="profile-name">
@@ -23,14 +23,18 @@
             <td>게시물</td>
             <td>{{ profileData.profileInfo.postnum }}</td>
           </tr>
+          
           <tr>
-            <td>팔로워</td>
-            <td>{{ profileData.profileInfo.followernum }}</td>
+            <td><router-link :to="{ name: 'FollowList', params: { tab: 0 }}" >팔로워</router-link></td>
+            <td><router-link :to="{ name: 'FollowList', params: { tab: 0 }}" >{{ profileData.profileInfo.followernum }}</router-link></td>
           </tr>
+
+         
           <tr>
-            <td>팔로잉</td>
-            <td>{{ profileData.profileInfo.followeenum }}</td>
+            <td> <router-link :to="{ name: 'FollowList', params: { tab: 1 }}">팔로잉 </router-link></td>
+            <td> <router-link :to="{ name: 'FollowList', params: { tab: 1 }}">{{ profileData.profileInfo.followeenum }} </router-link></td>
           </tr>
+         
         </table>
         <button
           v-if="loginData.user_id == profileData.userInfo.user_id"
@@ -202,10 +206,7 @@ export default {
     followCancel() {
       let vueInstance = this;
       this.followSend = false;
-      let instance = {
-        request: decrement,
-      };
-      instance[this.loginData.user_id] = firebase.firestore.FieldValue.delete();
+
       // 보내는 사람의 notification(알림) 1 감소
       // db.collection("notification")
       //   .doc(String(this.loginData.user_id))
@@ -219,15 +220,40 @@ export default {
       //     console.error("Error setting document: ", error);
       //   });
       // 받는 사람의 request(요청) 1 감소
+
+      // 이미 상대편에서 알림을 다 읽어서 감소할게 없을 때는 지우지 않는다
+      let flag = true;
       db.collection("notification")
         .doc(String(vueInstance.profileData.userInfo.user_id))
-        .update(instance)
-        .then(function () {
-          vueInstance.$parent.getNoti(vueInstance.loginData.user_id);
+        .get()
+        .then(function (doc) {
+          if (doc.exists) {
+            if (doc.data().request == 0) flag = false;
+          } else {
+            console.log("No such document!");
+          }
         })
-        .catch(function (error) {
-          console.error("Error setting document: ", error);
+        .catch(function (err) {
+          console.log("ERROR OCCURED : ", err);
         });
+
+      if (flag) {
+        let instance = {
+          request: decrement,
+        };
+        instance[
+          this.loginData.user_id
+        ] = firebase.firestore.FieldValue.delete();
+        db.collection("notification")
+          .doc(String(vueInstance.profileData.userInfo.user_id))
+          .update(instance)
+          .then(function () {
+            vueInstance.$parent.getNoti(vueInstance.loginData.user_id);
+          })
+          .catch(function (error) {
+            console.error("Error setting document: ", error);
+          });
+      }
       let params = {};
       params["follower_id"] = this.loginData.user_id;
       params["followee_id"] = this.profileData.userInfo.user_id;
@@ -248,8 +274,8 @@ export default {
       };
       this.$store.dispatch("followStore/deleteFollow", params);
       params = {
-        follower : this.loginData.user_id, //본인
-        followee : this.profileData.userInfo.user_id //상대방
+        follower: this.loginData.user_id, //본인
+        followee: this.profileData.userInfo.user_id, //상대방
       };
       this.getFollowee(params);
     },
@@ -263,7 +289,7 @@ export default {
     },
   },
   created() {
-    console.log(this.profileData)
+    console.log(this.profileData);
     this.getUserScraps(this.profileData.userInfo.user_id);
     var vueInstance = this;
     let params = {
@@ -277,19 +303,29 @@ export default {
       .doc(String(vueInstance.profileData.userInfo.user_id));
     let instance = {};
 
-    noti
-      .get()
-      .then(function (doc) {
-        instance = doc.data();
-        if (instance[vueInstance.loginData.user_id] == false) {
-          vueInstance.followSend = true;
-        }
-      })
-      .catch(function (err) {
-        console.log("ERROR OCCURED : ", err);
-      });
-      
-      console.log(this.profileData)
+    noti.onSnapshot(
+      {
+        // Listen for document metadata changes
+        includeMetadataChanges: true,
+      },
+      function (doc) {
+        //이벤트 발생시 카운트 재정립
+        noti
+          .get()
+          .then(function (doc) {
+            instance = doc.data();
+            if (instance[vueInstance.loginData.user_id] == false) {
+              vueInstance.followSend = true;
+            } else vueInstance.followSend = false;
+          })
+          .catch(function (err) {
+            console.log("ERROR OCCURED : ", err);
+          });
+        console.log("이벤트 발생", doc);
+      }
+    );
+
+    console.log(this.profileData);
   },
 
   
@@ -309,12 +345,13 @@ export default {
   padding: 20px;
   float: left;
   width: 50%;
+  text-align: center;
 }
 
 .profile-image {
-  width: 60%;
-  height: 60%;
-  margin-left: 20%;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
   margin-bottom: 10px;
   display: flex;
   align-items: center;
@@ -332,9 +369,13 @@ export default {
   font-size: 20px;
   font-weight: 600;
 }
+.profile-name img {
+  width: 15px;
+  height: 15px;
+}
 
 .profile-intro a {
-  font-size: 15px;
+  font-size: 12px;
 }
 .right-content {
   float: right;
@@ -345,17 +386,22 @@ export default {
   margin-top: 20%;
   height: 60%;
 }
-.right-content table tr td:nth-child(1) {
+.right-content table tr td:nth-child(1), td:nth-child(1) a {
   font-size: 15px;
   font-weight: 500;
   width: 60%;
+  color:black;
 }
 
-.right-content table tr td:nth-child(2) {
+.right-content table tr td:nth-child(2), td:nth-child(2) a {
   font-size: 20px;
   font-weight: 600;
   color: rgb(0, 171, 132);
   text-align: left;
+}
+
+td a{
+  text-decoration: none;
 }
 .profile-modify {
   width: 90%;
@@ -697,4 +743,7 @@ export default {
 .modify-footer img {
   height: 80%;
 }
+
+
+
 </style>

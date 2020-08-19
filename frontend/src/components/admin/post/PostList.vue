@@ -14,6 +14,7 @@
         <a class="qna-time">{{timeForToday(post.postpolice.post_date) }}</a>
         <img @click="changeSelectpost(post, 'comment')" src="@/assets/images/icon/icon_talk.png" />
         <a class="qna-reply">{{post.comments.length}}</a>
+        <a href="">{{ post.postpolice.count }}</a>
       </span>
     </div>
   </div>

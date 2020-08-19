@@ -18,7 +18,7 @@ public interface UserInfoDAO {
 	public UserInfo findUserInfoByEmail(String email);
 	public UserInfo findUserByEmailAndPassword(String email, String password);
 	public UserInfo findUserInfoByNickname(String nickname);
-	public List<UserInfo> selectUserInfoSearch(String username);
+	public List<UserInfo> selectUserInfoSearch(String keyword);
 	public String findNicknameById(int user_id);
 	public int getUserId(String email);
 	public int updateImage(UserInfo userinfo);
@@ -26,4 +26,6 @@ public interface UserInfoDAO {
 	public int updateDisable(int user_id);
 	public int updateRole(int user_id);
 	public String selectSaltByUserId(int user_id);
+	public int updateable(int user_id);
+	public int deleteRole(int user_id);
 }

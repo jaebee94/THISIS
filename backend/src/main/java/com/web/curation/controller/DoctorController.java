@@ -62,6 +62,7 @@ public class DoctorController {
 		}
 		doctor.setUser_id(user_id);
 		System.out.println(doctor.getUser_id());
+		int doctor_id = doctor.getDoctor_id();
 		doctor.setDoctorauth("unread");
 		try {
 			String access_path = "http://i3a301.p.ssafy.io/images/doctor/";
@@ -70,15 +71,15 @@ public class DoctorController {
 			String real_path = "/home/ubuntu/s03p13a301/backend/src/main/resources/doctor/";
 			// String attach_path = "resources\\upload\\";
 
-			String filename = user_id + ".jpg";
-			File checkFile = new File(root_path + filename);
+			String filename = doctor_id + ".jpg";
+			File checkFile = new File(real_path + filename);
 			if (checkFile.exists()) {
 				System.out.println("Delete");
 				checkFile.delete();
 			}
 			System.out.println(real_path + filename);
 
-			FileOutputStream fos = new FileOutputStream(root_path + filename);
+			FileOutputStream fos = new FileOutputStream(real_path + filename);
 			// 파일 저장할 경로 + 파일명을 파라미터로 넣고 fileOutputStream 객체 생성하고
 			InputStream is = uploadfile.getInputStream();
 			// file로 부터 inputStream을 가져온다.

@@ -1,7 +1,10 @@
 <template>
   <div class="qna wrap">
+    <div v-if="isDelete" @click="isDelete = !isDelete" class="black-layer"></div>
     <div class="qna-header">
-        <table style="width: 100%;">
+        <img class="qna-preview" v-if="qnaInfo.post.imgsrc" :src="qnaInfo.post.imgsrc">
+        <img class="qna-preview" v-else src="../../assets/images/icon/icon_qna.png">
+        <table>
             <tr >
                 <td>
                     <div class="qna-title">
@@ -9,7 +12,15 @@
                     </div>
                 </td>
                 <td>
-                    <img v-if="loginData.user_id == qnaInfo.userinfo.user_id" @click="changeSelectQnA(qnaInfo, 'modify')" src="../../assets/images/icon/icon_edit_unselect.png">
+                  <div class="dropdown" >
+                    <img class="dropmenu" @click="isDelete = !isDelete"  src="../../assets/images/icon/icon_3dots.png" />
+                  </div>
+                  <div v-show="isDelete" class="dropdown-content">
+                    <a href="#" v-if="loginData.user_id == qnaInfo.post.user_id" @click="changeSelectQnA(qnaInfo,'modify')">수정</a>
+                    <a href="#" v-if="loginData.user_id == qnaInfo.post.user_id" @click="showModal(qnaInfo)">삭제</a>
+                    <a href="#" v-if="loginData.user_id != qnaInfo.post.user_id"  @click="showModal(qnaInfo)">신고</a>
+                  </div>
+                    <!-- <img v-if="loginData.user_id == qnaInfo.userinfo.user_id" @click="changeSelectQnA(qnaInfo, 'modify')" src="../../assets/images/icon/icon_edit_unselect.png"> -->
                 </td>
             </tr>
         </table>
@@ -43,6 +54,7 @@ export default {
   data() {
     return {
       selectedQnA: {},
+      isDelete: false,
     };
   },
   methods: {
@@ -52,6 +64,7 @@ export default {
       "health",
       "scrap",
       "deleteScrap",
+      "deletePost",
       "setPost",
     ]),
     changeSelectQnA(qna, sort) {
@@ -96,6 +109,34 @@ export default {
       }
       return `${Math.floor(betweenTimeDay / 365)}년전`;
     },
+    showModal(qnaInfo){
+      this.isDelete = false;
+      console.log(qnaInfo.userinfo.user_id)
+      if(qnaInfo.userinfo.user_id == this.loginData.user_id) this.deletePost({qnaInfo:qnaInfo,user_id: this.loginData.user_id});
+      else {
+        // var reason = prompt("신고 내용은요?");
+        // let params = {
+        //   posts_id: postInfo.post.posts_id,
+        //   reason: reason,
+        //   user_id: this.loginData.user_id
+        // }
+        this.makeReport();
+        // axios.post(SERVER.URL + '/police', params, { headers: { accessToken : cookies.get('access-token')}})
+        // .then((res) => {
+        //   console.log(res);
+        //   // 신고 성공
+        //   alert('게시물을 신고했습니다')
+        // })
+        // .catch((err) => {
+        //   console.log(err);
+        //   // 신고 실패
+        //   alert('게시물 신고에 실패했습니다')
+        // })
+      }
+    },
+    makeReport() {
+      this.$emit("make-report", this.qnaInfo);
+    }
   },
   created() {
     console.log(this.selectedQnA);
@@ -123,8 +164,18 @@ export default {
   width: 100%;
 }
 
+.qna-preview {
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  left: 5%;
+  margin-top: 5px;
+}
+
 .qna-header table {
-  width: 100%;
+  width: 80%;
+  margin-top: 5px;
+  margin-left: calc(5% + 50px);
 }
 
 .qna-header table tr td:nth-child(1) {
@@ -136,11 +187,15 @@ export default {
 }
 
 .qna-title {
+  max-height: 20px;
+  overflow: hidden;
+  word-wrap: break-word;
+  text-overflow: ellipsis;
   text-align: left;
 }
 
 .qna-title a {
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 600;
   margin-left: 5%;
 }
@@ -148,13 +203,15 @@ export default {
 .qna-tag {
   text-align: left;
   color: slategray;
+  margin-left: calc(5% + 50px);
 }
 
 .qna-tag a {
+  font-size: 12px;
   margin-left: 5%;
 }
 
-.qna-header img {
+.qna-header table img {
   /* height: 20px;
         position: relative;
         top: -45px;
@@ -200,4 +257,53 @@ a {
   height: 30px;
   object-fit: cover;
 }
+
+
+
+/* ======= dropdown css ======= */
+.dropdown {
+  position: relative;
+  display: inline-block;
+  padding-top: 8px;
+}
+
+.dropmenu {
+  width: 18px;
+}
+
+.black-layer {
+  position: fixed;
+  /* background-color: black;
+  opacity: 0.1; */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 54;
+}
+
+.dropdown-content {
+  position: absolute;
+  right: 5px;
+  background-color: rgb(247, 247, 247);
+  outline: none;
+  min-width: 100px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 55;
+  display: block;
+
+}
+
+.dropdown-content a{
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  
+}
+
+.dropdown-content a:hover{
+  background-color:rgb(191, 181, 181);
+}
+/* ======= dropdown css ======= */
 </style>

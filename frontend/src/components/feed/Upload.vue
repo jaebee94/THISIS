@@ -82,7 +82,6 @@
 <script>
 import axios from "axios";
 import { mapState, mapActions } from "vuex";
-import router from '@/router'
 const proxyurl = "https://cors-anywhere.herokuapp.com/";
 
 export default {
@@ -186,6 +185,7 @@ export default {
         ServiceKey:
           "hhU4fvLXqUtlijp+SQxnotQgI7A4yLrBASX3GMofY45xyks9LOe05UKyCfH5gkyN1U+7YKFfujffwflXy4TzfA==",
       };
+      console.log(params);
       axios
         .request({
           // 서버에 마운트하면서 바꿔야 할 부분 :
@@ -274,7 +274,6 @@ export default {
     },
   },
   created() {
-    if(this.loginData == null) router.push({ name: 'Landing' })
     console.log(this.post);
     if (this.post != null) {
       
@@ -421,9 +420,18 @@ export default {
   outline: none;
 }
 
+.tutorial-select-wrap {
+  margin-bottom: 2px;
+}
+
+.tutorial-show-wrap {
+  margin-bottom: 5px;
+}
+
 .custom-tag-wrap {
   width: 100%;
-  margin-bottom: 3px;
+  margin-top: 3px;
+  /* margin-bottom: 3px; */
   /* margin: 7px 0 7px 0;  */
 }
 

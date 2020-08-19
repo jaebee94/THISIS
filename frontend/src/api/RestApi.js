@@ -3,15 +3,12 @@ export default {
   //  URL: 'http://localhost:8089/THISIS',
   ROUTES: {
     myprofile: '/account/0',
-    user: '/account/',
-    updateProfile: '/account',
+    user: '/account',
     profile: '/account/profile/',
     signup: '/account/signup',
     email: '/account/email',
     nickname: '/account/nickname',
     login: '/account/login',
-    logout: '/account/',
-    withdrawal: '/account/{user_id}',
     search : '/account/search',
     uploadProfile: '/account/upload',
 
@@ -42,11 +39,13 @@ export default {
     reportedPosts: '/admin/post',
     reportedUsers: '/admin/user',
     
+    doctors: '/admin/doctor-auth/check',
 
     qnasmain : '/articles/qna/main',
     qnastitle : '/articles/qna/title',
     qnasdisease : '/articles/qna/disease',
 
-    police : '/police'
+    police : '/police',
+    UploadDoctorAuth : '/doctor/register'
   }
 }
