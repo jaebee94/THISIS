@@ -51,7 +51,7 @@ const userStore = {
           }
           commit('SET_TOKEN', res.data.accessToken)
           commit('SET_LOGIN_DATA', res.data)
-          rootGetters.config;
+          rootGetters.config.headers = { accessToken:  cookies.get('access-token') };
           if (res.data.subscribeCount > 0) {
             router.push({ name: 'Feed' })
           } else {
