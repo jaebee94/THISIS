@@ -43,6 +43,22 @@
         </div>
       </div>
       <div v-else-if="profileTab == 1">
+<<<<<<< HEAD
+
+    <!--모달 시작 (의사 업로드) -->
+    <div class="doctor-wrap" v-if="!this.isDoctorHidden"> 
+      <div class="doctor-title">
+        <a id="doctor1">의료진 인증 화면입니다.</a><br>
+        <a id="doctor2">증빙 자료를 첨부해주세요</a>
+      </div>
+      <div class="doctor-content">
+        <div class="doctor-photo">
+            <div class="doctor-modify-image" v-if="this.Doctorimgsrc != null">
+              <img :src="Doctorimgsrc" />
+            </div>
+            <div class="doctor-image-button">
+              <button @click="onClickDoctorImageUpload">사진 첨부하기</button>
+=======
         <!--모달 시작 (의사 업로드) -->
         <div class="doctor-wrap" v-if="!this.isDoctorHidden">
           <div class="doctor-title">
@@ -59,6 +75,7 @@
                 <button @click="onClickDoctorImageUpload">사진 첨부하기</button>
               </div>
               <input ref="DoctorImg" type="file" hidden @change="onChangeDoctorImages" />
+>>>>>>> b509bc9147f6d7be4b47bfacfae78f7cba4bc66f
             </div>
           </div>
           <button class="doctor-submit-button" @click="doctorSubmit">인증 제출하기</button>
@@ -89,6 +106,15 @@
           >비밀번호 변경</button>
         </div>
         <div class="important-auth-wrap">
+<<<<<<< HEAD
+          <div class="doctor-auth-wrap" @click="showDoctor">
+            <img src="../../assets/images/icon/icon_doctor.png">
+            <div><a>의료진 인증하기</a></div>
+          </div>
+          <div class="signout-wrap" @click="signOut">
+            <img src="../../assets/images/icon/icon_signout.png">
+            <div><a>THISIS 떠나기</a></div>
+=======
           <div @click="showDoctor" class="doctor-auth-wrap">
             <img src="../../assets/images/icon/icon_doctor.png" />
             <div>
@@ -100,6 +126,7 @@
             <div>
               <a>THISIS 떠나기</a>
             </div>
+>>>>>>> b509bc9147f6d7be4b47bfacfae78f7cba4bc66f
           </div>
         </div>
       </div>
