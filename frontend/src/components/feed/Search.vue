@@ -33,7 +33,6 @@
         <img @click="close()" src="../../assets/images/icon/icon_close.png" />
       </div>
     </div>
-
     <div class="tab-container">
       <div
         class="tab"
@@ -83,7 +82,7 @@
         </div>
       </div>
       <div v-show="currentTab == 1">
-        <user-list v-bind:users="this.users" v-bind:sort="2" v-bind:keyword="this.keyword"></user-list>
+        <user-list class="searchedUser" v-bind:users="this.users" v-bind:sort="2" v-bind:keyword="this.keyword"></user-list>
       </div>
     </div>
   </div>
@@ -604,4 +603,9 @@ ul {
   width: 15px;
   height: 15px;
 }
+
+.searchedUser:last-child {
+  margin-bottom: 50px;
+}
+
 </style>
