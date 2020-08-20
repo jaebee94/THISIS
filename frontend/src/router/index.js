@@ -26,8 +26,6 @@ import FollowList from '../components/feed/FollowList.vue'
 import PostDetail from '../components/feed/PostDetail.vue'
 
 import ChangeProfile from '../components/feed/ChangeProfile.vue'
-//import { component } from 'vue/types/umd'
-
 
 import DiseaseTest from '../views/main/DiseaseTest.vue'
 import NewsTest from '../views/main/NewsTest.vue'
@@ -39,7 +37,6 @@ import store from '@/store'
 Vue.use(VueRouter)
 
 const requireAuth =(to, from, next) => {
-  console.log(store.getters.config)
   if (store.getters.config.headers!=null) return next()
   else return next('/')
 }

@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import cookies from 'vue-cookies'
 
 import postStore from './modules/postStore.js'
 import profileStore from './modules/profileStore.js'
@@ -25,7 +26,7 @@ export default new Vuex.Store({
   },
 
   getters: {
-    config: () => ({ headers: { accessToken:  window.$cookies.get('access-token') } }),
+    config: () => ({ headers: { accessToken:  cookies.get('access-token') } }),
   },
 
   mutations: {
