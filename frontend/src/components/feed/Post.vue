@@ -46,7 +46,7 @@
     <div class="feed-main" >
       <img v-show="postInfo.post.imgsrc != null" :src="postInfo.post.imgsrc" />
       <div class = "tag-header" v-show="postInfo.diseasename !=''" >
-       <span >{{postInfo.diseasename}}</span>
+       <span >#{{postInfo.diseasename}}</span>
     </div>
       <div class="post-content" 
       :class="{active : isActive}" @click="isActive = !isActive"
@@ -56,7 +56,8 @@
         class="custom-tag"
         v-for="tag in postInfo.tags"
         v-bind:key="tag.tagid"
-      >#{{tag.tagname}}</a>
+        style="font-size: 13px;"
+      > #{{tag.tagname}} </a>
       </div>
       <div v-if="postInfo.post.category == 0">
         <a v-show="postInfo.post.health_count != 0">
@@ -219,10 +220,15 @@ export default {
       }
       return `${Math.floor(betweenTimeDay / 365)}년전`;
     },
-    showModal(postInfo){
+    async showModal(postInfo){
       this.isDelete = false;
       console.log(postInfo.userinfo.user_id)
-      if(postInfo.userinfo.user_id == this.loginData.user_id) this.deletePost({postInfo:postInfo,user_id: this.loginData.user_id});
+      if(postInfo.userinfo.user_id == this.loginData.user_id) {
+        await this.deletePost(postInfo.posts_id);
+        console.log(this.$parent);
+        this.$emit("delete-post");
+        // this.$parent.$refs.infiniteLoadingPost.stateChanger.reset();
+      }
       else {
         // var reason = prompt("신고 내용은요?");
         // let params = {
@@ -287,14 +293,17 @@ export default {
 .tag-header span{
   background-color: rgb(0, 171, 132);
   border: 10px;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
-  border-radius: 20px;
+  border-radius: 15px;
   margin: 5px 10px 5px 0px ;
   color: white;
   display: inline-block;
   padding :5px  10px 5px 10px ;
-  text-align:center;
+  text-align: center;
+  word-wrap: break-word;
+  text-overflow: ellipsis;
+  
 }
 
 .dropdown {
@@ -347,6 +356,7 @@ export default {
   font-size: 13px;
   color: rgb(0, 171, 132);
 }
+
 
 
 .feed-footer table a {

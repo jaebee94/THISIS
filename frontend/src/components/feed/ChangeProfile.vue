@@ -475,6 +475,10 @@ export default {
   color: rgb(247, 247, 247);
 }
 
+.error-text {
+  color: rgb(220, 0, 27);
+}
+
 .important-auth-wrap {
   width: 100%;
   height: 120px;
