@@ -35,7 +35,7 @@ const userStore = {
   },
 
   actions: {
-    getAccessData({ commit }, info) {
+    getAccessData({ commit,rootGetters }, info) {
       axios.get(SERVER.URL + info.location, {
         params: {
           email: info.params.email,
@@ -43,9 +43,9 @@ const userStore = {
         }
       })
         .then(res => {
-          console.log("로그인", res)
           commit('SET_TOKEN', res.data.accessToken)
           commit('SET_LOGIN_DATA', res.data)
+          rootGetters.config;
           if (res.data.subscribeCount > 0) {
             router.push({ name: 'Feed' })
           } else {
@@ -67,12 +67,12 @@ const userStore = {
     logout({ commit }) {  // 주석코드 사용할 때 getters 추가하고 사용하기
       commit('SET_TOKEN', null)
       commit('SET_LOGIN_DATA', null)
+      window.$cookies.remove('access-token')
       cookies.remove('access-token')
       window.localStorage.clear();
       router.push({ name: 'Login' })
     },
     signup({rootGetters},signupData) {
-      console.log(signupData)
       axios.post(SERVER.URL + SERVER.ROUTES.signup, signupData,rootGetters.config)
         .then((res) => {
           var id = res.data.object;
@@ -94,12 +94,10 @@ const userStore = {
       var con = confirm("탈퇴하시겠습니까?");
       if (con) {
         axios.delete(SERVER.URL + SERVER.ROUTES.user, rootGetters.config)
-          .then((res) => {
-            console.log("회원 탈퇴", res)
+          .then(() => {
 
             //firebase 삭제 로직
             db.collection("notification").doc(String(state.loginData.user_id)).delete().then(function () {
-              console.log("Document successfully deleted!");
             }).catch(function (error) {
               console.error("Error removing document: ", error);
             });
@@ -112,10 +110,8 @@ const userStore = {
       }
     },
     async changeUserInfo({ rootGetters, dispatch, state }, changeInfo) {
-      console.log(changeInfo)
       await axios.put(SERVER.URL + SERVER.ROUTES.user, changeInfo.userInfo, { headers: { accessToken: cookies.get('access-token') } })
         .then(() => {
-          console.log('소개 변경 완료')
           alert('변경이 완료되었습니다.')
           dispatch('goProfile', changeInfo.userInfo.user_id)
         })
@@ -127,9 +123,7 @@ const userStore = {
         //config.headers['Content-Type'] = 'multipart/form-data'
         await axios.post(SERVER.URL + SERVER.ROUTES.uploadProfile, changeInfo.formData, config)
           .then(async (res) => {
-            console.log('사진 변경 완료')
             state.loginData.userimage = res.data;
-            console.log(res)
             dispatch('goProfile', changeInfo.userInfo.user_id)
             // router.push({ name: 'Profile' })
           })
@@ -139,28 +133,21 @@ const userStore = {
     async goProfile({ state, commit }, userId) {
       if (userId == null) {
         userId = state.loginData.user_id
-        console.log('userId == null')
       }
       await axios.get(SERVER.URL + SERVER.ROUTES.user + `/${userId}`, { headers: { accessToken: cookies.get('access-token') } })
         .then(res => {
-          console.log('유저인포 요청완료')
-          console.log(res.data)
           commit('SET_USER_INFO', res.data)
         })
         .catch(err => console.log(err))
       await axios.get(SERVER.URL + SERVER.ROUTES.profile + userId, { headers: { accessToken: cookies.get('access-token') } })
         .then(res => {
-          console.log('프로필인포 요청 완료')
-          console.log(res.data)
           commit('SET_PROFILE_INFO', res.data)
           router.push({ name: 'Profile' })
         })
         .then(() => { router.go() })
-      // console.log('라우터 푸시 프로필')
-      // router.push({ name: 'Profile' }) 
+      
     },
     async UploadDoctorAuth({ rootGetters,state }, Doctorimgsrc) {
-      console.log(Doctorimgsrc)
       if (Doctorimgsrc) {
         let config = { headers: {} }  
         config.headers = rootGetters.config.headers
@@ -168,11 +155,7 @@ const userStore = {
         //config.headers['Content-Type'] = 'multipart/form-data'
         await axios.post(SERVER.URL + SERVER.ROUTES.UploadDoctorAuth, Doctorimgsrc, config)
         .then(async (res) => {
-          console.log('사진 변경 완료')
           state.loginData.userimage=res.data;
-          console.log(res)
-          //dispatch('goProfile', state.user_id)
-          // router.push({ name: 'Profile' })
         })
         .catch(err => console.log('사진 변경 에러: ', err))
       }

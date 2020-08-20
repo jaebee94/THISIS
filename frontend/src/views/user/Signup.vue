@@ -167,7 +167,6 @@ export default {
           alert("사용가능한 E-mail 입니다.")
         })
         .catch(err => {
-          console.log(err.response)
           if (err.response.data.data == "wrong email") {
             this.confirm.email = true;
             alert("이미 사용중인 E-mail 입니다.")

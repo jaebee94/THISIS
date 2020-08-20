@@ -167,10 +167,8 @@ export default {
     },
     onChangeImages(e) {
       const file = e.target.files[0];
-      console.log(file);
       var formData = new FormData();
       formData.append("upload_file", file);
-      console.dir(formData)
       this.uploadData.formData = formData;
       this.imgsrc = URL.createObjectURL(file);
     },
@@ -187,7 +185,6 @@ export default {
           "hhU4fvLXqUtlijp+SQxnotQgI7A4yLrBASX3GMofY45xyks9LOe05UKyCfH5gkyN1U+7YKFfujffwflXy4TzfA==",
       };
       this.$parent.$parent.isLoaded = false;
-      console.log(params);
       axios
         .request({
           // 서버에 마운트하면서 바꿔야 할 부분 :
@@ -215,7 +212,6 @@ export default {
           else this.items = items;
           this.isSearched = true;
           this.$parent.$parent.isLoaded = true;
-          console.log(this.items);
         })
         .catch((err) => {
           this.isSearched = false;
@@ -253,7 +249,6 @@ export default {
       }
       this.tags.push(this.customTag);
       this.uploadData.postData.tags = this.tags;
-      console.log(this.uploadData.postData);
       this.customTag = "";
     },
     deleteTag(tag) {
@@ -279,7 +274,6 @@ export default {
     },
   },
   created() {
-    console.log(this.post);
     if (this.post != null) {
       
       this.uploadData.postData.post = this.post.post;

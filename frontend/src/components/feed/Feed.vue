@@ -356,7 +356,6 @@ export default {
       this.$refs.infiniteLoadingQnA.stateChanger.reset();
     },
     selectedReason: function(newRole) {
-      console.log(newRole);
       this.selectedReason = newRole;
     }
   },
@@ -387,7 +386,6 @@ export default {
     },
 
     async infiniteHandlerQnA($state) {
-      console.log("infiniteQna", this.qnaPage);
       if (this.searchType == "search") {
         //검색일 경우
         if (this.qnaoption == "text") {
@@ -415,7 +413,6 @@ export default {
                 });
               });
               this.qnas.push(...data);
-              console.log(data);
               $state.loaded();
             } else {
               $state.complete();
@@ -448,7 +445,6 @@ export default {
                 });
               });
               this.qnas.push(...data);
-              console.log(data);
               $state.loaded();
             } else {
               $state.complete();
@@ -481,7 +477,6 @@ export default {
                 });
               });
               this.qnas.push(...data);
-              console.log(data);
               $state.loaded();
             } else {
               $state.complete();
@@ -500,7 +495,6 @@ export default {
         let url = SERVER.URL + SERVER.ROUTES.qnas;
         //통신부분
         await axios.get(url, params).then(({ data }) => {
-          console.log(data);
           if (data.length) {
             this.qnaPage += 1;
 
@@ -514,11 +508,9 @@ export default {
                 }
               });
             });
-            console.log(data);
             this.qnas.push(...data);
             $state.loaded();
           } else {
-            console.log("complete");
             $state.complete();
           }
         });
@@ -554,7 +546,6 @@ export default {
           data.forEach((element) => {
             element.health = false;
             element.scrap = false;
-            console.log(element);
             axios
               .get(SERVER.URL + SERVER.ROUTES.scrap, {
                 params: {
@@ -622,7 +613,6 @@ export default {
     },
     showModify(info) {
       //댓글이나 글 수정시 부르는 함수
-      console.log("showInfo", info);
       this.postInfo = info.postInfo;
       this.$parent.$parent.isHidden = info.isHidden;
       this.$parent.$parent.$parent.isHidden = info.isHidden;
@@ -634,7 +624,6 @@ export default {
       this.commentData.user_id = this.loginData.user_id;
     },
     showModifyQnA(info) {
-      console.log(info);
       this.qnaInfo = info.qnaInfo;
       this.$parent.$parent.isHidden = info.isHidden;
       this.$parent.$parent.$parent.isHidden = info.isHidden;
@@ -689,7 +678,6 @@ export default {
       return `${Math.floor(betweenTimeDay / 365)}년전`;
     },
     makeReport(postInfo) {
-      console.log(postInfo)
       this.postInfo = postInfo;
       this.$parent.$parent.isHidden = true;
       this.$parent.$parent.$parent.isHidden = true;
@@ -728,8 +716,7 @@ export default {
         user_id: this.loginData.user_id
       }
       axios.post(SERVER.URL + '/police', params, { headers: { accessToken : cookies.get('access-token')}})
-        .then((res) => {
-          console.log(res);
+        .then(() => {
           // 신고 성공
           alert('게시물을 신고했습니다')
           this.$parent.$parent.isHidden = false;

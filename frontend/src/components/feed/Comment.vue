@@ -77,7 +77,6 @@ export default {
         },
         modifyComment(comment) {
             this.isDelete = false;
-            console.log('현재의 코멘트', comment);
             if(comment.comment.comment_main.length == 0) {
                 alert("수정 내용을 입력하세요!");
                 return;
@@ -90,7 +89,6 @@ export default {
                 "posts_id": comment.comment.posts_id,
                 "user_id": comment.comment.user_id
             }
-            console.log('commentData', commentData);
             this.updateComment(commentData)
             this.isModify = !this.isModify;
         },
@@ -108,7 +106,6 @@ export default {
             //     data : comment
             // }
             // this.$emit("check-delete",modalInfo)
-            // console.log(comment)
 
 
             //this.deleteComment(comment)

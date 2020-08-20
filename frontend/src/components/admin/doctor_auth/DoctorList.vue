@@ -58,8 +58,5 @@ export default {
       this.decideDoctorauth(requestdoctor)
     }
   },
-  created() {
-    // console.log(this.selectedQnA);
-  },
 };
 </script>

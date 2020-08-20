@@ -35,7 +35,7 @@ export default {
       axios.get(api, { params: {
         email: email
       }})
-        .then(res => {console.log('성공', res)
+        .then(()=> {
          alert("이메일을 전송하였습니다.")
          this.$router.push('/account/login')
          }

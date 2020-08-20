@@ -113,9 +113,6 @@
 </template>
 <script>
 import { mapActions, mapState } from "vuex";
-import SERVER from "@/api/RestApi.js";
-import axios from 'axios';
-import cookies from "vue-cookies";
 export default {
   name: "Post",
   computed: {
@@ -162,7 +159,6 @@ export default {
       };
 
       if (sort === "modify") {
-        console.log("post",post)
          this.setPost(post)
          this.$router.push({name: 'Upload'});
       } else if (sort === "comment") {
@@ -199,7 +195,6 @@ export default {
         post.scrap = true;
         this.scrap(params);
       }
-      console.log("click_post", post);
     },
    timeForToday(time) {
       const today = new Date();
@@ -222,10 +217,8 @@ export default {
     },
     async showModal(postInfo){
       this.isDelete = false;
-      console.log(postInfo.userinfo.user_id)
       if(postInfo.userinfo.user_id == this.loginData.user_id) {
         await this.deletePost(postInfo.posts_id);
-        console.log(this.$parent);
         this.$emit("delete-post");
         // this.$parent.$refs.infiniteLoadingPost.stateChanger.reset();
       }
@@ -237,7 +230,6 @@ export default {
         //   user_id: this.loginData.user_id
         // }
         this.makeReport();
-        console.log(SERVER, axios, cookies)
         // axios.post(SERVER.URL + '/police', params, { headers: { accessToken : cookies.get('access-token')}})
         // .then((res) => {
         //   console.log(res);
@@ -255,9 +247,6 @@ export default {
       this.$emit("make-report", this.postInfo);
     }
   
-  },
-  created() {
-    console.log(this.postInfo);
   },
 };
 </script>
