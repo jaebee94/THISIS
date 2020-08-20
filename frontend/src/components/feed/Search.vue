@@ -82,9 +82,9 @@
           </div>
         </div>
         <infinite-loading ref="infiniteLoading" @infinite="infiniteHandler">
-          <div slot="spinner">Loading...</div>
+          <div slot="spinner"> </div>
           <div slot="no-more">더 이상 게시글이 없습니다 :)</div>
-          <div slot="no-results">게시글이 존재하지 않습니다.</div>
+          <div slot="no-results"> </div>
           <div slot="error" slot-scope="{ trigger }">
             Error message, click
             <a href="javascript:;" @click="trigger">here</a> to retry
@@ -176,12 +176,12 @@ export default {
         )
         .then((res) => {
           this.users = res.data;
-          console.log(res.data);
           this.$parent.$parent.isLoaded = true;
         })
         .catch((err) => console.log(err));
     },
     async infiniteHandler($state) {
+
       if(this.page == 0) return;
       this.$parent.$parent.isLoaded = false;
       // API에서 질병을 검색하고 셀렉트 박스로 보여줌
@@ -211,13 +211,23 @@ export default {
           params: params,
         })
         .then((res) => {
+          var count = res.data.response.body.totalCount;
           var items = res.data.response.body.items.item;
-          if(items.length){
+          console.log(count)
+          if(items.length>0){
+            
             this.isSearched = true;
             this.$parent.$parent.isLoaded = true;
             this.items.push(...items);
+            console.log(this.items)
             $state.loaded();
             this.page += 1;
+          }
+          else if(count==1){
+            this.isSearched = false;
+            this.$parent.$parent.isLoaded = true;
+            this.items.push(items)
+            $state.complete();
           }
           else{
             this.isSearched = false;
