@@ -111,14 +111,15 @@ const postStore = {
       }
      
     },
-    deletePost({ rootGetters }, posts_id) {
+    async deletePost({ rootGetters }, posts_id) {
+      console.log(posts_id);
         var con = confirm("진짜 지우시겠습니까?");
         if (con) {
-          axios.delete(SERVER.URL + SERVER.ROUTES.post + `/${posts_id}`, rootGetters.config)
+          await axios.delete(SERVER.URL + SERVER.ROUTES.post + `/${posts_id}`, rootGetters.config)
             .then(() => {
               alert('게시글이 삭제되었습니다.')
             })
-            .catch(err => console.log(err))
+            .catch((err) => console.log(err))
         }     
 
     },
