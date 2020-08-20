@@ -16,4 +16,5 @@ public interface DoctorService {
 	public int updateDoctorImg(String img);
 	public int updateDoctorAuth(int doctor_id);
 	public int updateDoctorAuthFail(int doctor_id);
+	public int selectdoctorid();
 }

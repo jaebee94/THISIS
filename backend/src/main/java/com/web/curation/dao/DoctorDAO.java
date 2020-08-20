@@ -19,4 +19,5 @@ public interface DoctorDAO {
 	public int updateDoctorAuth(int doctor_id);
 	public int updateDoctorAuthFail(int doctor_id);
 	public Doctor selectMyDoctorID(int doctor_id);
+	public int selectdoctorid();
 }

@@ -70,4 +70,9 @@ public class DoctorServiceImpl implements DoctorService {
 		return doctordao.selectMyDoctorID(doctor_id);
 	}
 
+	@Override
+	public int selectdoctorid() {
+		return doctordao.selectdoctorid();
+	}
+
 }
