@@ -33,7 +33,7 @@
             <div class="dropdown" >
               <img class="dropmenu" @click="isDelete = !isDelete" src="../../assets/images/icon/icon_3dots.png" />
             </div>
-            <div v-show="isDelete" class="dropdown-content">
+            <div v-show="isDelete && postInfo.post.hidden == 0" class="dropdown-content">
               <a href="#" v-if="loginData.user_id == postInfo.post.user_id" @click="changeSelectPost(postInfo,'modify')">수정</a>
               <a href="#" v-if="loginData.user_id == postInfo.post.user_id" @click="showModal(postInfo)">삭제</a>
               <a href="#" v-if="loginData.user_id != postInfo.post.user_id"  @click="showModal(postInfo)">신고</a>
@@ -43,12 +43,13 @@
         </tr>
       </table>
     </div>
-    <div class="feed-main" >
-      <img v-show="postInfo.post.imgsrc != null" :src="postInfo.post.imgsrc" />
-      <div class = "tag-header" v-show="postInfo.diseasename !=''" >
+    <div class="feed-main">
+      <img v-show="postInfo.post.imgsrc != null && postInfo.post.hidden == 0" :src="postInfo.post.imgsrc" />
+      <img v-if="postInfo.post.hidden == 1" src="../../assets/images/icon/icon_noimage.png" >
+      <div class = "tag-header" v-show="postInfo.diseasename !=''"  v-if="postInfo.post.hidden == 0" >
        <span >#{{postInfo.diseasename}}</span>
-    </div>
-      <div class="post-content" 
+      </div>
+      <div class="post-content"  v-if="postInfo.post.hidden == 0"
       :class="{active : isActive}" @click="isActive = !isActive"
       >
       <strong @click="goProfile(postInfo.post.user_id)">{{postInfo.userinfo.nickname}}</strong> {{postInfo.post.posts_main }}
@@ -59,7 +60,7 @@
         style="font-size: 13px;"
       > #{{tag.tagname}} </a>
       </div>
-      <div v-if="postInfo.post.category == 0">
+      <div v-if="postInfo.post.category == 0 && postInfo.post.hidden == 0">
         <a v-show="postInfo.post.health_count != 0">
           <strong>{{postInfo.post.health_count}}명</strong>이 건강해요를 눌렀습니다
         </a>
@@ -70,30 +71,31 @@
         </a>
         <a v-show="postInfo.comments.length == 0"> 먼저 댓글을 달아보세요</a> -->
       </div>
+      <div v-if="postInfo.post.hidden == 1" class="blind-post"><img class="blind-image" src='../../assets/images/icon/icon_info.png'>관리자에 의해 블라인드 처리된 게시물입니다</div>
     </div>
     <div class="feed-footer">
       <table>
         <tr>
-          <td v-if="postInfo.post.category == 0">
+          <td v-if="postInfo.post.category == 0 && postInfo.post.hidden == 0">
             <span v-if="postInfo.healths.user_id"></span>
             <img v-show="postInfo.health" :src="isHealth" @click="clickHealth(postInfo)" />
             <img v-show="!postInfo.health" :src="isNotHealth" @click="clickHealth(postInfo)" />
             <!-- <span class="health-count">{{ postInfo.post.health_count }}</span> -->
           </td>
-          <td>
+          <td v-if="postInfo.post.hidden == 0">
             <img
               @click="changeSelectPost(postInfo,'comment')"
               src="../../assets/images/icon/icon_talk.png"
             />
-            <a>{{postInfo.comments.length}}</a>
+            <a  v-if="postInfo.post.hidden == 0">{{postInfo.comments.length}}</a>
           </td>
-          <td v-if="postInfo.post.category == 0">
-            <img
+          <td>
+            <img  
               v-show="postInfo.scrap"
               @click="clickScrap(postInfo)"
               src="../../assets/images/icon/icon_scrap_select.png"
             />
-            <img
+            <img v-if="postInfo.post.hidden == 0"
               v-show="!postInfo.scrap"
               @click="clickScrap(postInfo)"
               src="../../assets/images/icon/icon_scrap_unselect.png"
@@ -369,5 +371,19 @@ export default {
   height: 15px;
   margin-top: 0px;
   margin-left : 2px;
+}
+
+.blind-post {
+  display: flex; 
+  justify-content: center; 
+  align-items: center;
+  color: slategray; 
+  font-size:14px;
+}
+.blind-post .blind-image {
+  width: 12px; 
+  height: 12px; 
+  margin-right: 4px; 
+  margin-top:1px;
 }
 </style>
