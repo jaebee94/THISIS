@@ -93,7 +93,6 @@ export default {
     ]),
 
     accessFollow(noti) {
-      console.log("noti", noti);
       noti.notification.approval = 1;
       let params = {
         follower: noti.notification.follower_id,
@@ -125,9 +124,6 @@ export default {
       db.collection("notification")
         .doc(String(noti.notification.follower_id)) //승낙했을 때 상대방 알림count+1
         .update(instance)
-        .then(function (docRef) {
-          console.log("Document written with ID: ", docRef.id);
-        })
         .catch(function (error) {
           console.error("Error setting document: ", error);
         });
@@ -141,15 +137,11 @@ export default {
       db.collection("notification")
         .doc(String(noti.notification.followee_id))
         .update(instance)
-        .then(() => {
-          console.log("FIREBASE DELETION COMPLETE");
-        })
         .catch(() => {
           console.error("FIREBASE DELETION UNEXECUTED");
         });
     },
     clickNoti(idx) {
-      console.log("click");
       this.currentTab = idx;
       if (idx == 0) this.tab1++;
       if (idx == 1) this.tab2++;
@@ -165,9 +157,6 @@ export default {
         .update({
           notification: 0,
         })
-        .then(function (doc) {
-          console.log(doc);
-        })
         .catch(function (err) {
           console.error(err);
         });
@@ -177,9 +166,6 @@ export default {
       db.collection("notification").doc(String(this.loginData.user_id))
         .update({
           request: 0,
-        })
-        .then(function (doc) {
-          console.log(doc);
         })
         .catch(function (err) {
           console.error(err);
@@ -198,7 +184,7 @@ export default {
         // Listen for document metadata changes
         includeMetadataChanges: true,
       },
-      function (doc) {
+      function () {
         //이벤트 발생시 카운트 재정립
         vueInstance.fetchNotification(vueInstance.loginData.user_id);
         vueInstance.fetchRequests(vueInstance.loginData.user_id);
@@ -208,7 +194,6 @@ export default {
             if (doc.exists) {
               vueInstance.noti_count = doc.data().notification;
               vueInstance.req_count = doc.data().request;
-              console.log("Document data:", doc.data().notification);
             } else {
               console.log("No such document!");
             }
@@ -216,7 +201,6 @@ export default {
           .catch(function (error) {
             console.log("Error getting document:", error);
           });
-        console.log("이벤트 발생", doc);
       }
     );
 

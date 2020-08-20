@@ -211,12 +211,10 @@ export default {
         })
         .then((res) => {
           var items = res.data.response.body.items.item;
-          console.log(typeof(items))
           if(items.length){           
             this.isSearched = true;
             this.$parent.$parent.isLoaded = true;
             this.items.push(...items);
-            console.log(this.items)
             $state.loaded();
             this.page += 1;
           }
@@ -246,12 +244,10 @@ export default {
     },
     checkFollow(item) {
       //내가 갖고있는 질병 팔로우목록중 해당 아이템이 포함되어있나.
-      console.log(this.diseases);
       this.diseases.forEach((disease) => {
         if (disease.diseasecode == item.sickCd) {
           this.check = true;
           item.check = true;
-          console.log(item.sickCd);
         }
       });
       this.check = false;
@@ -307,14 +303,12 @@ export default {
           });
           //this.selectedDisease.description = res.data.items;
 
-          // console.log(res);
           this.$parent.$parent.isLoaded = true;
         })
         .catch((err) => {
           console.error(err);
           this.$parent.$parent.isLoaded = true;
         });
-      console.log(this.searchedItems);
     },
     switchTab(index) {
       this.currentTab = index;
@@ -334,10 +328,11 @@ export default {
     //   this.items[idx].check=true;
     //
     // },
-    deleteFollow(idx) {
+    async deleteFollow(idx) {
       var item = this.items[idx];
-      this.deleteDisease(item.sickCd);
       this.items[idx].check = false;
+      await this.deleteDisease(item.sickCd);
+      
     },
   },
 };

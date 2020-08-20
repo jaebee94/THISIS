@@ -40,16 +40,13 @@ const adminStore = {
         },
         headers: rootGetters.config.headers
       }
-      console.log(rootGetters.config)
       axios.get(SERVER.URL + SERVER.ROUTES.reportedPosts, params)
         .then(data => {
-          console.log(data)
+
           commit('SET_TEMP_DATA', data)
-          console.log(state.page)
           if (data) {
             commit('INCREASE_PAGE')
             commit('SET_POST_LIST', data)
-            // console.log(state.postList)
             $state.loaded() 
           } else {
 
@@ -80,11 +77,8 @@ const adminStore = {
       axios.get(SERVER.URL + SERVER.ROUTES.doctors, rootGetters.config)
     },
     decideDoctorauth({ rootGetters }, requestdoctor) {
-      console.log(requestdoctor)
       axios.put(SERVER.URL + SERVER.ROUTES.doctorauth, requestdoctor, rootGetters.config)
-        .then(res => {
-          console.log(res)
-        })
+
     }
   },
 }

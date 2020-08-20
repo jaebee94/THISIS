@@ -59,7 +59,6 @@ export default {
          ...mapActions("diseaseStore", ["getFolloingwDisease"]),
         async findNews(keyword) {
             this.selectedDisease = keyword;
-            console.log(keyword);
             this.$parent.$parent.$parent.isLoaded = false;
             this.selectedDisease = keyword
             this.diseases.forEach(disease => {
@@ -75,35 +74,6 @@ export default {
                 start: 1,
                 sort: 'sim'
             }
-            // var params2 = {
-            //     query: keyword,
-            //     display: 2,
-            //     start: 1,
-            //     sort: 'sim',
-            //     filter: 'small'
-            // }
-            // await axios.request({
-            //     url: proxyurl + 'https://openapi.naver.com/v1/search/image',
-            //     headers: {
-            //         'X-Naver-Client-Id' : 'VmhwDszuy_Em4wjSyKBs',
-            //         'X-Naver-Client-Secret' : 'u1VmQ08Ai6'
-            //     },
-            //     params: params2
-            // })
-            // .then((res) => {
-            //     console.log(res.data.items[0].link);
-            //     console.log(res);
-            //     if(res.data.items.length == 0) {
-            //         this.sample_images.one = null;
-            //         this.sample_images.two = null;
-            //     } else if(res.data.items.length == 1) {
-            //         this.sample_images.one = res.data.items[0].link;
-            //         this.sample_images.two = null;
-            //     } else {
-            //         this.sample_images.one = res.data.items[0].link;
-            //         this.sample_images.two = res.data.items[1].link;
-            //     }
-            // })
             await axios.request({
                 url: proxyurl + 'https://openapi.naver.com/v1/search/news.json',
                 headers: {
@@ -123,7 +93,6 @@ export default {
                     item.title = String(item.title).replace(/<(\/)?([a-zA-Z]*)(\s[a-zA-Z]*=[^>]*)?(\s)*(\/)?>/ig, "");
                 });
                 this.items = res.data.items;
-                console.log(res);
                 this.$parent.$parent.$parent.isLoaded = true;
             })
             .catch((err) => {

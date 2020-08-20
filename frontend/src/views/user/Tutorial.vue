@@ -128,7 +128,6 @@ export default {
             if(idx > -1) this.checkedItems.splice(idx, 1);
         },
         onStart() {
-            console.log(this.checkedItems)
             this.checkedItems.forEach(chkItem => {
                 this.createDisease(chkItem); //db에 보내기
             });

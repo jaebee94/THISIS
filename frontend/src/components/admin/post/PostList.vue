@@ -99,9 +99,7 @@ export default {
       return `${Math.floor(betweenTimeDay / 365)}년전`;
     },
   },
-  created() {
-    // console.log(this.selectedQnA);
-  },
+
 };
 </script>
 

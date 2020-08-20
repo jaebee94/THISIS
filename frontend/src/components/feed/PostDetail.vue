@@ -68,10 +68,6 @@ export default {
             postInfo: this.info.postInfo
         }
     },
-    created() {
-
-        console.log(this.info)
-    },
     methods : {
         timeForToday(time) {
       const today = new Date();

@@ -16,11 +16,6 @@ export default {
     },
     created () {
         this.$parent.isLoaded = true;
-        // document.querySelector('html').addEventListener('click', function () {
-        //     // console.log("!!!!");
-        //     // this.$router.push('/account/join');
-
-        // });
 
         setTimeout( () => {
             document.body.className = "whitebodyfadeout";

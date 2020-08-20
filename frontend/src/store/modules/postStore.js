@@ -37,11 +37,9 @@ const postStore = {
   actions: {
     // Post
     createPost({ rootGetters }, uploadData) {
-      console.log(uploadData)
       if (uploadData.formData == null) {
         let headers = rootGetters.config.headers
         headers['Accept'] = 'application/json'
-        console.log('headers', headers)
         axios.post(SERVER.URL + SERVER.ROUTES.posts, uploadData.postData, rootGetters.config)
           .then(() => {
             alert('작성이 완료되었습니다.')
@@ -58,7 +56,6 @@ const postStore = {
         })
           .then(res => {
             uploadData.postData.post.imgsrc = res.data
-            console.log(uploadData.postData)
             axios.post(SERVER.URL + SERVER.ROUTES.posts, uploadData.postData,
               {headers: { accessToken:  cookies.get('access-token') }})
               .then(() => {
@@ -74,8 +71,6 @@ const postStore = {
       commit('SET_POST', postInfo);
     },
     updatePost({rootGetters},uploadData) {
-      console.log("updatePost", uploadData)
-
       if (uploadData.formData == null) {
         axios.put(SERVER.URL + SERVER.ROUTES.post, 
           uploadData.postData,
@@ -96,7 +91,6 @@ const postStore = {
         })
           .then(res => {
             uploadData.postData.post.imgsrc = res.data
-            console.log(uploadData.postData)
             axios.put(SERVER.URL + SERVER.ROUTES.post, 
               uploadData.postData,
               rootGetters.config
@@ -112,7 +106,6 @@ const postStore = {
      
     },
     async deletePost({ rootGetters }, posts_id) {
-      console.log(posts_id);
         var con = confirm("진짜 지우시겠습니까?");
         if (con) {
           await axios.delete(SERVER.URL + SERVER.ROUTES.post + `/${posts_id}`, rootGetters.config)
@@ -126,7 +119,6 @@ const postStore = {
 
     // Comment
     createComment({ commit, rootGetters }, commentData) {
-      console.log("createComment - commentData", commentData)
       if(commentData.comment_main == null || commentData.comment_main == "") {
         alert("댓글을 입력해주세요")
       }else{
@@ -143,23 +135,18 @@ const postStore = {
       
     },
     fetchComments({ commit }, posts_id) {
-      console.log('여기가 문제?')
       axios.get(SERVER.URL + SERVER.ROUTES.comment + '/' + posts_id)
         .then(res => {
-          console.log('fetchComments', res.data)
           commit('SET_COMMENTS', res.data)
         })
     },
     updateComment({ rootGetters }, commentData) {
-      console.log('server 요청 전', rootGetters)
       axios.put(SERVER.URL + SERVER.ROUTES.comment + '/' + commentData.comment_id, commentData, rootGetters.config)
-        .then((res) => { console.log(res) })
         .catch((err) => { console.log(err) })
     },
     deleteComment({ rootGetters,dispatch }, commentData) {     // 삭제 로직 개발 필요
       axios.delete(SERVER.URL + SERVER.ROUTES.comment + `/${commentData.comment_id}`, rootGetters.config)
-      .then(res => {
-        console.log("result", res);
+      .then(() => {
         dispatch('fetchComments',commentData.posts_id)
       }).catch(err => console.log(err))
     },
@@ -167,10 +154,6 @@ const postStore = {
     // Health
     health({ rootGetters }, healthData) {
       axios.post(SERVER.URL + SERVER.ROUTES.health + `/${healthData.posts_id}`, healthData, rootGetters.config)
-        .then(res => {
-          console.log(rootGetters.config)
-          console.log(res.data)
-        })
     },
     fetchHealths({ commit }, posts_id) {
       axios.get(SERVER.URL + SERVER.ROUTES.healthCount + posts_id)
@@ -187,9 +170,7 @@ const postStore = {
     },
     deleteScrap({ rootGetters }, params) {
       axios.delete(SERVER.URL + SERVER.ROUTES.scrap + `/${params.posts_id}`, rootGetters.config)
-        .then(res => {
-          console.log("result", res);
-        }).catch(err => console.log(err))
+        .catch(err => console.log(err))
     },
     getCheckScrap({ state, rootGetters, commit }, posts_id) {
       axios.get(SERVER.URL + SERVER.ROUTES.scrap,
@@ -205,7 +186,6 @@ const postStore = {
         }).catch(err => console.log(err))
     },
     getUserScraps({ rootGetters, commit }, userId) {
-      console.log("rootGetters.config", rootGetters.config)
       axios.get(SERVER.URL + SERVER.ROUTES.scrap + "/" + userId, rootGetters.config)
         .then(res => {
           commit('SET_SCRAPS', res.data);
@@ -217,9 +197,7 @@ const postStore = {
           params: { delete_file: deletefile },
           headers:rootGetters.config.headers
         })
-        .then(res => {
-          console.log("result", res);
-        }).catch(err => console.log(err))
+        .catch(err => console.log(err))
     },
     deleteTagRelation({ rootGetters }, params) {
 
@@ -228,9 +206,7 @@ const postStore = {
           data: params,
           headers:rootGetters.config.headers
         })
-        .then(res => {
-          console.log("result", res);
-        }).catch(err => console.log(err));
+        .catch(err => console.log(err));
 
     },
     //신고하기
