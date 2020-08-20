@@ -1,30 +1,38 @@
 <template>
   <div class="search wrap">
     <!-- 질병 설명 -->
-    <div class="disease-wrap" v-if="!this.isDiseaseHidden"> 
+    <div class="disease-wrap" v-if="!this.isDiseaseHidden">
       <div>
         <h2>{{this.selectedDisease.name}}</h2>
       </div>
       <!-- <div class="post-content">
         <textarea v-model="selectedDisease.description"></textarea>
-      </div> -->
+      </div>-->
       <div class="post-content">
-       <carousel class="carousel wrap" :per-page="1" v-bind:pagination-enabled="true">
-        <slide v-for="item in searchedItems" v-bind:key="item.index" class="myslide">
-          <div><strong>{{item.title}}</strong></div>
-          <div><img v-show="item.thumbnail != null" :src="item.thumbnail"></div>
-          <div><a>{{item.description}}</a></div>
-          <div class="morebtn">  
-            <a @click="openLink(item.link)"><i style="color:skyblue">더보기 </i></a>
-            <img src="../../assets/images/icon/icon_search_select.png"></div>
-        </slide>
-      </carousel>
+        <carousel class="carousel wrap" :per-page="1" v-bind:pagination-enabled="true">
+          <slide v-for="item in searchedItems" v-bind:key="item.index" class="myslide">
+            <div>
+              <strong>{{item.title}}</strong>
+            </div>
+            <div>
+              <img v-show="item.thumbnail != null" :src="item.thumbnail" />
+            </div>
+            <div>
+              <a>{{item.description}}</a>
+            </div>
+            <div class="morebtn">
+              <a @click="openLink(item.link)">
+                <i style="color:skyblue">더보기</i>
+              </a>
+              <img src="../../assets/images/icon/icon_search_select.png" />
+            </div>
+          </slide>
+        </carousel>
       </div>
       <div class="modify-footer">
         <img @click="close()" src="../../assets/images/icon/icon_close.png" />
       </div>
     </div>
-
 
     <div class="tab-container">
       <div
@@ -40,63 +48,62 @@
 
     <div class="search-panel">
       <div>
-        <input type="text" v-model="keyword" placeholder="검색어를 입력하세요" v-on:keyup.enter="getSearchList(keyword)"/>
-        <img id="search" @click="getSearchList(keyword)" src="../../assets/images/icon/icon_search_unselect.png">
+        <input
+          type="text"
+          v-model="keyword"
+          placeholder="검색어를 입력하세요"
+          v-on:keyup.enter="getSearchList(keyword)"
+        />
+        <img
+          id="search"
+          @click="getSearchList(keyword)"
+          src="../../assets/images/icon/icon_search_unselect.png"
+        />
       </div>
     </div>
     <div id="search-main">
       <div v-show="currentTab == 0">
-        <div class="search" v-for="item in this.items" v-bind:key="item.sickCd" :value="item.sickCd + ':' + item.sickNm">
-          <div class="search-item" >
-             <div class="search-text2" @click="selectDisease(item)" >{{item.sickNm}}</div> 
-             <button v-if="item.check"  @click="deleteDisease(item.sickCd)"  > 팔로우 취소</button>
-             <button v-else @click="createDisease({diseasename : item.sickNm,diseasecode : item.sickCd})">팔로우</button>
-          </div>         
-        </div>
-      </div>
-      <div v-show="currentTab == 1">
-        <div class="searchU" v-for="user in this.users" v-bind:key="user.user_id">
-          <div class="search-itemU" @click="goProfile(user.user_id)">
-            <div class="search-img">
-              <img :src="user.userimage" style="height:50px" />
-            </div>
-            <div class="search-textU">
-              <div class="search-nickname">
-                <span v-for="char in user.nickname" :key="char">
-                  <strong v-if="keyword.includes(char)">{{ char }}</strong>
-                  <span v-if="!keyword.includes(char)">{{ char }}</span>
-                </span>
-                <span> - </span>
-                <span v-for="char in user.username" :key="char">
-                  <strong v-if="keyword.includes(char)">{{ char }}</strong>
-                  <span v-if="!keyword.includes(char)">{{ char }}</span>
-                </span>
-              </div>
-              <div class="search-Introduction" v-if="user.introduction != null">{{user.introduction}}</div>
-              <div class="search-Introduction" v-if="user.introduction == null"><br></div>
+        <div
+          class="search-disease"
+          v-for="(item,index) in this.items"
+          v-bind:key="index"
+          v-bind:disease="diseases"
+          :value="item.sickCd + ':' + item.sickNm"
+        >
+          <div class="search-item">
+            <div class="search-text2" @click="selectDisease(item)">{{item.sickNm}}</div>
+            <div class="following-button">
+              <button v-if="item.check" @click="deleteFollow(index)">팔로우 취소</button>
+              <button
+                v-else
+                @click="createDisease({diseasename : item.sickNm,diseasecode : item.sickCd})"
+              >팔로우</button>
             </div>
           </div>
         </div>
+      </div>
+      <div v-show="currentTab == 1">
+        <user-list v-bind:users="this.users" v-bind:sort="2" v-bind:keyword="this.keyword"></user-list>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapActions,mapState } from "vuex";
+import { mapActions, mapState } from "vuex";
 import axios from "axios";
 import SERVER from "@/api/RestApi.js";
 import cookies from "vue-cookies";
-import {Carousel, Slide} from 'vue-carousel';
-import router from '@/router'
+import { Carousel, Slide } from "vue-carousel";
 const proxyurl = "https://cors-anywhere.herokuapp.com/";
 export default {
   name: "Search",
-  components:{
-    Carousel, Slide
+  components: {
+    Carousel,
+    Slide,
   },
   computed: {
-    ...mapState('diseaseStore', ['diseases']),
+    ...mapState("diseaseStore", ["diseases"]),
     ...mapState("userStore", ["loginData"]),
   },
   data() {
@@ -110,11 +117,11 @@ export default {
       items: [],
       check: false,
       selectedDisease: {
-        name : "",
+        name: "",
         description: "",
       },
       searchedItems: [],
-      isDiseaseHidden : true
+      isDiseaseHidden: true,
     };
   },
   watch: {
@@ -128,17 +135,20 @@ export default {
     items: function () {
       this.checkout(this.items);
     },
-    diseases:function(){
+    diseases: function () {
       this.checkout(this.items);
-    }
+    },
   },
-  created(){
-    if(this.loginData == null) router.push({ name: 'Landing' })
+  created() {
     this.$store.dispatch("diseaseStore/getFollowingDisease");
   },
   methods: {
     ...mapActions("userStore", ["goProfile"]),
-    ...mapActions("diseaseStore", ["getFolloingwDisease","createDisease","deleteDisease"]), //add와 딜리트 할때마다 내부에서 disease업데이트함
+    ...mapActions("diseaseStore", [
+      "getFolloingwDisease",
+      "createDisease",
+      "deleteDisease",
+    ]), //add와 딜리트 할때마다 내부에서 disease업데이트함
     getSearchList(keyword) {
       if (this.currentTab == 0) {
         this.getDisease(keyword);
@@ -197,7 +207,8 @@ export default {
           this.items = [];
           var len = res.data.response.body.totalCount;
           var items = res.data.response.body.items.item;
-          if (len == 0) { //찾은게 있음
+          if (len == 0) {
+            //찾은게 있음
             this.isSearched = false;
             this.$parent.$parent.isLoaded = true;
             return;
@@ -215,81 +226,103 @@ export default {
     checkout(items) {
       items.forEach((item) => {
         this.checkFollow(item);
-      })
+      });
     },
-    checkFollow(item){ //내가 갖고있는 질병 팔로우목록중 해당 아이템이 포함되어있나.
-      console.log(this.diseases)
+    checkFollow(item) {
+      //내가 갖고있는 질병 팔로우목록중 해당 아이템이 포함되어있나.
+      console.log(this.diseases);
       this.diseases.forEach((disease) => {
-        if(disease.diseasecode==item.sickCd) {
-          this.check = true
+        if (disease.diseasecode == item.sickCd) {
+          this.check = true;
           item.check = true;
-          console.log(item.sickCd)
+          console.log(item.sickCd);
         }
       });
-      this.check = false
+      this.check = false;
     },
-    selectDisease(disease){
+    selectDisease(disease) {
       this.$parent.$parent.isHidden = true;
       this.isDiseaseHidden = false;
       this.selectedDisease.name = disease.sickNm;
-      this.findDisease(disease.sickNm)
+      this.findDisease(disease.sickNm);
     },
-    async findDisease(disease){
+    async findDisease(disease) {
       this.searchedItems = [];
-      this.selectedDisease.description=""
+      this.selectedDisease.description = "";
       this.$parent.$parent.isLoaded = false;
       var params = {
-          query: disease,
-          display: 10,
-          start: 1,
-      }
-      await axios.request({
-          url: proxyurl + 'https://openapi.naver.com/v1/search/encyc.json',
+        query: disease,
+        display: 10,
+        start: 1,
+      };
+      await axios
+        .request({
+          url: proxyurl + "https://openapi.naver.com/v1/search/encyc.json",
           headers: {
-              'X-Naver-Client-Id' : 'fTUNPODC3LOXXIgFgqfZ',
-              'X-Naver-Client-Secret' : 'xqqkXHlwzG'
+            "X-Naver-Client-Id": "fTUNPODC3LOXXIgFgqfZ",
+            "X-Naver-Client-Secret": "xqqkXHlwzG",
           },
-          params: params
-      })
-      .then((res) => {
+          params: params,
+        })
+        .then((res) => {
           res.data.items.forEach((item) => {
-              
-              item.description = String(item.description).replace(/<br\/>/ig, "\n");
-              item.description = String(item.description).replace(/&quot;/ig, "");
-              item.description = String(item.description).replace(/<(\/)?([a-zA-Z]*)(\s[a-zA-Z]*=[^>]*)?(\s)*(\/)?>/ig, "");
+            item.description = String(item.description).replace(
+              /<br\/>/gi,
+              "\n"
+            );
+            item.description = String(item.description).replace(/&quot;/gi, "");
+            item.description = String(item.description).replace(
+              /<(\/)?([a-zA-Z]*)(\s[a-zA-Z]*=[^>]*)?(\s)*(\/)?>/gi,
+              ""
+            );
 
-              item.title = String(item.title).replace(/<br\/>/ig, "\n");
-              item.title = String(item.title).replace(/&quot;/ig, "");
-              item.title = String(item.title).replace(/<(\/)?([a-zA-Z]*)(\s[a-zA-Z]*=[^>]*)?(\s)*(\/)?>/ig, "");
+            item.title = String(item.title).replace(/<br\/>/gi, "\n");
+            item.title = String(item.title).replace(/&quot;/gi, "");
+            item.title = String(item.title).replace(
+              /<(\/)?([a-zA-Z]*)(\s[a-zA-Z]*=[^>]*)?(\s)*(\/)?>/gi,
+              ""
+            );
 
-              this.searchedItems.push(item);
-              // this.selectedDisease.description += item.description+"\n";
-              // item.title = String(item.title).replace(/<br\/>/ig, "\n");
-              // item.title = String(item.title).replace(/&quot;/ig, "");
-              // item.title = String(item.title).replace(/<(\/)?([a-zA-Z]*)(\s[a-zA-Z]*=[^>]*)?(\s)*(\/)?>/ig, "");
+            this.searchedItems.push(item);
+            // this.selectedDisease.description += item.description+"\n";
+            // item.title = String(item.title).replace(/<br\/>/ig, "\n");
+            // item.title = String(item.title).replace(/&quot;/ig, "");
+            // item.title = String(item.title).replace(/<(\/)?([a-zA-Z]*)(\s[a-zA-Z]*=[^>]*)?(\s)*(\/)?>/ig, "");
           });
           //this.selectedDisease.description = res.data.items;
 
           // console.log(res);
           this.$parent.$parent.isLoaded = true;
-      })
-      .catch((err) => {
+        })
+        .catch((err) => {
           console.error(err);
           this.$parent.$parent.isLoaded = true;
-      })
-      console.log(this.searchedItems)
+        });
+      console.log(this.searchedItems);
     },
-    switchTab(index){
-      this.currentTab=index;
+    switchTab(index) {
+      this.currentTab = index;
       this.keyword = "";
     },
-    close(){
+    close() {
       this.$parent.$parent.isHidden = false;
-      this.isDiseaseHidden = true;    
+      this.isDiseaseHidden = true;
     },
     openLink(link) {
-            window.open(link,"_parent");
-    }
+      window.open(link, "_parent");
+    },
+    // createFollow(idx){
+    //   var item = this.items[idx]
+    //   console.log(item)
+    //   this.createDisease()
+    //   this.items[idx].check=true;
+    //
+    // },
+    deleteFollow(idx) {
+      var item = this.items[idx];
+      this.deleteDisease(item.sickCd);
+      this.items[idx].check = false;
+    },
   },
 };
 </script>
@@ -298,7 +331,6 @@ export default {
 .search.wrap {
   text-align: center;
   background-color: white;
-  padding-bottom: 20px;
 }
 .search-panel {
   width: 100%;
@@ -343,7 +375,7 @@ export default {
   height: 70%;
   background-color: white;
   border-radius: 5px;
-  margin : auto 4%;
+  margin: auto 4%;
 }
 
 .post-content {
@@ -361,14 +393,13 @@ export default {
   max-width: 80%;
 }
 
-.myslide strong{
+.myslide strong {
   font-weight: 600;
 }
 
-.VueCarousel-wrapper{
+.VueCarousel-wrapper {
   height: 70%;
 }
-
 
 .myslide div:nth-child(3) {
   padding-left: 10%;
@@ -423,11 +454,24 @@ export default {
   outline: none;
   border-radius: 3px;
 }
+
 .search-item {
+  width: 90%;
   background-color: rgb(247, 247, 247);
   border-radius: 5px;
   border: none;
   transition-duration: 300ms;
+  margin:10px auto 0 auto;
+  clear: both;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-item:hover {
+  background-color: rgb(0, 171, 132);
+  color: white;
 }
 
 /* .search-user-panel:hover {
@@ -442,11 +486,6 @@ export default {
   width: 70%;
   height: 20px;
   background-color: orange;
-}
-
-.search-item:hover {
-  background-color: rgb(0, 171, 132);
-  color: white;
 }
 
 .search-item-user {
@@ -490,18 +529,21 @@ ul {
   /* background-size: cover; */
 }
 
-.search-item {
-  margin: 10px;
-  clear: both;
-  height: auto;
-}
 .search-text2 {
   padding: 10px;
   text-align: left;
-  width : 70%;
+  width: 60%;
   float: left;
-  height : inherit;
-  word-break:break-all;
+  height: inherit;
+  word-break: break-all;
+}
+
+.following-button {
+  width:30%;
+  text-align: center;
+  
+   float:right;
+  
 }
 .search-nickname {
   font-size: 18px;
@@ -512,18 +554,16 @@ ul {
   color: slategray;
 }
 
-button {
+
+.search-item button {
   background-color: rgb(0, 171, 132);
-  border : none;
+  border: none;
   border-radius: 5px;
-  width : 80px;
-  
-  padding : 5px;
-  margin-top : 10px;
-  margin-bottom : 10px;
+  width: 80px;
+
+  padding: 5px;
+  margin: 0 auto;
 }
-
-
 .searchU {
   width: 90%;
   margin-left: 5%;
@@ -536,7 +576,7 @@ button {
 
 .searchU:hover {
   background-color: rgb(0, 171, 132);
-  color:white;
+  color: white;
 }
 
 .searchU:hover .search-Introduction {
@@ -550,14 +590,18 @@ button {
 .search-textU {
   padding: 10px;
   text-align: left;
-  width : 70%;
+  width: 70%;
   float: left;
-  height : inherit;
-  word-break:break-all;
+  height: inherit;
+  word-break: break-all;
 }
-.morebtn{
+.morebtn {
   height: 30px;
   float: right;
 }
 
+.doctor-image {
+  width: 15px;
+  height: 15px;
+}
 </style>

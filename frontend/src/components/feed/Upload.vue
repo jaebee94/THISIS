@@ -22,6 +22,7 @@
       <!-- 질병 태그하는 부분 START -->
       <div class="tutorial-input-wrap">
         <input list="disease-list" id="keyword" v-model="keyword" placeholder="태그할 질병을 검색하세요" v-on:keyup.enter="getDisease(keyword)"/>
+        <img src="../../assets/images/icon/icon_search_unselect.png" @click="getDisease(keyword)">
       </div>
       <div class="tutorial-select-wrap">
         <a v-show="this.isSearched">추가 버튼을 누르시면 태그됩니다</a>
@@ -82,7 +83,6 @@
 <script>
 import axios from "axios";
 import { mapState, mapActions } from "vuex";
-import router from '@/router'
 const proxyurl = "https://cors-anywhere.herokuapp.com/";
 
 export default {
@@ -136,10 +136,10 @@ export default {
     posts_main: function () {
       this.checkForm();
     },
-    keyword: function () {
-      this.isSearched = false;
-      this.getDisease(this.keyword);
-    },
+    // keyword: function () {
+    //   this.isSearched = false;
+    //   this.getDisease(this.keyword);
+    // },
   },
   methods: {
     ...mapActions("postStore", ["createPost", "updatePost", "deleteFile","deleteTagRelation"]),
@@ -186,6 +186,7 @@ export default {
         ServiceKey:
           "hhU4fvLXqUtlijp+SQxnotQgI7A4yLrBASX3GMofY45xyks9LOe05UKyCfH5gkyN1U+7YKFfujffwflXy4TzfA==",
       };
+      this.$parent.$parent.isLoaded = false;
       console.log(params);
       axios
         .request({
@@ -208,14 +209,17 @@ export default {
           var items = res.data.response.body.items.item;
           if (len == 0) {
             this.isSearched = false;
+            this.$parent.$parent.isLoaded = true;
             return;
           } else if (len == 1) this.items.push(items);
           else this.items = items;
           this.isSearched = true;
+          this.$parent.$parent.isLoaded = true;
           console.log(this.items);
         })
         .catch((err) => {
           this.isSearched = false;
+          this.$parent.$parent.isLoaded = true;
           console.log(err);
         });
     },
@@ -275,7 +279,6 @@ export default {
     },
   },
   created() {
-    if(this.loginData == null) router.push({ name: 'Landing' })
     console.log(this.post);
     if (this.post != null) {
       
@@ -312,11 +315,13 @@ export default {
 }
 
 .title-panel #posts_title {
+  font-size: 15px;
+  font-weight: 500;
   transition-duration: 300ms;
 }
 
 .title-panel #posts_title:focus {
-  background-color: rgb(247, 247, 247);
+  background-color: rgb(200, 200, 200);
   color: black;
   font-weight: 600;
 }
@@ -420,6 +425,10 @@ export default {
   font-size: 15px;
   font-weight: 600;
   outline: none;
+}
+
+.tutorial-input-wrap img{
+  right: 10%;
 }
 
 .tutorial-select-wrap {

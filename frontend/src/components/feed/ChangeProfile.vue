@@ -12,7 +12,7 @@
           <img :src="tab" />
         </div>
       </div>
-      <div v-show="profileTab == 0">
+      <div v-if="profileTab == 0">
         <div class="profile-photo">
           <div class="profile-modify-image">
             <img :src="imgsrc" />
@@ -42,38 +42,34 @@
           >프로필 변경</button>
         </div>
       </div>
-      <div v-show="profileTab == 1">
-
-    <!--모달 시작 (의사 업로드) -->
-    <div class="doctor-wrap" v-if="!this.isDoctorHidden"> 
-      <div class="doctor-title">
-        <a id="doctor1">의료진 인증 화면입니다.</a><br>
-        <a id="doctor2">증빙 자료를 첨부해주세요</a>
-      </div>
-      <div class="doctor-content">
-        <div class="doctor-photo">
-            <div class="doctor-modify-image" v-if="this.Doctorimgsrc != null">
-              <img :src="Doctorimgsrc" />
+      <div v-else-if="profileTab == 1">
+        <!--모달 시작 (의사 업로드) -->
+        <div class="doctor-wrap" v-if="!this.isDoctorHidden">
+          <div class="doctor-title">
+            <a id="doctor1">의료진 인증 화면입니다.</a>
+            <br />
+            <a id="doctor2">증빙 자료를 첨부해주세요</a>
+          </div>
+          <div class="doctor-content">
+            <div class="doctor-photo">
+              <div class="doctor-modify-image" v-if="this.Doctorimgsrc != null">
+                <img :src="Doctorimgsrc" />
+              </div>
+              <div class="doctor-image-button">
+                <button @click="onClickDoctorImageUpload">사진 첨부하기</button>
+              </div>
+              <input ref="DoctorImg" type="file" hidden @change="onChangeDoctorImages" />
             </div>
-            <div class="doctor-image-button">
-              <button @click="onClickDoctorImageUpload">사진 첨부하기</button>
-            </div>
-            <input ref="DoctorImg" type="file" hidden @change="onChangeDoctorImages" />
+          </div>
+          <button class="doctor-submit-button" @click="doctorSubmit">인증 제출하기</button>
+          <div class="doctor-footer">
+            <img @click="close()" src="../../assets/images/icon/icon_close.png" />
+          </div>
         </div>
-      </div>
-      <button class="doctor-submit-button" @click="doctorSubmit">인증 제출하기</button>
-      <div class="doctor-footer">
-        <img @click="close()" src="../../assets/images/icon/icon_close.png" />
-      </div>
-    </div> <!--모달 끝-->
+        <!--모달 끝-->
 
         <div class="input-with-label">
-          <input
-            v-model="password"
-            id="password"
-            type="password"
-            placeholder="비밀번호를 입력해주세요"
-          />
+          <input v-model="password" id="password" type="password" placeholder="비밀번호를 입력해주세요" />
           <div class="error-text" v-if="error.password">{{error.password}}</div>
         </div>
         <div class="input-with-label">
@@ -85,7 +81,7 @@
           />
           <div class="error-text" v-if="error.passwordConfirm">{{error.passwordConfirm}}</div>
         </div>
-        <div class="button-wrap">
+        <div class="password-button-wrap">
           <button
             @click="changeUserInfo(changeInfo)"
             :disabled="!isSubmitPassword"
@@ -93,20 +89,19 @@
           >비밀번호 변경</button>
         </div>
         <div class="important-auth-wrap">
-          <div class="doctor-auth-wrap">
-            <img src="../../assets/images/icon/icon_doctor.png">
-            <div><a @click="showDoctor">의료진 인증하기</a></div>
+          <div @click="showDoctor" class="doctor-auth-wrap">
+            <img src="../../assets/images/icon/icon_doctor.png" />
+            <div>
+              <a>의료진 인증하기</a>
+            </div>
           </div>
-          <div class="signout-wrap" >
-            <img src="../../assets/images/icon/icon_signout.png" @click="withdraw">
-            <div><a>THISIS 떠나기</a></div>
+          <div @click="signOut" class="signout-wrap">
+            <img src="../../assets/images/icon/icon_signout.png"/>
+            <div>
+              <a>THISIS 떠나기</a>
+            </div>
           </div>
         </div>
-        <!-- <div class="signout-wrap">
-          <button @click="signOut()">
-            회원탈퇴
-          </button>
-        </div> -->
       </div>
     </div>
   </div>
@@ -116,12 +111,10 @@
 import PV from "password-validator";
 import axios from "axios";
 import SERVER from "@/api/RestApi.js";
-import router from '@/router'
 import { mapState, mapActions } from "vuex";
 
 export default {
   created() {
-    if(this.loginData == null) router.push({ name: 'Landing' })
     this.passwordSchema
       .is()
       .min(8)
@@ -132,18 +125,16 @@ export default {
       .has()
       .letters();
 
-    console.log("프로필 데이터" ,this.profileData)
+    console.log("프로필 데이터", this.profileData);
     this.email = this.profileData.userInfo.email;
     this.nickname = this.profileData.userInfo.nickname;
     this.introduction = this.profileData.userInfo.introduction;
-    if(this.profileData.userInfo.userimage!=null) this.imgsrc = this.profileData.userInfo.userimage;
+    if (this.profileData.userInfo.userimage != null)
+      this.imgsrc = this.profileData.userInfo.userimage;
   },
 
   computed: {
-    ...mapState("userStore", [
-      "loginData",
-      "profileData"
-      ]),
+    ...mapState("userStore", ["loginData", "profileData"]),
     // ...mapState("profileStore", ["profileData"]),
   },
   data() {
@@ -165,7 +156,7 @@ export default {
           userimage: "",
         },
       },
-      DoctorFormData : null,
+      DoctorFormData: null,
       confirm: {
         email: false,
         nickname: false,
@@ -185,8 +176,8 @@ export default {
         require("../../assets/images/icon/icon_key.png"),
       ],
       isDoctorHidden: true,
-      imgsrc:require('../../assets/user2.png'),
-      Doctorimgsrc:null,
+      imgsrc: require("../../assets/user2.png"),
+      Doctorimgsrc: null,
     };
   },
 
@@ -205,7 +196,11 @@ export default {
     },
   },
   methods: {
-    ...mapActions("userStore", ["changeUserInfo", "getAccessData","UploadDoctorAuth"]),
+    ...mapActions("userStore", [
+      "changeUserInfo",
+      "getAccessData",
+      "UploadDoctorAuth",
+    ]),
     checkFormInfo() {
       if (this.nickname.length == 0) {
         this.error.nickname = false;
@@ -229,7 +224,7 @@ export default {
 
       if (this.error.nickname && this.error.intro) {
         this.isSubmit = true;
-        this.changeInfo.userInfo.user_id = this.loginData.user_id
+        this.changeInfo.userInfo.user_id = this.loginData.user_id;
         this.changeInfo.userInfo.email = this.email;
         this.changeInfo.userInfo.nickname = this.nickname;
         this.changeInfo.userInfo.introduction = this.introduction;
@@ -253,6 +248,7 @@ export default {
         }
       }
       if (!this.error.password && !this.error.passwordConfirm) {
+        console.log("1")
         this.isSubmitPassword = true;
         this.changeInfo.userInfo.password = this.passwordConfirm;
       } else {
@@ -284,27 +280,27 @@ export default {
       const file = e.target.files[0];
       var formData = new FormData();
       formData.append("upload_file", file);
-      console.log('formData', formData)
-      console.log("file",formData)
+      console.log("formData", formData);
+      console.log("file", formData);
       this.changeInfo.formData = formData;
       console.log("changeInfo : ", this.changeInfo);
       this.imgsrc = URL.createObjectURL(file);
     },
     signOut() {
       var res = confirm("정말로 탈퇴하시겠습니까?");
-      if(res) {
+      if (res) {
         alert("개새끼...");
       } else {
-        alert("그래요 잘 생각했어요")
+        alert("그래요 잘 생각했어요");
       }
     },
-    showDoctor(){
+    showDoctor() {
       this.$parent.$parent.isHidden = true;
       this.isDoctorHidden = false;
     },
-    close(){
+    close() {
       this.$parent.$parent.isHidden = false;
-      this.isDoctorHidden = true;    
+      this.isDoctorHidden = true;
     },
     onChangeDoctorImages(e) {
       const file = e.target.files[0];
@@ -319,11 +315,11 @@ export default {
     onClickDoctorImageUpload() {
       this.$refs.DoctorImg.click();
     },
-    doctorSubmit(){
+    doctorSubmit() {
       this.UploadDoctorAuth(this.DoctorFormData);
-      alert("성공적으로 서버에 등록되었습니다.")
+      alert("성공적으로 서버에 등록되었습니다.");
       this.close();
-    }
+    },
   },
 };
 </script>
@@ -448,15 +444,35 @@ export default {
   margin-top: 10%;
 }
 
+.password-button-wrap {
+  margin-top: 10%;
+}
+
 .button-wrap button {
   width: 90%;
   height: 40px;
   border: none;
   background-color: rgb(0, 171, 132);
-  color: white;
+   color: white;
   font-size: 20px;
   font-weight: 600;
   border-radius: 5px;
+}
+
+.password-button-wrap button {
+  width: 90%;
+  height: 40px;
+  border: none;
+  background-color: rgb(138, 135, 135);
+   color: black; 
+  font-size: 20px;
+  font-weight: 600;
+  border-radius: 5px;
+}
+
+.password-button-wrap button:enabled {
+  background-color: rgba(0, 171, 132, 1);
+  color: rgb(247, 247, 247);
 }
 
 .important-auth-wrap {
@@ -525,7 +541,7 @@ export default {
   height: 70%;
   background-color: white;
   border-radius: 5px;
-  margin : auto 4%;
+  margin: auto 4%;
 }
 
 .doctor-footer {
@@ -539,7 +555,7 @@ export default {
   height: 80%;
 }
 
-.doctor-submit-button{
+.doctor-submit-button {
   width: 90%;
   height: 40px;
   border: none;
@@ -550,9 +566,9 @@ export default {
   border-radius: 5px;
 }
 
-.doctor-modify-image{
+.doctor-modify-image {
   width: 100%;
-  height: 350px;
+  height: 330px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -560,23 +576,23 @@ export default {
   margin-bottom: 15px;
 }
 
-.doctor-modify-image img{
-  width:100%;
+.doctor-modify-image img {
+  width: 100%;
   max-height: 350px;
   object-fit: cover;
 }
 
-.doctor-photo{
+.doctor-photo {
   width: 100%;
-  height: 420px;
+  height: 380px;
 }
 
-#doctor1{
+#doctor1 {
   font-size: 20px;
   font-weight: bold;
 }
 
-.doctor-title{
-  padding : 10px;
+.doctor-title {
+  padding: 10px;
 }
 </style>

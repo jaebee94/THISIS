@@ -45,11 +45,8 @@
 <script>
 import db from "../../firebaseInit";
 import { mapState, mapActions } from "vuex";
-import router from '@/router'
-//const functions = require('firebase-functions');
 export default {
   created() {
-    if(this.loginData == null) router.push({ name: 'Landing' })
     document.body.className = "whitebody";
     var vueInstance = this;
     db.collection("notification").doc(String(this.loginData.user_id))
@@ -139,7 +136,7 @@ export default {
   background-color: rgb(240, 240, 240);
 }
 .logo.wrap img {
-  margin: 5px 5px auto;
+  margin: 8px 5px 8px 5px;
   width: 20%;
 }
 .footer.wrap {
@@ -167,7 +164,7 @@ export default {
 }
 
 .notify-num {
-  padding: 2px 2px;
+  padding: 1px 4px;
   position: fixed;
   margin-left: -5px;
   text-decoration: none;

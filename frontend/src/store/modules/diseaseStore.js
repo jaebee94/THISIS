@@ -20,8 +20,8 @@ const diseaseStore = {
 
 
     actions: {
-        getFollowingDisease({ rootGetters, commit }) {
-            axios.get(SERVER.URL + SERVER.ROUTES.disease, rootGetters.config)
+        async getFollowingDisease({ rootGetters, commit }) {
+            await axios.get(SERVER.URL + SERVER.ROUTES.disease, rootGetters.config)
                 .then(res => {
                     console.log(res)
                     commit('SET_DISEASE', res.data)
@@ -37,9 +37,9 @@ const diseaseStore = {
                 dispatch('getFollowingDisease')
             })
         },
-        deleteDisease({ rootGetters, dispatch }, diseasecode) {
+        async deleteDisease({ rootGetters, dispatch }, diseasecode) {
             console.log(rootGetters.config)
-            axios.delete(SERVER.URL + SERVER.ROUTES.subscribe,
+            await axios.delete(SERVER.URL + SERVER.ROUTES.subscribe,
                 {
                     data:{
                         diseasecode: diseasecode

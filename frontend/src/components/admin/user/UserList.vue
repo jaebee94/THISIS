@@ -1,26 +1,37 @@
 <template>
   <div class="qna wrap">
-    <div class="qna-header">
-      <div class="qna-title">
-        <a>{{ user.email }}</a>
-      </div>
-      <div class="qna-tag">
-        <a>{{ user.username }}</a>
-      </div>
+    <table>
+      <tr>
+        <td>이름: </td>
+        <td>{{ user.username }}</td>
+      </tr>
+      <tr>
+        <td>닉네임: </td>
+        <td>{{ user.nickname }}</td>
+      </tr>
+      <tr>
+        <td>E-mail: </td>
+        <td>{{ user.email }}</td>
+      </tr>
+    </table>
+    <div v-if="user.disabled == 1">
+      <strong>정지된 계정입니다.</strong>
     </div>
-    <div class="qna-footer">
-      <span>
-        <strong class="qna-writer">{{user.nickname}}</strong>
-
-        <a href="">{{ user.count }}</a>
-      </span>
-    </div>
+    <form class="user-manage-panel" v-on:submit.prevent="onClickSubmit">
+      <select name="user-option" id="user-option" v-model="userOption">
+        <option value="" hidden></option>
+        <option value="delete">삭제</option>
+        <option value="disable">정지</option>
+        <option value="able">정지 해제</option>
+      </select>
+      <button type="submit">확인</button>
+    </form>
+    <hr>
   </div>
 </template>
 
 <script>
-// import { mapActions, mapState } from "vuex";
-// import PostListItem from './PostListItem'
+import { mapActions } from "vuex";
 
 export default {
   name: "UserList",
@@ -34,9 +45,19 @@ export default {
   },
   computed: {},
   data() {
-    return {};
+    return {
+      userOption: null,
+    };
   },
   methods: {
+    ...mapActions("adminStore", ["manageUser"]),
+    onClickSubmit() {
+      var data = {
+        check: this.userOption,
+        user_id: this.user.user_id
+      }
+      this.manageUser(data)
+    },
     timeForToday(time) {
       const today = new Date();
       var timeValue = new Date(time);

@@ -6,9 +6,10 @@
     <div class="tutorial-main-wrap"> 
         <div class="tutorial-input-wrap">
             <div>
-                <a>관심있는 질병을 검색하여 3개 이상 구독을 눌러주세요!</a>
+                <a>관심있는 질병을 검색하여 1개 이상 구독을 눌러주세요!</a>
             </div>
             <input list="disease-list" id="keyword" v-model="keyword" v-on:keyup.enter="getDisease(keyword)">
+            <img src="../../assets/images/icon/icon_search_unselect.png" @click="getDisease(keyword)">
         </div>
         <div class="tutorial-select-wrap">
             <a v-show="this.isSearched">추가 버튼을 누르시면 구독됩니다</a>
@@ -33,7 +34,6 @@
 <script>
 import axios from 'axios';
 import { mapState, mapActions } from "vuex";
-import router from '@/router'
 const proxyurl = "https://cors-anywhere.herokuapp.com/";
 export default {
     data() {
@@ -50,14 +50,13 @@ export default {
     ...mapState('userStore', ['loginData']),
     },
     created() {
-        if(this.loginData == null) router.push({ name: 'Landing' })
         document.body.className = "greenbody";
     },
     watch : {
-        keyword: function () {
-            this.isSearched = false;
-            this.getDisease(this.keyword);
-        },
+        // keyword: function () {
+        //     this.isSearched = false;
+        //     this.getDisease(this.keyword);
+        // },
         checkedItems : function () {
             this.checkForm();
         },
@@ -66,7 +65,7 @@ export default {
         ...mapActions("diseaseStore", ["createDisease"]),
         checkForm() {
             // 현재 선택한 구독 질병의 갯수로 다음으로 넘어갈 수 있는지 체크
-            if(this.checkedItems.length >= 3) {
+            if(this.checkedItems.length >= 1) {
                 this.isSelected = true;
             } else {
                 this.isSelected = false;
@@ -83,6 +82,7 @@ export default {
                 searchText : keyword,
                 ServiceKey : 'hhU4fvLXqUtlijp+SQxnotQgI7A4yLrBASX3GMofY45xyks9LOe05UKyCfH5gkyN1U+7YKFfujffwflXy4TzfA=='
             };
+            this.$parent.isLoaded = false;
             axios.request({
                 // 서버에 마운트하면서 바꿔야 할 부분 :
                 // proxyurl 지우고 올려야 함
@@ -99,14 +99,16 @@ export default {
                 this.items = [];
                 var len = res.data.response.body.totalCount;
                 var items = res.data.response.body.items.item;
-                if(len == 0) {this.isSearched = false;return;}
+                if(len == 0) {this.isSearched = false; this.$parent.isLoaded = true;return;}
                 else if(len == 1) this.items.push(items);
                 else this.items = items;
                 this.isSearched = true;
+                this.$parent.isLoaded = true;
             })
             .catch((err) => {
                 this.isSearched = false;
                 console.log(err)
+                this.$parent.isLoaded = true;
             })
         },
         checkItem(now) {
@@ -264,5 +266,13 @@ export default {
         height: 30px;
         padding-left: 3%;
         outline:none;
+    }
+
+    .tutorial-input-wrap img {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        right: 25px;
+        margin-top: 5px;
     }
 </style>
