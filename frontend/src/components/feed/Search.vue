@@ -62,7 +62,7 @@
       </div>
     </div>
     <div id="search-main">
-      <div v-show="currentTab == 0">
+      <div v-if="currentTab == 0">
         <div
           class="search-disease"
           v-for="(item,index) in this.items"
@@ -81,8 +81,17 @@
             </div>
           </div>
         </div>
+        <infinite-loading ref="infiniteLoading" @infinite="infiniteHandler">
+          <div slot="spinner"> </div>
+          <div slot="no-more">더 이상 게시글이 없습니다 :)</div>
+          <div slot="no-results"> </div>
+          <div slot="error" slot-scope="{ trigger }">
+            Error message, click
+            <a href="javascript:;" @click="trigger">here</a> to retry
+          </div>
+        </infinite-loading>
       </div>
-      <div v-show="currentTab == 1">
+      <div v-else-if="currentTab == 1">
         <user-list v-bind:users="this.users" v-bind:sort="2" v-bind:keyword="this.keyword"></user-list>
       </div>
     </div>
@@ -122,16 +131,10 @@ export default {
       },
       searchedItems: [],
       isDiseaseHidden: true,
+      page:0
     };
   },
   watch: {
-    // keyword: function () {
-    //   if (this.currentTab == 0) {
-    //     this.getDisease(this.keyword);
-    //   } else {
-    //     this.getUsers(this.keyword);
-    //   }
-    // },
     items: function () {
       this.checkout(this.items);
     },
@@ -140,6 +143,7 @@ export default {
     },
   },
   created() {
+    this.page=0
     this.$store.dispatch("diseaseStore/getFollowingDisease");
   },
   methods: {
@@ -151,7 +155,9 @@ export default {
     ]), //add와 딜리트 할때마다 내부에서 disease업데이트함
     getSearchList(keyword) {
       if (this.currentTab == 0) {
-        this.getDisease(keyword);
+        this.page=1;
+        this.items=[];
+        this.$refs.infiniteLoading.stateChanger.reset();
       } else {
         this.getUsers(keyword);
       }
@@ -170,21 +176,22 @@ export default {
         )
         .then((res) => {
           this.users = res.data;
-          console.log(res.data);
           this.$parent.$parent.isLoaded = true;
         })
         .catch((err) => console.log(err));
     },
-    getDisease(keyword) {
+    async infiniteHandler($state) {
+
+      if(this.page == 0) return;
       this.$parent.$parent.isLoaded = false;
       // API에서 질병을 검색하고 셀렉트 박스로 보여줌
       var params = {
-        pageNo: 1,
+        pageNo: this.page,
         numOfRows: 10,
         sickType: 1,
         medTp: 2,
         diseaseType: "SICK_NM",
-        searchText: keyword,
+        searchText: this.keyword,
         ServiceKey:
           "hhU4fvLXqUtlijp+SQxnotQgI7A4yLrBASX3GMofY45xyks9LOe05UKyCfH5gkyN1U+7YKFfujffwflXy4TzfA==",
       };
@@ -204,18 +211,30 @@ export default {
           params: params,
         })
         .then((res) => {
-          this.items = [];
-          var len = res.data.response.body.totalCount;
+          var count = res.data.response.body.totalCount;
           var items = res.data.response.body.items.item;
-          if (len == 0) {
-            //찾은게 있음
+          console.log(count)
+          if(items.length>0){
+            
+            this.isSearched = true;
+            this.$parent.$parent.isLoaded = true;
+            this.items.push(...items);
+            console.log(this.items)
+            $state.loaded();
+            this.page += 1;
+          }
+          else if(count==1){
             this.isSearched = false;
             this.$parent.$parent.isLoaded = true;
-            return;
-          } else if (len == 1) this.items.push(items);
-          else this.items = items;
-          this.isSearched = true;
-          this.$parent.$parent.isLoaded = true;
+            this.items.push(items)
+            $state.complete();
+          }
+          else{
+            this.isSearched = false;
+            this.$parent.$parent.isLoaded = true;
+            $state.complete();
+          } 
+          
         })
         .catch((err) => {
           this.isSearched = false;
@@ -461,7 +480,7 @@ export default {
   border-radius: 5px;
   border: none;
   transition-duration: 300ms;
-  margin:10px auto 0 auto;
+  margin: 10px auto 0 auto;
   clear: both;
 
   display: flex;
@@ -539,11 +558,10 @@ ul {
 }
 
 .following-button {
-  width:30%;
+  width: 30%;
   text-align: center;
-  
-   float:right;
-  
+
+  float: right;
 }
 .search-nickname {
   font-size: 18px;
@@ -553,7 +571,6 @@ ul {
   font-size: 12px;
   color: slategray;
 }
-
 
 .search-item button {
   background-color: rgb(0, 171, 132);

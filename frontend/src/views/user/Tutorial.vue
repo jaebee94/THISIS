@@ -139,140 +139,138 @@ export default {
 </script>
 
 <style>
-    .tutorial.wrap {
-        width: 100%;
-        height: 100%;
-    }
+.tutorial.wrap {
+  width: 100%;
+  height: 100%;
+}
 
-    .tutorial-logo-wrap {
-        width: 100%;
-        height: 60px;
-    }
+.tutorial-logo-wrap {
+  width: 100%;
+  height: 60px;
+}
 
-    .tutorial-logo-wrap img { 
-        height: 48px;
-        margin-top: 6px;
-    }
+.tutorial-logo-wrap img {
+  height: 48px;
+  margin-top: 6px;
+}
 
-    .tutorial-main-wrap{
-        margin-top: 40px;
-        width: 100%;
-        height: 60%;
-    }
+.tutorial-main-wrap {
+  margin-top: 40px;
+  width: 100%;
+  height: 60%;
+}
 
+.tutorial-input-wrap div a {
+  color: white;
+  font-size: 12px;
+}
 
-    .tutorial-input-wrap div a {
-        color : white;
-        font-size: 12px;
-    }
+.tutorial-select-wrap {
+  width: 100%;
+  height: 100%;
+  text-align: left;
+}
 
-    .tutorial-select-wrap {
-        width: 100%;
-        height: 100%;
-        text-align:left;
-    }
+.tutorial-select-wrap a {
+  font-size: 10px;
+  margin-left: 5%;
+  color: slategray;
+}
 
-     .tutorial-select-wrap a {
-        font-size: 10px;
-        margin-left: 5%;
-        color: slategray;
-    }
+.tutorial-select-wrap select {
+  width: 70%;
+  height: 30px;
+  margin-left: 5%;
+  border: none;
+  background-color: white;
+  border-radius: 5px;
+}
 
-    .tutorial-select-wrap select {
-        width: 70%;
-        height: 30px;
-        margin-left: 5%;
-        border:none;
-        background-color: white;
-        border-radius: 5px;
-    }
+.tutorial-select-wrap select:focus {
+  outline: none;
+}
 
-    .tutorial-select-wrap select:focus {
-        outline: none;
-    }
+.tutorial-select-wrap button {
+  background-color: white;
+  color: rgb(0, 171, 132);
+  font-weight: 600;
+  margin-left: 2%;
+  width: 18%;
+  height: 30px;
+  border: none;
+  border-radius: 5px;
+  outline: none;
+}
 
-    .tutorial-select-wrap button {
-        background-color: white;
-        color: rgb(0, 171, 132);
-        font-weight: 600;
-        margin-left: 2%;
-        width: 18%;
-        height: 30px;
-        border: none;
-        border-radius: 5px;
-        outline:none;
-    }
+.tutorial-show-wrap {
+  width: 100%;
+  margin-top: 7px;
+}
 
-    .tutorial-show-wrap {
-        width: 100%;
-        margin-top: 7px; 
-    }
+.tutorial-show-wrap div {
+  margin: 5px;
+  height: 100%;
+}
 
-    .tutorial-show-wrap div {
-        margin : 5px;
-        height: 100%;
-    }
+.tutorial-show-wrap div span {
+  background-color: white;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  height: 20px;
+  border-radius: 5px;
+  color: black;
+  display: inline-block;
+  text-align: center;
+}
 
-    .tutorial-show-wrap div span {
+.tutorial-show-wrap div img {
+  display: inline-block;
+  height: 10px;
+  margin-left: 10px;
+}
 
-        background-color: white;
-        border: none;
-        font-size: 14px;
-        font-weight: 600;
-        height: 20px;
-        border-radius: 5px;
-        color: black;
-        display: inline-block;
-        text-align: center;
-    }
+.button.wrap {
+  position: absolute;
+  bottom: 30px;
+  width: 100%;
+}
 
-    .tutorial-show-wrap div img {
-        display: inline-block;
-        height: 10px;
-        margin-left: 10px;
-    }
+.button.wrap button {
+  border: none;
+  border-radius: 5px;
+  width: 80%;
+  height: 40px;
+  color: black;
+  font-size: 25px;
+  font-weight: 600;
+  transition-duration: 300ms;
+}
+.button.wrap button:disabled {
+  background-color: rgb(200, 200, 200);
+  color: white;
+}
 
-    .button.wrap {
-        position: absolute;
-        bottom: 30px;
-        width: 100%;
-    }
+.button.wrap button:focus {
+  outline: none;
+  background-color: rgb(0, 171, 132);
+  color: white;
+}
 
-    .button.wrap button {
-        border: none;
-        border-radius: 5px;
-        width: 80%;
-        height: 40px;
-        color: black;
-        font-size: 25px;
-        font-weight: 600;
-        transition-duration: 300ms;
-    }
-    .button.wrap button:disabled {
-        background-color: rgb(200, 200, 200);
-        color: white;
-    }
+#keyword {
+  width: 87%;
+  border: none;
+  border-radius: 5px;
+  height: 30px;
+  padding-left: 3%;
+  outline: none;
+}
 
-    .button.wrap button:focus {
-        outline: none;
-        background-color: rgb(0, 171, 132);
-        color: white;
-    }
-
-    #keyword {
-        width: 87%;
-        border: none;
-        border-radius: 5px;
-        height: 30px;
-        padding-left: 3%;
-        outline:none;
-    }
-
-    .tutorial-input-wrap img {
-        position: absolute;
-        width: 20px;
-        height: 20px;
-        right: 25px;
-        margin-top: 5px;
-    }
+.tutorial-input-wrap img {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  right: 25px;
+  margin-top: 5px;
+}
 </style>
