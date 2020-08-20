@@ -110,10 +110,13 @@ export default {
       }
       return `${Math.floor(betweenTimeDay / 365)}년전`;
     },
-    showModal(qnaInfo){
+    async showModal(qnaInfo){
       this.isDelete = false;
       console.log(qnaInfo.userinfo.user_id)
-      if(qnaInfo.userinfo.user_id == this.loginData.user_id) this.deletePost({qnaInfo:qnaInfo,user_id: this.loginData.user_id});
+      if(qnaInfo.userinfo.user_id == this.loginData.user_id) {
+        await this.deletePost(qnaInfo.posts_id);
+        this.$emit("delete-qna");
+      }
       else {
         // var reason = prompt("신고 내용은요?");
         // let params = {

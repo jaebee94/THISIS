@@ -294,6 +294,7 @@ public class AdminController {
 		if (check(request) == 1) {
 			String check = requestdoctor.getCheck();
 			int doctor_id = requestdoctor.getDoctor_id();
+			System.out.println(doctor_id);
 			Doctor doctor = doctorService.selectMyDoctorID(doctor_id);
 			int user_id = doctor.getUser_id();
 			if (check.equals("accept")) {

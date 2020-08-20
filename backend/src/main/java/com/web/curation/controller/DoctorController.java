@@ -62,7 +62,12 @@ public class DoctorController {
 		}
 		doctor.setUser_id(user_id);
 		System.out.println(doctor.getUser_id());
-		int doctor_id = doctor.getDoctor_id();
+		Integer doctor_id = doctorService.selectdoctorid();
+		if(doctor_id==null) {
+			doctor_id=1;
+		}
+		else
+			doctor_id+=1;
 		doctor.setDoctorauth("unread");
 		try {
 			String access_path = "http://i3a301.p.ssafy.io/images/doctor/";

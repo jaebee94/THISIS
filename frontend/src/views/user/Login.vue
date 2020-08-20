@@ -2,6 +2,9 @@
   <div class="main wrap">
       <div class="logo wrap">
         <img src="../../assets/images/icon/logo_green.png" alt="logo_green" />
+        <div> 
+            <a style="color: rgb(0, 171, 132); font-size: 15px; font-weight: 600;">세상의 모든 질병</a>
+        </div>
       </div>
 
       <div class="email wrap">

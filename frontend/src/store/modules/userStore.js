@@ -71,8 +71,9 @@ const userStore = {
       window.localStorage.clear();
       router.push({ name: 'Login' })
     },
-    signup(signupData) {
-      axios.post(SERVER.URL + SERVER.ROUTES.signup, signupData)
+    signup({rootGetters},signupData) {
+      console.log(signupData)
+      axios.post(SERVER.URL + SERVER.ROUTES.signup, signupData,rootGetters.config)
         .then((res) => {
           var id = res.data.object;
           let instance = {

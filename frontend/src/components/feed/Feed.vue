@@ -55,7 +55,7 @@
               class="custom-tag"
               v-for="tag in qnaInfo.tags"
               v-bind:key="tag.tagid"
-            >#{{tag.tagname}}</a>
+            > #{{tag.tagname}} </a>
           </div>
         </div>
         <div :class="{'wide' : qnaInfo.post.imgsrc == null}" class="qna-comment-wrap">
@@ -215,6 +215,7 @@
           v-bind:postInfo="postInfo"
           @send-modify="showModify"
           @make-report="makeReport"
+          @delete-post="deletePost"
         ></post>
       </div>
       <infinite-loading
@@ -248,6 +249,7 @@
         v-bind:qnaInfo="qnaInfo"
         @send-modify-qna="showModifyQnA"
         @make-report="makeReport"
+        @delete-qna="deleteQnA"
       ></qna>
       <infinite-loading
         v-if="this.currentTab == 1"
@@ -695,6 +697,16 @@ export default {
       document.body.className = "lockbody";
       this.selectedReason = 'A';
     },
+    deletePost() {
+      this.page = 0;
+      this.posts = [];
+      this.$refs.infiniteLoadingPost.stateChanger.reset();
+    },
+    deleteQnA() {
+      this.qnaPage = 0;
+      this.qnas = [];
+      this.$refs.infiniteLoadingQnA.stateChanger.reset();
+    },
     policeConfirm() {
       var reason = '';
       if(this.selectedReason == 'A'){
@@ -739,6 +751,7 @@ export default {
     },
     policeCancel() {
       this.$parent.$parent.isHidden = false;
+      this.$parent.$parent.$parent.isHidden = false;
       this.isReportHidden = false;
       /*------ 피드 스크롤 unlock ------*/
       document.body.className = "";
