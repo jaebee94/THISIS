@@ -43,9 +43,14 @@ const userStore = {
         }
       })
         .then(res => {
+          console.log("로그인", res)
+          if(res.data.disabled == 1) {
+            alert("운영자에 의해 정지된 사용자입니다.")
+            return;
+          }
           commit('SET_TOKEN', res.data.accessToken)
           commit('SET_LOGIN_DATA', res.data)
-          rootGetters.config;
+          
           if (res.data.subscribeCount > 0) {
             router.push({ name: 'Feed' })
           } else {

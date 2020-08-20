@@ -2,18 +2,23 @@
   <div class="qna wrap">
     <div v-if="isDelete" @click="isDelete = !isDelete" class="black-layer"></div>
     <div class="qna-header">
-        <img class="qna-preview" v-if="qnaInfo.post.imgsrc" :src="qnaInfo.post.imgsrc">
+        <img class="qna-preview" v-if="qnaInfo.post.hidden == 1" src="../../assets/images/icon/icon_noimage.png">
+        <img class="qna-preview" v-else-if="qnaInfo.post.imgsrc" :src="qnaInfo.post.imgsrc">
         <img class="qna-preview" v-else src="../../assets/images/icon/icon_qna.png">
         <table>
             <tr >
                 <td>
-                    <div class="qna-title">
+                    <div class="qna-title" v-if="qnaInfo.post.hidden == 0">
                         <a>{{qnaInfo.post.posts_title}}</a>
                     </div>
+                    <div class="blind-post"  v-if="qnaInfo.post.hidden == 1">
+                      <img class="blind-image" src="../../assets/images/icon/icon_info.png">
+                      관리자에 의해 블라인드 처리된 게시물입니다
+                    </div>
                 </td>
-                <td>
+                <td v-if="qnaInfo.post.hidden == 0">
                   <div class="dropdown" >
-                    <img class="dropmenu" @click="isDelete = !isDelete"  src="../../assets/images/icon/icon_3dots.png" />
+                    <img class="dropmenu" @click="isDelete = !isDelete" src="../../assets/images/icon/icon_3dots.png" />
                   </div>
                   <div v-show="isDelete" class="dropdown-content">
                     <a href="#" v-if="loginData.user_id == qnaInfo.post.user_id" @click="changeSelectQnA(qnaInfo,'modify')">수정</a>
@@ -24,11 +29,11 @@
                 </td>
             </tr>
         </table>
-        <div  class="qna-tag" @click="changeSelectQnA(qnaInfo, 'comment')">
+        <div  class="qna-tag" @click="changeSelectQnA(qnaInfo, 'comment')"  v-if="qnaInfo.post.hidden == 0">
             <a v-if="qnaInfo.diseasename != ''">#{{qnaInfo.diseasename}}</a>
         </div>
     </div>
-    <div class="qna-footer" @click="changeSelectQnA(qnaInfo, 'comment')">
+    <div class="qna-footer" @click="changeSelectQnA(qnaInfo, 'comment')"  v-if="qnaInfo.post.hidden == 0">
       <!-- <img
         class="profile-image"
         @click="goProfile(qnaInfo.userinfo.user_id)"
