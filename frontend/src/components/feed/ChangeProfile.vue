@@ -121,7 +121,6 @@ export default {
       .has()
       .letters();
 
-    console.log("프로필 데이터", this.profileData);
     this.email = this.profileData.userInfo.email;
     this.nickname = this.profileData.userInfo.nickname;
     this.introduction = this.profileData.userInfo.introduction;
@@ -244,7 +243,6 @@ export default {
         }
       }
       if (!this.error.password && !this.error.passwordConfirm) {
-        console.log("1")
         this.isSubmitPassword = true;
         this.changeInfo.userInfo.password = this.passwordConfirm;
       } else {
@@ -276,10 +274,7 @@ export default {
       const file = e.target.files[0];
       var formData = new FormData();
       formData.append("upload_file", file);
-      console.log("formData", formData);
-      console.log("file", formData);
       this.changeInfo.formData = formData;
-      console.log("changeInfo : ", this.changeInfo);
       this.imgsrc = URL.createObjectURL(file);
     },
     signOut() {
@@ -302,10 +297,7 @@ export default {
       const file = e.target.files[0];
       var formData = new FormData();
       formData.append("upload_file", file);
-      //console.log('formData', formData)
-      //console.log("file",formData)
       this.DoctorFormData = formData;
-      //console.log("DoctorFormData : ", this.DoctorFormData);
       this.Doctorimgsrc = URL.createObjectURL(file);
     },
     onClickDoctorImageUpload() {

@@ -30,10 +30,6 @@ const followStore = {
     // 내가 클릭해서 요청 보내는 작업
     createFollowing({ rootGetters }, params) {
       axios.post(SERVER.URL + SERVER.ROUTES.following, params, rootGetters.config.headers)
-        .then((res) => {
-          console.log(res);
-          console.log(params)
-        })
         .catch(err => {
           console.log(err)
         })
@@ -41,10 +37,6 @@ const followStore = {
     // 내가 클릭해서 요청 보냈던거 취소하는 작업
     deleteFollowing({ rootGetters }, params) {
       axios.delete(SERVER.URL + SERVER.ROUTES.following, { data: params, headers: rootGetters.config.headers })
-        .then((res) => {
-          console.log(res);
-          console.log(params);
-        })
         .catch(err => {
           console.log(err)
         })
@@ -52,9 +44,6 @@ const followStore = {
     // 팔로우 요청 수락 (팔로우가 맺어짐)
     createFollow({ rootGetters }, params) {
       axios.post(SERVER.URL + SERVER.ROUTES.follow, params, rootGetters.config.headers)
-        .then(res => {
-          console.log(res)
-        })
         .catch(err => console.log(err))
     },
     //팔로우 끊기
@@ -62,10 +51,6 @@ const followStore = {
       var conf = confirm("정말 팔로우를 끊으시겠습니까?");
       if (conf) {
         axios.delete(SERVER.URL + SERVER.ROUTES.follow, { data: params, headers: rootGetters.config.headers })
-          .then((res) => {
-            console.log(res);
-            console.log(params);
-          })
           .catch(err => {
             console.log(err)
           })
@@ -95,7 +80,6 @@ const followStore = {
       var followingArray = [];
       await axios.get(SERVER.URL + SERVER.ROUTES.followee + id, rootGetters.config.headers)
         .then((res) => {
-          console.log("팔로잉목록", res)
           //팔로이 아이디 통해서 유저정보 획득
           res.data.object.forEach(following => {
             axios.get(SERVER.URL + SERVER.ROUTES.user + `/${following.followee}`, rootGetters.config)
@@ -117,12 +101,10 @@ const followStore = {
       var followerArray = [];
       await axios.get(SERVER.URL + SERVER.ROUTES.follower + id, rootGetters.config.headers)
       .then((res) => {
-        console.log("팔로잉목록", res)
         //팔로이 아이디 통해서 유저정보 획득
         res.data.object.forEach(followerlist => {
           axios.get(SERVER.URL + SERVER.ROUTES.user + `/${followerlist.follower}`, rootGetters.config)
             .then((res) => {
-              console.log("팔로워",res)
               followerArray.push(res.data);
             })
             .catch(err => {

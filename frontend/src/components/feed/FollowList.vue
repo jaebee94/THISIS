@@ -75,7 +75,6 @@ export default {
     }
   },
   created() {
-    console.log('followlist')
     //이 계정의 팔로워와 팔로잉 리스트 setting함
      this.currentTab=this.$route.params.tab
     this.getFollower(this.loginData.user_id);

@@ -140,7 +140,6 @@ export default {
   },
   mounted() {
     this.user.user_id = this.$route.params.id;
-    console.log("mounted");
   },
   computed: {
     ...mapState("userStore", ["loginData", "profileData"]),
@@ -289,7 +288,6 @@ export default {
     },
   },
   created() {
-    console.log(this.profileData);
     this.getUserScraps(this.profileData.userInfo.user_id);
     var vueInstance = this;
     let params = {
@@ -308,7 +306,7 @@ export default {
         // Listen for document metadata changes
         includeMetadataChanges: true,
       },
-      function (doc) {
+      function () {
         //이벤트 발생시 카운트 재정립
         noti
           .get()
@@ -321,11 +319,9 @@ export default {
           .catch(function (err) {
             console.log("ERROR OCCURED : ", err);
           });
-        console.log("이벤트 발생", doc);
       }
     );
 
-    console.log(this.profileData);
   },
 
   

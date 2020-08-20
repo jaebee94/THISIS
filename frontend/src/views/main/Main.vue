@@ -33,7 +33,6 @@
           <td>
             <!-- <router-link to="/main/profile"> -->
               <img v-if="this.loginData.userimage!=null" @click="checkProfile()" :src="this.loginData.userimage" />
-              <img v-else @click="checkProfile()" src="../../assets/images/icon/icon_default_image.png" />
             <!-- </router-link> -->
           </td>
         </tr>
@@ -53,9 +52,8 @@ export default {
     .onSnapshot({
         // Listen for document metadata changes
         includeMetadataChanges: true
-    }, function(doc) {
+    }, function() {
         vueInstance.getNoti(String(vueInstance.loginData.user_id))
-        console.log("이벤트 발생", doc)
     });
   },
   data() {

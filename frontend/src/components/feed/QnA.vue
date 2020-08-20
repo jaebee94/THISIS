@@ -81,17 +81,14 @@ export default {
         isModifyHidden: false,
         isQnAHidden: false,
       };
-      console.log("qna", qna);
       if (sort == "comment") {
         info.isQnAHidden = true;
         this.fetchComments(qna.posts_id);
         this.$emit("send-modify-qna", info);
-        console.log("comment");
       } else if (sort == "modify") {
         //info.isModifyHidden = true;
         this.setPost(qna);
         this.$router.push({ name: "Upload" });
-        console.log("modify");
       }
     },
     timeForToday(time) {
@@ -117,38 +114,18 @@ export default {
     },
     async showModal(qnaInfo){
       this.isDelete = false;
-      console.log(qnaInfo.userinfo.user_id)
       if(qnaInfo.userinfo.user_id == this.loginData.user_id) {
         await this.deletePost(qnaInfo.posts_id);
         this.$emit("delete-qna");
       }
       else {
-        // var reason = prompt("신고 내용은요?");
-        // let params = {
-        //   posts_id: postInfo.post.posts_id,
-        //   reason: reason,
-        //   user_id: this.loginData.user_id
-        // }
+
         this.makeReport();
-        // axios.post(SERVER.URL + '/police', params, { headers: { accessToken : cookies.get('access-token')}})
-        // .then((res) => {
-        //   console.log(res);
-        //   // 신고 성공
-        //   alert('게시물을 신고했습니다')
-        // })
-        // .catch((err) => {
-        //   console.log(err);
-        //   // 신고 실패
-        //   alert('게시물 신고에 실패했습니다')
-        // })
       }
     },
     makeReport() {
       this.$emit("make-report", this.qnaInfo);
     }
-  },
-  created() {
-    console.log(this.selectedQnA);
   },
   props: {
     qnaInfo: {
