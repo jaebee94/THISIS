@@ -212,8 +212,7 @@ export default {
         .then((res) => {
           var items = res.data.response.body.items.item;
           console.log(typeof(items))
-          if(typeof(items)==Array){
-            
+          if(items.length){           
             this.isSearched = true;
             this.$parent.$parent.isLoaded = true;
             this.items.push(...items);
@@ -221,7 +220,7 @@ export default {
             $state.loaded();
             this.page += 1;
           }
-          else if(typeof(items)===Object){
+          else if(typeof(items)=='object'){
             this.isSearched = false;
             this.$parent.$parent.isLoaded = true;
             this.items.push(items)
