@@ -37,7 +37,7 @@
 	
 	<insert id="createHealth">
 		insert into health
-		values(#{posts_id}, #{user_id}, #{nickname})
+		values(#{posts_id}, #{user_id})
 	</insert>
 
 	<delete id="deleteHealth">

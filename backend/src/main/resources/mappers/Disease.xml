@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.web.curation.dao.DiseaseDAO">
+	
+	<!-- 질병 전체 조회 -->
+	<select id="selectDisease" resultType="Disease">
+		select *
+		from disease
+	</select>
+	
+	<!-- 질병 코드로 조회 -->
+	<select id="selectDiseaseByDiseasecode" resultType="Disease">
+		select *
+		from disease
+		where diseasecode=#{diseasecode}
+	</select>
+	
+	<!-- 유저가 구독한 질병 조회 -->
+	<select id="selectDiseaseByUserid" resultType="Disease">
+		select *
+		from disease
+		where disease.diseasecode in (select diseasecode from subscribe where subscribe.user_id = #{user_id})
+	</select>
+	
+	<!-- 질병 레코드 추가  -->
+	<insert id="createDisease" parameterType="Disease">
+		insert into disease(
+			diseasecode, diseasename
+		) values (
+			#{diseasecode},#{diseasename}
+		)
+	</insert>
+
+	<!-- 질병 레코드 삭제 -->
+	<delete id="deleteDisease" parameterType="String">
+		delete 
+		from 	disease
+		where 	diseasecode = #{diseasecode}
+	</delete>
+</mapper>

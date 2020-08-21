@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.web.curation.dao.PoliceDAO">
+
+	<select id="selectUserPolice" resultType="Integer">
+		select (select count(*) from police p join posts po on p.posts_id =
+		po.posts_id where po.user_id = u.user_id) as count
+		from UserInfo u
+		where u.user_id = #{user_id}
+	</select>
+	
+	<insert id="createPolice">
+		insert into police (
+		posts_id, user_id, reason
+		)values(#{posts_id}, #{user_id}, #{reason})
+	</insert>
+	
+	<select id="selectPolice" resultType="Integer">
+		select count(*)
+		from police
+		where posts_id=#{posts_id}
+	</select>
+	
+	<select id = "selectpostPolice" resultType="Police">
+		select*
+		from police
+		where posts_id = #{posts_id}
+	</select>
+	
+	<select id = "selectMyPolice" resultType="PoliceJoin">
+		select police.posts_id, posts.user_id, police.reason
+		from police 
+		join posts
+		on police.posts_id = posts.posts_id 
+		where posts.user_id=#{user_id}
+	</select>
+</mapper>

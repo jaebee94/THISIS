@@ -47,23 +47,30 @@ public class AuthInterceptor extends HandlerInterceptorAdapter{
 			//HandlerMethod hm = (HandlerMethod) handler;
 
 			//헤더로부터 토큰을 읽음
-			String accessToken = request.getHeader("ACCESS_TOKEN");
-			System.out.println("access_token : " + accessToken);
-			final String refreshToken = request.getHeader("REFRESH_TOKEN");
-			System.out.println("refresh_token : " + refreshToken);
+			String accessToken = request.getHeader("accessToken");
+			System.out.println("accessToken : " + accessToken);
+			final String refreshToken = request.getHeader("refreshToken");
+			System.out.println("refreshToken : " + refreshToken);
 			
 			if(refreshToken != null) {	//ACCESS_TOKEN이 없어서 REFRESH TOKEN을 보낸것임
 				TokenSet tokenSet = jwtService.refreshAccessToken(refreshToken);
 				accessToken = tokenSet.getAccessToken();
-				response.addHeader("ACCESS_TOKEN", accessToken);
-				response.addHeader("REFRESH_TOKEN", tokenSet.getRefreshToken());
+				response.addHeader("accessToken", accessToken);
+				//response.addHeader("refreshToken", tokenSet.getRefreshToken());
 			}
-
+			
 			//if (hm.hasMethodAnnotation(LoginRequired.class) && (accessToken == null || !jwtService.isValidToken(accessToken, JwtService.AT_SECRET_KEY)))
 			if (accessToken == null /*|| !jwtService.isValidToken(accessToken, JwtService.AT_SECRET_KEY)*/) {
 				//throw new AuthenticationException("로그인되어있지 않습니다.");
+				//System.out.println("액세스 토큰 x");
 				accessToken =null;
 			}
+			/*else if(!jwtService.isValidToken(accessToken, JwtService.AT_SECRET_KEY)){
+				Auth auth = authService.findAuthByAccessToken(accessToken);
+				response.addHeader("refreshToken", auth.getRefresh_token());
+				//throw new AuthenticationException("액세스 토큰이 유효하지 않습니다");
+				//accessToken = null;
+			}*/
 			else {
 				//accessToken이 확인됨
 				//토큰으로 유저정보 가져오기

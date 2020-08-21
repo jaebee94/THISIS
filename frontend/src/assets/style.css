@@ -1,0 +1,331 @@
+.feed.wrap {
+  text-align: center;
+  background-color: white;
+  padding-bottom: 20px;
+}
+
+.feed {
+  padding: 1% 1%;
+  width: 92%;
+  margin: 2% 3%;
+  margin-bottom: 5%;
+  background-color: rgb(247, 247, 247);
+  border: none;
+  border-radius: 5px;
+}
+
+.feed-header {
+  display: flex;
+  background-color: rgb(247, 247, 247);
+  text-align: left;
+  width: 100%;
+  height: 45px;
+  border: none;
+  border-radius: 5px;
+  vertical-align: middle;
+}
+
+.feed-header table {
+  text-align: center;
+  width: 100%;
+}
+
+.feed-header table tr td {
+  height: 40px;
+  margin-top: 0px;
+}
+
+.feed-header table tr td:nth-child(1){
+  width: 50px;
+}
+
+.feed-header table tr td a {
+  /* color: white; */
+  color: black;
+  font-weight: 600;
+}
+
+.feed-header a.time {
+  font-size: 10px;
+  /* color: rgb(247, 247, 247); */
+  color: slategray;
+  font-weight: 400;
+}
+
+.feed-header table tr td img {
+  margin-top: 15%;
+  height: 70%;
+}
+
+.feed-header table tr td:nth-child(2) {
+  text-align: left;
+}
+
+.feed-header table tr td:nth-child(3) {
+  padding-right: 10px;
+  text-align: right;
+}
+
+.feed-main {
+  padding: 10px 5px;
+  text-align: left;
+  text-overflow: ellipsis;
+}
+
+.feed-main img {
+  width: 100%;
+}
+
+.post-content { 
+  max-height: 100px;
+  overflow:hidden;
+  display: -webkit-box;
+  -webkit-line-clamp:3; 
+  -webkit-box-orient:vertical;
+  word-wrap: break-word;
+  text-overflow: ellipsis;
+  -webkit-transition: all .3s linear 0s;
+  transition: all .3s linear 0s;
+}
+
+.post-content.active {
+  display: inline-block;
+  max-height: 1000px;
+  overflow: auto;
+  white-space: normal;
+  word-wrap: unset;
+  text-overflow: unset;
+  -webkit-transition: all .3s linear 0s;
+  transition: all .3s linear 0s;
+}
+
+.feed-main strong {
+  color: rgb(0, 171, 132);
+}
+
+.feed-main div a {
+  color: slategray;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+
+.feed-header table tr td .profile-image {
+  background-color: white;
+  border: 2px rgb(0, 171, 132) solid;
+  border-radius: 70%;
+}
+
+.feed-footer {
+  width: 100%;
+  margin-bottom: 15px;
+  height: 30px;
+  text-align: left;
+  background-color: rgb(220, 220, 220);
+}
+
+.feed-footer table {
+  margin-left: 20px;
+}
+
+.feed-footer table tr td {
+  width: 50px;
+  height: 30px;
+}
+
+.feed-footer table tr td img {
+  margin: 2% 5%;
+  height: 60%;
+}
+
+.health-count {
+  position: absolute;
+  margin-left: -5px;
+  margin-top: -5px;
+  background-color: red;
+  color: white;
+  border: none;
+  font-size: 10px;
+  border-radius: 70%;
+  padding:1px 3px;
+}
+
+.post {
+  position: fixed;
+  z-index: 99;
+  top: 10%;
+  width: 92%;
+  height: 80%;
+  background-color: white;
+  border-radius: 5px;
+}
+
+.post-header {
+  display: flex;
+  background-color: rgb(0, 171, 132);
+  text-align: left;
+  width: 100%;
+  height: 40px;
+  border: none;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  vertical-align: middle;
+}
+
+.post-header table {
+  text-align: center;
+  width: 100%;
+}
+
+.post-header table tr td {
+  height: 40px;
+}
+
+.post-header table tr td a {
+  color: white;
+  font-weight: 600;
+}
+
+.post-header table tr td img {
+  height: 80%;
+}
+
+.post-header table tr td:nth-child(2) {
+  text-align: left;
+}
+
+.post-header table tr td:nth-child(3) {
+  padding-right: 10px;
+  text-align: right;
+}
+
+.post-main {
+  height: 30%;
+  overflow: auto;
+  padding: 10px 10px;
+  text-align: left;
+}
+
+.post-footer {
+  position: absolute;
+  width: 100%;
+  height: 10%;
+  bottom: -12%;
+}
+
+.post-footer img {
+  height: 80%;
+}
+
+.comment-wrap {
+  display: inherit;
+  overflow: auto;
+  height: 50%;
+}
+
+.comment {
+  width: 90%;
+  margin-left: 5%;
+  margin-bottom: 5%;
+}
+
+.comment-header {
+  height: 30px;
+  background-color: rgb(0, 171, 132);
+  border-radius: 5px;
+}
+
+/* .comment-header table tr td{
+        height: 20px;
+    } */
+
+.comment-header table {
+  width: 100%;
+  height: 100%;
+}
+
+.comment-header table tr {
+  height: 20px;
+}
+
+.comment-header table tr td {
+  padding: 2px;
+}
+
+.comment-header table tr td a {
+  color: white;
+  font-weight: 600;
+}
+
+.comment-header table tr td:nth-child(1) img {
+  height: 20px;
+}
+
+.comment-content {
+  text-align: left;
+}
+
+.comment-submit {
+  position: absolute;
+  height: 8%;
+  width: 90%;
+  margin-left: 5%;
+  bottom: 1%;
+}
+
+/* 수정할 포스트 내용 보이기 */
+.modify-wrap {
+  position: fixed;
+  z-index: 99;
+  top: 10%;
+  width: 92%;
+  height: 70%;
+  background-color: white;
+  border-radius: 5px;
+}
+
+.post-content textarea {
+  padding: 5px 5px;
+  font-size: 20px;
+  margin-top: 10px;
+  width: 90%;
+  height: 350px;
+  word-wrap: break-word;
+  transition-duration: 300ms;
+  border: none;
+}
+
+.post-content textarea:focus {
+  outline: none;
+  border: rgb(0, 171, 132) 3px solid;
+}
+
+.post-modify-btn {
+  width: 100%;
+  height: 50px;
+}
+
+.post-modify-btn button {
+  width: 90%;
+  height: 90%;
+  border: none;
+  border-radius: 5px;
+  background-color: rgb(0, 171, 132);
+  outline: none;
+  color: white;
+  font-size: 20px;
+}
+
+.modify-footer {
+  position: absolute;
+  width: 100%;
+  height: 10%;
+  bottom: -12%;
+}
+
+.modify-footer img {
+  height: 80%;
+}
+
+
+

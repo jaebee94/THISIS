@@ -1,16 +1,15 @@
 package com.web.curation.model;
 
-import java.util.Date;
-
 public class Post {
 	private int posts_id;
 	private int user_id;
 	private String posts_title;
 	private String posts_main;
-	private int health_count;
-	private int notification_id;
 	private String post_date;
-	private String nickname;
+	private int category;
+	private String diseasecode;
+	private String imgsrc;
+	private int hidden;
 
 	public int getPosts_id() {
 		return posts_id;
@@ -44,34 +43,6 @@ public class Post {
 		this.posts_main = posts_main;
 	}
 
-	public int getHealth_count() {
-		return health_count;
-	}
-
-	public void setHealth_count(int health_count) {
-		this.health_count = health_count;
-	}
-
-	public int getNotification_id() {
-		return notification_id;
-	}
-
-	public void setNotification_id(int notification_id) {
-		this.notification_id = notification_id;
-	}
-
-	public Post() {
-
-	}
-
-	public String getNickname() {
-		return nickname;
-	}
-
-	public void setNickname(String nickname) {
-		this.nickname = nickname;
-	}
-
 	public String getPost_date() {
 		return post_date;
 	}
@@ -80,18 +51,59 @@ public class Post {
 		this.post_date = post_date;
 	}
 
-	public Post(int posts_id, int user_id, String posts_title, String posts_main, int health_count, int notification_id,
-			String post_date, String nickname) {
-		super();
+	public int getCategory() {
+		return category;
+	}
+
+	public void setCategory(int category) {
+		this.category = category;
+	}
+
+	public String getDiseasecode() {
+		return diseasecode;
+	}
+
+	public void setDiseasecode(String diseasecode) {
+		this.diseasecode = diseasecode;
+	}
+
+	public String getImgsrc() {
+		return imgsrc;
+	}
+
+	public void setImgsrc(String imgsrc) {
+		this.imgsrc = imgsrc;
+	}
+
+	public int getHidden() {
+		return hidden;
+	}
+
+	public void setHidden(int hidden) {
+		this.hidden = hidden;
+	}
+
+	public Post() {
+	}
+
+	public Post(int posts_id, int user_id, String posts_title, String posts_main, String post_date, int category,
+			String diseasecode, String imgsrc, int hidden) {
 		this.posts_id = posts_id;
 		this.user_id = user_id;
 		this.posts_title = posts_title;
 		this.posts_main = posts_main;
-		this.health_count = health_count;
-		this.notification_id = notification_id;
 		this.post_date = post_date;
-		this.nickname = nickname;
+		this.category = category;
+		this.diseasecode = diseasecode;
+		this.imgsrc = imgsrc;
+		this.hidden = hidden;
 	}
 
+	@Override
+	public String toString() {
+		return "Post [posts_id=" + posts_id + ", user_id=" + user_id + ", posts_title=" + posts_title + ", posts_main="
+				+ posts_main + ", post_date=" + post_date + ", category=" + category + ", diseasecode=" + diseasecode
+				+ ", imgsrc=" + imgsrc + "]";
+	}
 
 }

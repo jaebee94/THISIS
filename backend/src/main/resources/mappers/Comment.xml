@@ -10,12 +10,19 @@
 		from comment
 		where posts_id=#{posts_id}
 	</select>
-
+	
+	<select id="checkComment" resultType="Integer">
+		select count(*)
+		from comment
+		where posts_id=#{posts_id}
+		AND user_id=#{user_id}
+	</select>
+	
 	<insert id="createComment">
 		insert into comment(
-			user_id, posts_id, user_nickname, comment_main, hide
+			user_id, posts_id, comment_main, hide
 		) values (
-			#{user_id},#{posts_id},#{user_nickname},#{comment_main},0
+			#{user_id},#{posts_id},#{comment_main},0
 		)
 	</insert>
 

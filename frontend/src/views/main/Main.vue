@@ -2,6 +2,7 @@
   <div class="main wrap">
     <div class="logo wrap">
       <img src="../../assets/images/icon/logo_green.png" />
+      <router-link v-if="loginData.role == 'admin'" to="/admin">ADMIN</router-link>
     </div>
     <router-view></router-view>
 
@@ -31,7 +32,7 @@
           </td>
           <td>
             <!-- <router-link to="/main/profile"> -->
-              <img @click="checkProfile()" src="@/assets/sample.jpg" />
+              <img v-if="this.loginData.userimage!=null" @click="checkProfile()" :src="this.loginData.userimage" />
             <!-- </router-link> -->
           </td>
         </tr>
@@ -45,7 +46,15 @@ import db from "../../firebaseInit";
 import { mapState, mapActions } from "vuex";
 export default {
   created() {
-    this.getNoti(this.loginData.user_id);
+    document.body.className = "whitebody";
+    var vueInstance = this;
+    db.collection("notification").doc(String(this.loginData.user_id))
+    .onSnapshot({
+        // Listen for document metadata changes
+        includeMetadataChanges: true
+    }, function() {
+        vueInstance.getNoti(String(vueInstance.loginData.user_id))
+    });
   },
   data() {
     return {
@@ -56,21 +65,15 @@ export default {
         search: require("../../assets/images/icon/icon_search_unselect.png"),
         upload: require("../../assets/images/icon/icon_upload.png"),
         notify: require("../../assets/images/icon/icon_bell_unselect.png"),
-        // //profile: require('../../assets/images/icon/icon_upload.png')
-        // profile: require('../../assets/sample.jpg')
       },
     };
   },
-  watch: {
-    noti: function () {
-      this.getNoti(this.loginData.user_id);
-    }
-  },
   computed: {
-    ...mapState(["loginData", "profileData"]),
+    ...mapState('userStore', ['loginData', 'profileData']),
   },
   methods: {
-    ...mapActions(["goProfile", "getUserScraps"]),
+    ...mapActions('userStore', ['goProfile']),
+    ...mapActions('postStore', ['setPost','getUserScraps']),
 
     getNoti(id) {
       const noti = db.collection("notification").doc(String(id));
@@ -78,7 +81,6 @@ export default {
       noti.get()
       .then(function(doc){
         if(doc.exists) {
-          console.log(doc.data());
           vueInstance.noti = doc.data().notification + doc.data().request;
         } else {
           console.log("No Such Document!");
@@ -92,31 +94,28 @@ export default {
       this.selectPage.home = require("../../assets/images/icon/icon_home_select.png");
       this.selectPage.search = require("../../assets/images/icon/icon_search_unselect.png");
       this.selectPage.notify = require("../../assets/images/icon/icon_bell_unselect.png");
-      this.getNoti(this.loginData.user_id);
     },
     checkSearch() {
       this.selectPage.home = require("../../assets/images/icon/icon_home_unselect.png");
       this.selectPage.search = require("../../assets/images/icon/icon_search_select.png");
       this.selectPage.notify = require("../../assets/images/icon/icon_bell_unselect.png");
-      this.getNoti(this.loginData.user_id);
     },
     checkUpload() {
       this.selectPage.home = require("../../assets/images/icon/icon_home_unselect.png");
       this.selectPage.search = require("../../assets/images/icon/icon_search_unselect.png");
       this.selectPage.notify = require("../../assets/images/icon/icon_bell_unselect.png");
-      this.getNoti(this.loginData.user_id);
+      this.setPost(null);
     },
     checkNotify() {
       this.selectPage.home = require("../../assets/images/icon/icon_home_unselect.png");
       this.selectPage.search = require("../../assets/images/icon/icon_search_unselect.png");
       this.selectPage.notify = require("../../assets/images/icon/icon_bell_select.png");
-      this.getNoti(this.loginData.user_id);
+
     },
     checkProfile() {
       this.selectPage.home = require("../../assets/images/icon/icon_home_unselect.png");
       this.selectPage.search = require("../../assets/images/icon/icon_search_unselect.png");
       this.selectPage.notify = require("../../assets/images/icon/icon_bell_unselect.png");
-      this.getNoti(this.loginData.user_id);
       this.goProfile(this.loginData.user_id);
       this.getUserScraps(this.loginData.user_id);
     },
@@ -135,8 +134,8 @@ export default {
   background-color: rgb(240, 240, 240);
 }
 .logo.wrap img {
-  margin: 5px 5px auto;
-  width: 30%;
+  margin: 8px 5px 8px 5px;
+  width: 20%;
 }
 .footer.wrap {
   position: fixed;
@@ -153,17 +152,17 @@ export default {
   width: 20%;
 }
 .footer.table td img {
-  width: 30%;
+  width: 20px;
 }
 .footer.table td:nth-child(5) img {
   margin-top: 3px;
-  width: 30px;
-  height: 30px;
+  width: 25px;
+  height: 25px;
   border-radius: 70%;
 }
 
 .notify-num {
-  padding: 2px 2px;
+  padding: 1px 4px;
   position: fixed;
   margin-left: -5px;
   text-decoration: none;
