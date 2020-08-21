@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.web.curation.dao.TagDAO">
+
+	<!-- 태그 전체 조회 -->
+	<select id="selectTag" resultType="Tag">
+		select *
+		from tag
+		where tagid=#{tagid}
+	</select>
+	
+	<!-- 태그 이름으로 조회 -->
+	<select id="selectTagByTagname" resultType="Tag">
+		select *
+		from tag
+		where tagname=#{tagname}
+	</select>
+	
+	<!-- 태그 이름으로 존재 유무 조회 -->
+	<select id="selectCountByTagname" resultType="Integer">
+		select count(*)
+		from tag
+		where tagname=#{tagname}
+	</select>
+	
+	<insert id="createTag">
+		insert into tag (tagname)
+		values(#{tagname})
+	</insert>
+
+	<delete id="deleteTag">
+		delete from tag
+		where tagid = #{tagid} 
+	</delete>
+	
+	<select id="selectTagByPostsId" resultType="Tag">
+		select *
+		from tag
+		where tag.tagid in (select tag_id from tag_relation where posts_id=#{posts_id})
+	</select>
+</mapper>

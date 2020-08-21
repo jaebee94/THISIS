@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.web.curation.dao.DoctorDAO">
+
+	<insert id="insertDoctor" parameterType="Doctor">
+		insert into doctor(
+		user_id, doctorimg, doctorauth
+		) values (
+		#{user_id}, #{doctorimg},
+		#{doctorauth}
+		)
+	</insert>
+
+	<delete id="deleteDoctor" parameterType="Integer">
+		delete
+		from doctor
+		where
+		user_id = #{user_id}
+	</delete>
+
+	<!-- 회원정보 수정 -->
+	<update id="updateDoctor" parameterType="Integer">
+		update doctor
+		set
+		doctorimg = #{doctorimg}
+		where user_id = #{user_id}
+	</update>
+
+	<select id="selectDoctor" resultType="Doctor">
+		select *
+		from doctor
+		where
+		doctorauth = "accept"
+	</select>
+
+	<select id="selectCheckDoctor" resultType="Doctor">
+		select *
+		from doctor
+		where doctorauth = "unread"
+	</select>
+
+	<select id="selectDoctorByUserid" resultType="Doctor">
+		select *
+		from doctor
+		where user_id = #{user_id}
+	</select>
+
+	<select id="selectMyDoctorID" resultType="Doctor">
+		select *
+		from doctor
+		where doctor_id=#{doctor_id}
+	</select>
+
+	<select id="selectdoctorid" resultType="Integer">
+		select doctor_id
+		from doctor
+		order by doctor_id desc
+		limit 1;
+	</select>
+
+	<select id="selectMyDoctor" resultType="Doctor">
+		select *
+		from doctor
+		where
+		user_id = #{user_id}
+		order by doctor.doctor_id desc
+		limit 1
+	</select>
+
+	<update id="updateDoctorImg">
+		update doctor
+		set doctorimg = #{doctorimg}
+		where
+		user_id = #{user_id}
+	</update>
+
+	<update id="updateDoctorAuth">
+		update doctor
+		set doctorauth = "accept"
+		where doctor_id
+		= #{doctor_id}
+	</update>
+
+	<update id="updateDoctorAuthFail">
+		update doctor
+		set doctorauth = "fail"
+		where doctor_id =
+		#{doctor_id}
+	</update>
+
+</mapper>

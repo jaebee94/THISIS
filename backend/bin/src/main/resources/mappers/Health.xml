@@ -16,6 +16,11 @@
 		from health
 		where posts_id=#{posts_id}
 	</select>
+	<select id="selectHealthUser" resultType="Health">
+		select *
+		from health
+		where user_id=#{user_id}
+	</select>
 	
 	<!-- 회원정보 전체 조회 -->
 	<select id="selectHealthList" resultType="Health">
@@ -32,7 +37,7 @@
 	
 	<insert id="createHealth">
 		insert into health
-		values(#{posts_id}, #{user_id}, #{nickname})
+		values(#{posts_id}, #{user_id})
 	</insert>
 
 	<delete id="deleteHealth">

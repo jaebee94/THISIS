@@ -38,4 +38,9 @@ public class CommentServiceImpl implements CommentService {
 	public int modifyhideComment(Comment comment) {
 		return CommentDao.modifyhideComment(comment);
 	}
+
+	@Override
+	public int checkComment(int user_id, int posts_id) {
+		return CommentDao.checkComment(user_id, posts_id);
+	}
 }

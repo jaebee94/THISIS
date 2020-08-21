@@ -7,43 +7,97 @@ public class UserInfo {
 	private String email;
 	private String password;
 	private String introduction;
+	private String userimage;
+	private String role;
+	private int disabled;
+	private String salt;
+
 	public int getUser_id() {
 		return user_id;
 	}
+
 	public void setUser_id(int user_id) {
 		this.user_id = user_id;
 	}
+
 	public String getUsername() {
 		return username;
 	}
+
 	public void setUsername(String username) {
 		this.username = username;
 	}
+
 	public String getNickname() {
 		return nickname;
 	}
+
 	public void setNickname(String nickname) {
 		this.nickname = nickname;
 	}
+
 	public String getEmail() {
 		return email;
 	}
+
 	public void setEmail(String email) {
 		this.email = email;
 	}
+
 	public String getPassword() {
 		return password;
 	}
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
 	public String getIntroduction() {
 		return introduction;
 	}
+
 	public void setIntroduction(String introduction) {
 		this.introduction = introduction;
 	}
-	public UserInfo(int user_id, String username, String nickname, String email, String password, String introduction) {
+
+	public String getUserimage() {
+		return userimage;
+	}
+
+	public void setUserimage(String userimage) {
+		this.userimage = userimage;
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+	public int getDisabled() {
+		return disabled;
+	}
+
+	public void setDisabled(int disabled) {
+		this.disabled = disabled;
+	}
+
+	public String getSalt() {
+		return salt;
+	}
+
+	public void setSalt(String salt) {
+		this.salt = salt;
+	}
+
+	public UserInfo() {
+
+	}
+
+	public UserInfo(int user_id, String username, String nickname, String email, String password, String introduction,
+			String userimage, String role, int disabled, String salt) {
 		super();
 		this.user_id = user_id;
 		this.username = username;
@@ -51,10 +105,10 @@ public class UserInfo {
 		this.email = email;
 		this.password = password;
 		this.introduction = introduction;
+		this.userimage = userimage;
+		this.role = role;
+		this.disabled = disabled;
+		this.salt = salt;
 	}
-	public UserInfo() {
-		// TODO Auto-generated constructor stub
-	}
-	
-	
+
 }

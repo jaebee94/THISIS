@@ -3,31 +3,45 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.web.curation.dao.PostDAO">
-	
+
 	<select id="selectAllPost" resultType="Post">
 		select*
 		from posts
-		order by post_date desc
+		order by
+		post_date desc 
 	</select>
-	
+
+	<select id="selectAllPostpolice" resultType="Postpolice">
+		select p.*, (select
+		count(*) from police where posts_id = p.posts_id) as count
+		from posts p
+		order by count desc
+	</select>
+
 	<select id="selectPost" resultType="Post">
 		select*
 		from posts
-		where user_id=#{user_id}
+		where
+		user_id=#{user_id}
+		order by post_date desc
 	</select>
-	
-	<select id="selectScrapInfo" parameterType="java.util.List" resultType="Post">
+
+	<select id="selectScrapInfo" parameterType="java.util.List"
+		resultType="Post">
 		select *
 		from posts
+		<if test="list != null and list.size!=0">
 		where posts_id in
-		  <foreach collection="list" item="item" open="(" close=")"
+		<foreach collection="list" item="item" open="(" close=")"
 			separator=",">
 			#{item.posts_id}
 		</foreach>
+		</if>
+		order by post_date desc
 	</select>
-	
+
 	<!-- post수 합계 조회 -->
-	<select id="sumOfPost" resultType="Integer">	
+	<select id="sumOfPost" resultType="Integer">
 		select COUNT(*)
 		from posts
 		where user_id = #{user_id}
@@ -35,9 +49,11 @@
 
 	<insert id="createPost">
 		insert into posts(
-			user_id, posts_title, posts_main, health_count, notification_id, nickname
+		user_id, posts_title, posts_main,
+		category, diseasecode, imgsrc
 		) values (
-			#{user_id},#{posts_title},#{posts_main},#{health_count},#{notification_id}, #{nickname}
+		#{user_id},#{posts_title},#{posts_main},#{category},#{diseasecode},
+		#{imgsrc}
 		)
 	</insert>
 
@@ -45,10 +61,91 @@
 		delete from posts
 		where posts_id = #{posts_id}
 	</delete>
-	
+
 	<update id="modifyPost">
 		update posts
-			set posts_title=#{posts_title}, posts_main = #{posts_main}
+		set posts_title=#{posts_title},
+		posts_main = #{posts_main},
+		diseasecode=#{diseasecode},
+		imgsrc = #{imgsrc}
 		where posts_id = #{posts_id}
 	</update>
+
+	<update id="hiddenupdate">
+		update posts
+		set hidden = 1
+		where posts_id= #{posts_id}
+	</update>
+	
+	<update id="showupdate">
+		update posts
+		set hidden = 0
+		where posts_id= #{posts_id}
+	</update>
+	
+	<update id="updatehiddenuser">
+		update posts
+		set hidden = 1
+		where user_id= #{user_id}
+	</update>
+	
+	<update id="updateshownuser">
+		update posts
+		set hidden = 0
+		where user_id= #{user_id}
+	</update>
+
+	<select id="selectMainFeed" resultType="Post">
+		select * from posts
+		where
+		(posts.user_id in (select followee from followers_following where
+		follower = #{user_id})
+		OR posts.user_id = #{user_id}
+		OR posts.user_id = 1
+		OR
+		posts.diseasecode in (select diseasecode from disease where
+		disease.diseasecode in (select diseasecode from subscribe where
+		subscribe.user_id = #{user_id})))
+		AND posts.category = 0
+		order by
+		post_date desc
+	</select>
+
+	<select id="selectAutoIncrement" resultType="Integer">
+		select
+		LAST_INSERT_ID()
+	</select>
+
+	<select id="selectQnA" resultType="Post">
+		select * from posts
+		where
+		posts.category = 1
+		order by post_date desc
+	</select>
+	
+	<select id="selectQnAByMain" resultType="Post">
+		select * from posts
+		where
+		posts.category = 1
+		AND posts.posts_main LIKE concat('%',#{keyword}, '%')
+		order by post_date desc
+	</select>
+	
+	<select id="selectQnAByTitle" resultType="Post">
+		select * from posts
+		where
+		posts.category = 1
+		AND posts.posts_title LIKE concat('%',#{keyword}, '%')
+		order by post_date desc
+	</select>
+	
+	<select id="selectQnAByDisease" resultType="Post">
+		select * from posts
+		where
+		posts.category = 1
+		AND posts.diseasecode in (select disease.diseasecode from disease where disease.diseasename LIKE concat('%',#{keyword}, '%'))
+		order by post_date desc
+	</select>
+	
+	
 </mapper>

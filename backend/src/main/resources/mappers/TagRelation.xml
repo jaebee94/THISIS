@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.web.curation.dao.TagRelationDAO">
+
+	<select id="selectTagRelationpost" resultType="TagRelation">
+		select *
+		from tag_relation
+		where posts_id=#{posts_id}
+	</select>
+	
+	<select id="selectTagRelationtag" resultType="TagRelation">
+		select *
+		from tag_relation
+		where tag_id=#{tag_id}
+	</select>
+	
+	<insert id="createTagRelation">
+		insert into tag_relation (tag_id, posts_id)
+		values(#{tag_id}, #{posts_id})
+	</insert>
+
+	<delete id="deleteTagRelation">
+		delete from tag_relation
+		where tag_id = #{tag_id} 
+		AND posts_id = #{posts_id}
+	</delete>
+	
+</mapper>

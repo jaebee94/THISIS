@@ -47,7 +47,7 @@ public class JwtService {
 		
 		tokenSet = tokenSet.accessToken(Jwts.builder()
 							 .setHeaderParam("typ", "JWT")
-							 .setExpiration(new Date(curTime + (1000*60*30)))
+							 .setExpiration(new Date(curTime + (1000*60*1)))	//1분
 							 .setIssuedAt(new Date(curTime))
 							 .claim(DATA_KEY, userinfo)
 							 .signWith(SignatureAlgorithm.HS256, this.generateKey(AT_SECRET_KEY))
@@ -56,9 +56,9 @@ public class JwtService {
 		int user_id = userinfo.getUser_id();
 		if(authService.selectAuthByUserid(user_id) != null) {
 			authService.updateAuth(new Auth(user_id, tokenSet.getRefreshToken(),tokenSet.getAccessToken()));
-		}else
+		}else {
 			authService.insertAuth(new Auth(user_id, tokenSet.getRefreshToken(),tokenSet.getAccessToken()));
-		
+		}
 		return tokenSet;
 	}
 	
