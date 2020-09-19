@@ -74,6 +74,14 @@ public class Post {
 	public void setImgsrc(String imgsrc) {
 		this.imgsrc = imgsrc;
 	}
+	
+	public int getHidden() {
+		return hidden;
+	}
+
+	public void setHidden(int hidden) {
+		this.hidden = hidden;
+	}
 
 	public int getHidden() {
 		return hidden;
@@ -103,7 +111,8 @@ public class Post {
 	public String toString() {
 		return "Post [posts_id=" + posts_id + ", user_id=" + user_id + ", posts_title=" + posts_title + ", posts_main="
 				+ posts_main + ", post_date=" + post_date + ", category=" + category + ", diseasecode=" + diseasecode
-				+ ", imgsrc=" + imgsrc + "]";
+				+ ", imgsrc=" + imgsrc + ", hidden=" + hidden + "]";
 	}
+	
 
 }
