@@ -32,6 +32,9 @@ const postStore = {
     SET_SCRAPS(state, scraps) {
       state.profileData.scrapInfo = scraps
     },
+    SET_TOKEN(state, token) {
+      cookies.set('access-token', token)
+    },
   },
 
   actions: {
@@ -152,8 +155,34 @@ const postStore = {
     },
 
     // Health
-    health({ rootGetters }, healthData) {
-      axios.post(SERVER.URL + SERVER.ROUTES.health + `/${healthData.posts_id}`, healthData, rootGetters.config)
+    health({ rootGetters, commit }, healthData) {
+      console.log(healthData)
+      axios.post(SERVER.URL + SERVER.ROUTES.health + `/${healthData.posts_id}`,healthData,rootGetters.config)
+        .then(res => {
+          console.log(rootGetters.config)
+          console.log(res.data)
+          console.log(res)
+        }).catch((error) =>{
+          console.log("ERR!!" + error.response.status) 
+          if(error.response.status == 401){ //인증 에러
+            alert("인증에러")
+            console.log(rootGetters.config)
+           axios.get(SERVER.URL + SERVER.ROUTES.refreshAccessToken, rootGetters.config)
+           .then(res => {//액세스 토큰만 만료
+              console.log("new RES" + res.data.accessToken)
+              commit('SET_TOKEN', res.data.accessToken)
+              axios.post(SERVER.URL + SERVER.ROUTES.health + `/${healthData.posts_id}`,healthData, {
+                headers : {
+                  'accessToken' : res.data.accessToken
+                }
+              })
+              .then(res =>{
+                console.log(res.data)
+              })
+             })
+             .catch() //리프레시 토큰 만료 -> LOGIN
+          }
+        })
     },
     fetchHealths({ commit }, posts_id) {
       axios.get(SERVER.URL + SERVER.ROUTES.healthCount + posts_id)
