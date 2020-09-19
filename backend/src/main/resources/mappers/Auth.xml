@@ -6,7 +6,7 @@
 	
 	<!-- 인증정보 상세 조회 -->
 	<select id="selectAuthByUserid" resultType="Auth">	
-		select user_id, refresh_token, access_token
+		select *
 		from auth
 		where user_id = #{user_id}
 	</select>
@@ -37,14 +37,14 @@
 	
 	<!-- 인증정보 refresh_token으로 조회  -->
 	<select id="findAuthByRefreshToken" resultType="Auth">
-		select user_id, refresh_token, access_token
+		select *
 		from auth
 		where refresh_token = #{refresh_token}
 	</select>
 	
 	<!-- 인증정보 access_token으로 조회  -->
 	<select id="findAuthByAccessToken" resultType="Auth">
-		select user_id, refresh_token, access_token
+		select *
 		from auth
 		where access_token = #{access_token}
 	</select>

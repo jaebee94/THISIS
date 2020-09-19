@@ -32,5 +32,11 @@ public class Auth {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	@Override
+	public String toString() {
+		return "Auth [user_id=" + user_id + ", refresh_token=" + refresh_token + ", access_token=" + access_token + "]";
+	}
+	
+	
 		
 }

@@ -38,4 +38,11 @@ public class TokenSet {
 	public void setRefreshToken(String refreshToken) {
 		this.refreshToken = refreshToken;
 	}
+
+	@Override
+	public String toString() {
+		return "TokenSet [accessToken=" + accessToken + ", refreshToken=" + refreshToken + "]";
+	}
+	
+	
 }

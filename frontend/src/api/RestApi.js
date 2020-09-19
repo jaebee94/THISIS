@@ -1,4 +1,5 @@
 export default {
+
   URL: 'https://i3a301.p.ssafy.io:8089/THISIS', // 서버 포트
   //  URL: 'http://localhost:8089/THISIS',
   ROUTES: {
@@ -32,6 +33,10 @@ export default {
     followee: '/follow/followee/',
     follower: '/follow/follower/',
 
+    searchUser: '/account/search',
+    modify:'/articles/',
+
+    refreshAccessToken : '/account/refreshAccessToken'
     disease: '/disease/user',
     subscribe: '/subscribe',
 
