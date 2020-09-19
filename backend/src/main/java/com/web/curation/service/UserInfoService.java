@@ -3,9 +3,11 @@ package com.web.curation.service;
 import java.util.List;
 
 import com.web.curation.model.UserInfo;
+import com.web.curation.model.UserPolice;
 
 public interface UserInfoService {
 	public List<UserInfo> selectUserInfo();
+	public List<UserPolice> selectUserInfoPolice();
 	public UserInfo selectUserInfoByUserid(int user_id);
 	public int insertUserInfo(UserInfo userinfo);
 	public int updateUserInfo(UserInfo userinfo);
@@ -18,4 +20,9 @@ public interface UserInfoService {
 	public int getUserId(String email);
 	public int updateImage(UserInfo userinfo);
 	public int updatePassword(UserInfo userinfo);
+	public int updateDisable(int user_id);
+	public int updateable(int user_id);
+	public int updateRole(int user_id);
+	public String selectSaltByUserId(int user_id);
+	public int deleteRole(int user_id);
 }

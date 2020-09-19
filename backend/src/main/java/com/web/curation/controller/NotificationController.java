@@ -1,5 +1,6 @@
 package com.web.curation.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -18,8 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.web.curation.model.Notification;
-import com.web.curation.model.UserInfo;
+import com.web.curation.model.NotificationResponse;
 import com.web.curation.service.NotificationService;
+import com.web.curation.service.UserInfoService;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -35,6 +37,8 @@ public class NotificationController {
 	
 	@Autowired
 	private NotificationService notificationService;
+	@Autowired
+	private UserInfoService userInfoService;
 	
 	@ApiOperation(value = "모든 알람/요청을 반환한다.", response = List.class)
 	@GetMapping
@@ -45,11 +49,8 @@ public class NotificationController {
 	@ApiOperation(value = "팔로우를 요청했을 때 레코드를 저장한다.", response = String.class)
 	@PostMapping()
 		public ResponseEntity<String> insertNotification(@RequestBody Notification noti) throws Exception {
-//			Notification noti = new Notification();
 //			noti.setFollowee_id(followee_id);
 //			noti.setFollower_id(follower_id);
-//			noti.setNewtofollowee(0);
-//			noti.setNewtofollower(0);
 //			noti.setApproval(0);//0이면 아직 안함, 1이면 승낙, 2는 거절
 			if(notificationService.insertNotification(noti) == 1) {
 				return new ResponseEntity<String>("success",HttpStatus.OK);
@@ -60,12 +61,6 @@ public class NotificationController {
 	@ApiOperation(value = "팔로우를 요청 취소했을 때 레코드를 삭제한다.", response = String.class)
 	@DeleteMapping()
 		public ResponseEntity<String> deleteNotification(@RequestBody Notification noti) throws Exception {
-//			Notification noti = new Notification();
-//			noti.setFollowee_id(followee_id);
-//			noti.setFollower_id(follower_id);
-//			noti.setNewtofollowee(0);
-//			noti.setNewtofollower(0);
-//			noti.setApproval(0);//0이면 아직 안함, 1이면 승낙, 2는 거절
 			System.out.println("11"); 
 			System.out.println(noti.toString());
 		
@@ -87,15 +82,32 @@ public class NotificationController {
 	
 	@ApiOperation(value = "해당 user_id가 follower인 레코드 목록 조회.", response = List.class)
 	@GetMapping("follower/{user_id}")
-		public ResponseEntity<List<Notification>> GetListByFollower(@PathVariable int user_id) { 
-			return new ResponseEntity<List<Notification>>(notificationService.GetListByFollower(user_id), HttpStatus.OK);
+		public ResponseEntity<List<NotificationResponse>> GetListByFollower(@PathVariable int user_id) { 
+			List<Notification> list = notificationService.GetListByFollower(user_id);
+			List<NotificationResponse> notificationResponses = new ArrayList<NotificationResponse>();
+			for(Notification noti : list) {
+				NotificationResponse notificationResponse = new NotificationResponse();
+				notificationResponse.setNotification(noti);
+				notificationResponse.setUserInfo(userInfoService.selectUserInfoByUserid(noti.getFollowee_id()));
+				notificationResponses.add(notificationResponse);
+			}
+			
+			return new ResponseEntity<List<NotificationResponse>>(notificationResponses, HttpStatus.OK);
 			
 	}
 	
 	@ApiOperation(value = "해당 user_id가 followee인 레코드 목록 조회.", response = List.class)
 	@GetMapping("/followee/{user_id}")
-		public ResponseEntity<List<Notification>> GetListByFollowee(@PathVariable int user_id) { 
-			return new ResponseEntity<List<Notification>>(notificationService.GetListByFollowee(user_id), HttpStatus.OK);
+		public ResponseEntity<List<NotificationResponse>> GetListByFollowee(@PathVariable int user_id) { 
+		List<Notification> list = notificationService.GetListByFollowee(user_id);
+		List<NotificationResponse> notificationResponses = new ArrayList<NotificationResponse>();
+		for(Notification noti : list) {
+			NotificationResponse notificationResponse = new NotificationResponse();
+			notificationResponse.setNotification(noti);
+			notificationResponse.setUserInfo(userInfoService.selectUserInfoByUserid(noti.getFollower_id()));
+			notificationResponses.add(notificationResponse);
+		}
+		return new ResponseEntity<List<NotificationResponse>>(notificationResponses, HttpStatus.OK);
 	}
 	
 

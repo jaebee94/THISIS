@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -83,6 +82,7 @@ public class DiseaseController {
 				Auth auth = authService.findAuthByAccessToken(accessToken);
 				user_id = auth.getUser_id();
 			}
+			System.out.println("user_id : " +user_id);
 			return new ResponseEntity<List<Disease>>(diseaseService.selectDiseaseByUserid(user_id), HttpStatus.OK); 
 	}
 

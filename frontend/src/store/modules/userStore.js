@@ -2,12 +2,13 @@ import axios from 'axios'
 import router from '@/router'
 import SERVER from '@/api/RestApi.js'
 import cookies from 'vue-cookies'
+import db from "../../firebaseInit";
 
 const userStore = {
   namespaced: true,
 
   state: {
-    loginData: {},
+    loginData: null,
     profileData: {},
   },
 
@@ -34,7 +35,7 @@ const userStore = {
   },
 
   actions: {
-    getAccessData({ commit }, info) {
+    getAccessData({ commit,rootGetters }, info) {
       axios.get(SERVER.URL + info.location, {
         params: {
           email: info.params.email,
@@ -42,13 +43,24 @@ const userStore = {
         }
       })
         .then(res => {
-          console.log(res)
+          
+          console.log("로그인", res)
+          if(res.data.disabled == 1) {
+            alert("운영자에 의해 정지된 사용자입니다.")
+            return;
+          }
           commit('SET_TOKEN', res.data.accessToken)
           commit('SET_LOGIN_DATA', res.data)
-          router.push({ name: 'Feed' })
+          rootGetters.config.headers = { accessToken:  cookies.get('access-token') };
+          if (res.data.subscribeCount > 0) {
+            router.push({ name: 'Feed' })
+          } else {
+            router.push({ name: 'Tutorial' })
+          }
+
         })
         .catch(() => {
-          alert("로그인에 실패하였습니다.")
+          alert("회원이 아니거나 로그인 정보가 일치하지 않습니다.")
         })
     },
     login({ dispatch }, loginData) {
@@ -61,61 +73,99 @@ const userStore = {
     logout({ commit }) {  // 주석코드 사용할 때 getters 추가하고 사용하기
       commit('SET_TOKEN', null)
       commit('SET_LOGIN_DATA', null)
+      window.$cookies.remove('access-token')
       cookies.remove('access-token')
       window.localStorage.clear();
       router.push({ name: 'Login' })
     },
-    async changeUserInfo({ rootGetters, dispatch }, changeInfo) {
-      axios.put(SERVER.URL + SERVER.ROUTES.updateProfile, changeInfo.userInfo, rootGetters.config)
+    signup({rootGetters},signupData) {
+      axios.post(SERVER.URL + SERVER.ROUTES.signup, signupData,rootGetters.config)
+        .then((res) => {
+          var id = res.data.object;
+          let instance = {
+            notification: 0,
+            request: 0
+          }
+          db
+            .collection("notification")
+            .doc(String(id))
+            .set(instance);
+
+          alert('회원가입이 완료되었습니다.')
+          router.push({ name: 'Login' })
+        })
+        .catch(err => console.log(err))
+    },
+    withdraw({ state,rootGetters, dispatch }) {
+      var con = confirm("탈퇴하시겠습니까?");
+      if (con) {
+        axios.delete(SERVER.URL + SERVER.ROUTES.user, rootGetters.config)
+          .then(() => {
+
+            //firebase 삭제 로직
+            db.collection("notification").doc(String(state.loginData.user_id)).delete().then(function () {
+            }).catch(function (error) {
+              console.error("Error removing document: ", error);
+            });
+            dispatch("logout");
+          })
+          .catch(
+            err => console.log('회원 탈퇴 에러: ', err)
+          )
+        
+      }
+    },
+    async changeUserInfo({ rootGetters, dispatch, state }, changeInfo) {
+      await axios.put(SERVER.URL + SERVER.ROUTES.user, changeInfo.userInfo, { headers: { accessToken: cookies.get('access-token') } })
         .then(() => {
-          console.log('소개 변경 완료')
           alert('변경이 완료되었습니다.')
-          dispatch('userStore/goProfile', changeInfo.userInfo.user_id, { root: true })
+          dispatch('goProfile', changeInfo.userInfo.user_id)
         })
         .catch(err => console.log('프로필 변경 에러: ', err))
       if (changeInfo.formData) {
+        let config = { headers: {} }
+        config.headers = rootGetters.config.headers
+        config.headers['Accept'] = 'application/json'
+        //config.headers['Content-Type'] = 'multipart/form-data'
+        await axios.post(SERVER.URL + SERVER.ROUTES.uploadProfile, changeInfo.formData, config)
+          .then(async (res) => {
+            state.loginData.userimage = res.data;
+            dispatch('goProfile', changeInfo.userInfo.user_id)
+            // router.push({ name: 'Profile' })
+          })
+          .catch(err => console.log('사진 변경 에러: ', err))
+      }
+    },
+    async goProfile({ state, commit }, userId) {
+      if (userId == null) {
+        userId = state.loginData.user_id
+      }
+      await axios.get(SERVER.URL + SERVER.ROUTES.user + `/${userId}`, { headers: { accessToken: cookies.get('access-token') } })
+        .then(res => {
+          commit('SET_USER_INFO', res.data)
+        })
+        .catch(err => console.log(err))
+      await axios.get(SERVER.URL + SERVER.ROUTES.profile + userId, { headers: { accessToken: cookies.get('access-token') } })
+        .then(res => {
+          commit('SET_PROFILE_INFO', res.data)
+          router.push({ name: 'Profile' })
+        })
+        .then(() => { router.go() })
+      
+    },
+    async UploadDoctorAuth({ rootGetters,state }, Doctorimgsrc) {
+      if (Doctorimgsrc) {
         let config = { headers: {} }  
         config.headers = rootGetters.config.headers
         config.headers['Accept'] = 'application/json'
-        config.headers['Content-Type'] = 'multipart/form-data'
-        axios.post(SERVER.URL + SERVER.ROUTES.uploadProfile, changeInfo.formData, config)
-        .then(async () => {
-          console.log('사진 변경 완료')
-          dispatch('userStore/goProfile', changeInfo.userInfo.user_id, { root: true })
-          // router.push({ name: 'Profile' })
+        //config.headers['Content-Type'] = 'multipart/form-data'
+        await axios.post(SERVER.URL + SERVER.ROUTES.UploadDoctorAuth, Doctorimgsrc, config)
+        .then(async (res) => {
+          state.loginData.userimage=res.data;
         })
         .catch(err => console.log('사진 변경 에러: ', err))
       }
-    },
-    async goProfile({ state, commit, rootGetters }, userId) {
-      if (userId == null) {
-        userId = state.loginData.user_id
-        console.log('userId == null')
-      }
-      console.log(userId)
-      await axios.get(SERVER.URL + SERVER.ROUTES.user + userId, rootGetters.config)
-        .then(res => {
-          console.log('유저인포 요청완료')
-          commit('SET_USER_INFO', res.data)
-            // .then(() => router.push({ name: 'Profile' }))
-          // setTimeout(() => commit('SET_USER_INFO', res.data), 10000)
-        })
-        .catch(err => console.log(err))
-      axios.get(SERVER.URL + SERVER.ROUTES.profile + userId, rootGetters.config)
-        .then(res => {
-          console.log('프로필인포 요청 완료')
-          commit('SET_PROFILE_INFO', res.data)
-        })
-        .then(() => {
-          console.log('라우터 푸시 프로필')
-          router.push({ name: 'Profile' })
-        })
-        .then(() => {
-          router.go()
-        })
-      // console.log('라우터 푸시 프로필')
-      // router.push({ name: 'Profile' }) 
-    },
+    },//upload
   },
 }
 

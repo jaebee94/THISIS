@@ -11,14 +11,11 @@
 <script>
 export default {
     beforeCreate() {
+        this.$parent.isLoaded = false;
         document.body.className = "greenbody";
     },
     created () {
-        // document.querySelector('html').addEventListener('click', function () {
-        //     // console.log("!!!!");
-        //     // this.$router.push('/account/join');
-
-        // });
+        this.$parent.isLoaded = true;
 
         setTimeout( () => {
             document.body.className = "whitebodyfadeout";

@@ -2,6 +2,9 @@
   <div class="main wrap">
       <div class="logo wrap">
         <img src="../../assets/images/icon/logo_green.png" alt="logo_green" />
+        <div> 
+            <a style="color: rgb(0, 171, 132); font-size: 15px; font-weight: 600;">세상의 모든 질병</a>
+        </div>
       </div>
 
       <div class="email wrap">
@@ -9,7 +12,7 @@
           v-model="loginData.email" 
           id="email"
           type="text" 
-          placeholder="이메일을 입력해주세요" 
+          placeholder="이메일을 입력해주세요"
         />
       </div>
       <div class="password wrap">
@@ -35,15 +38,19 @@
       <div class="help join">
         <router-link to="/account/signup" class="btn--text"><a>아직 회원이 아니신가요?</a></router-link>
       </div>
-
+      <!-- <loading></loading> -->
   </div>
 </template>
 
 <script>
 import { mapActions } from 'vuex'
+// import loading from '../../components/loading/Loading.vue';
 
 export default {
   name: 'Login',
+  components: {
+    // loading,
+  },
   data() {
     return {
       loginData: {
@@ -52,19 +59,16 @@ export default {
       }
     }
   },
+  mounted() {
+    this.$parent.isLoaded = true;
+  },
   beforeCreate() {
     document.body.className = "whitebody";
+    this.$parent.isLoaded = false;
   },
   methods: {
-    ...mapActions('userStore', [
-      'login'
-    ]),
-    // ,login(loginData){
-    //   this.$store.dispatch("login",loginData);
-    // }
+    ...mapActions('userStore', ['login']),
   },
-  created() {
-  }
 };
 </script>
 

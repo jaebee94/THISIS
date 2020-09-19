@@ -1,16 +1,32 @@
 <template>
   <div class="news-wrap">
     <div class="news-search-input">
-        <input v-model="keyword" placeholder="키워드를 입력하세요" v-on:keyup.enter="findNews">
-        <span><img @click="findNews" src="../../assets/images/icon/icon_search_unselect.png"></span>
+        <input v-model="keyword" placeholder="키워드를 입력하세요" v-on:keyup.enter="findNews(keyword)">
+        <span><img @click="findNews(keyword)" src="../../assets/images/icon/icon_search_unselect.png"></span>
         <!-- <button >검색</button> -->
     </div>
-    <div v-if="sample_images.one"  class="news-search-image">
+    <div class="tutorial-show-wrap">
+        <span :selected="!disease.isSelected" :class="{selected : disease.isSelected}" 
+        v-for="disease in this.diseases" v-bind:key="disease.diseasecode" 
+        @click="findNews(disease.diseasename) ">{{disease.diseasename}}</span>
+    </div>
+    <!-- <div v-if="sample_images.one"  class="news-search-image">
         <img :src="sample_images.one"> 
         <img :src="sample_images.two">
+    </div> -->
+    <div class="news-ment">
+        <span>
+            <img src="../../assets/images/icon/quot_open.png">
+            <strong>{{selectedDisease}}</strong>
+            <img src="../../assets/images/icon/quot_close.png">
+            <a>에 대한</a>
+            <br>
+            <a>뉴스 기사입니다</a>
+        </span>
+        
     </div>
     <div class="news-content"> 
-        <ul v-for="item in items" v-bind:key="item">
+        <ul v-for="(item,idx) in items" v-bind:key="idx">
             <li><a @click="readNews(item.link)">{{item.title}}</a></li>
         </ul>
     </div>
@@ -19,14 +35,20 @@
 
 <script>
 import axios from 'axios';
+import { mapActions,mapState } from "vuex";
 const proxyurl = "https://cors-anywhere.herokuapp.com/";
 
 export default {
     name : 'news',
+     computed: {
+    ...mapState("userStore", ["loginData"]),
+    ...mapState('diseaseStore', ['diseases']),
+    },
     data() {
         return {
             keyword: "",
             items: [],
+            selectedDisease:"",
             sample_images: [
                 {one: ""},
                 {two: ""},
@@ -34,34 +56,24 @@ export default {
         }
     },
     methods: {
-        async findNews() {
-            console.log(this.keyword);
+         ...mapActions("diseaseStore", ["getFolloingwDisease"]),
+        async findNews(keyword) {
+            this.selectedDisease = keyword;
+            this.$parent.$parent.$parent.isLoaded = false;
+            this.selectedDisease = keyword
+            this.diseases.forEach(disease => {
+                disease.isSelected = false;
+                if(this.selectedDisease == disease.diseasename){
+                    disease.isSelected = true;
+                }
+            });
+            
             var params = {
-                query: this.keyword,
+                query: keyword,
                 display: 10,
                 start: 1,
                 sort: 'sim'
             }
-            var params2 = {
-                query: this.keyword,
-                display: 2,
-                start: 1,
-                sort: 'sim',
-                filter: 'small'
-            }
-            await axios.request({
-                url: proxyurl + 'https://openapi.naver.com/v1/search/image',
-                headers: {
-                    'X-Naver-Client-Id' : 'VmhwDszuy_Em4wjSyKBs',
-                    'X-Naver-Client-Secret' : 'u1VmQ08Ai6'
-                },
-                params: params2
-            })
-            .then((res) => {
-                console.log(res.data.items[0].link);
-                this.sample_images.one = res.data.items[0].link;
-                this.sample_images.two = res.data.items[1].link;
-            })
             await axios.request({
                 url: proxyurl + 'https://openapi.naver.com/v1/search/news.json',
                 headers: {
@@ -81,16 +93,22 @@ export default {
                     item.title = String(item.title).replace(/<(\/)?([a-zA-Z]*)(\s[a-zA-Z]*=[^>]*)?(\s)*(\/)?>/ig, "");
                 });
                 this.items = res.data.items;
-                console.log(res);
+                this.$parent.$parent.$parent.isLoaded = true;
             })
             .catch((err) => {
                 console.error(err);
+                this.$parent.$parent.$parent.isLoaded = true;
             })
         },
         readNews(link) {
-            window.open(link);
+            window.open(link,"_parent");
         }
-    }
+    },
+    created(){
+    this.$store.dispatch("diseaseStore/getFollowingDisease");
+    this.selectedDisease == this.diseases[0].diseasename //안됨
+    this.findNews(this.diseases[0].diseasename)
+  },
 }
 </script>
 
@@ -101,9 +119,10 @@ export default {
     }
 
     .news-search-input {
-        margin-top: 5px;
+        margin-top: 10px;
         width: 100%;
         height: 30px;
+        margin-bottom: 10px;
     }
 
     .news-search-input input {
@@ -115,19 +134,49 @@ export default {
         border: none;
         background-color: rgb(240, 240, 240);
         color: black;
-        font-weight: 700;
+        font-weight: 600;
         outline: none;
     }
 
-    .news-search-input input:focus {
+    /* .news-search-input input:focus {
         background-color: rgb(0, 171, 132);
         color: white;
-    }
+    } */
 
     .news-search-input span{
         position: relative;
         right: 8%;
         top: 5px;
+    }
+
+    .news-ment {
+        /* background-color: rgba(250, 200, 200, 0.3); */
+        margin-top: 20px;
+        width: 90%;
+        margin-left: 5%;
+        padding: 5px 0px;
+        /* border: none; */
+        /* border-radius: 15px; */
+        /* border-top: 3px slategray solid; */
+        border-bottom: 3px slategray solid;
+    }
+
+    .news-ment img {
+        width: 12px;
+        height: 12px;
+        position: relative;
+        top: -5px;
+        margin: 0 5px auto;
+    }
+
+    .news-ment strong {
+        font-size: 20px;
+        font-weight: 600;
+    }
+
+    .news-ment a {
+        font-size: 13px;
+        font-weight: 600;
     }
 
     .news-search-input span img {
@@ -159,4 +208,29 @@ export default {
         font-size: 13px;
         font-weight: 600;
     }
+
+    .tutorial-show-wrap {
+        width: 100%;
+        margin-top: -4px;
+        /* margin-top: 3px; */
+        display: inline-block;
+    }
+
+    .tutorial-show-wrap span {
+        background-color: rgb(200, 200, 200);
+        color: black;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 4px 8px;
+        border: none;
+        border-radius: 5px;
+        display: inline-block;
+        margin: 5px 5px auto;
+    }
+
+    .tutorial-show-wrap span.selected {
+        background-color: rgb(0, 171, 132);
+        color: white;
+    }
+
 </style>

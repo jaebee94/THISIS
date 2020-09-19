@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.web.curation.dao.UserInfoDAO;
 import com.web.curation.model.UserInfo;
+import com.web.curation.model.UserPolice;
 
 @Service
 public class UserInfoServiceImpl implements UserInfoService {
@@ -77,6 +78,36 @@ public class UserInfoServiceImpl implements UserInfoService {
 	@Override
 	public int updatePassword(UserInfo userinfo) {
 		return userInfoDao.updatePassword(userinfo);
+	}
+
+	@Override
+	public int updateDisable(int user_id) {
+		return userInfoDao.updateDisable(user_id);
+	}
+
+	@Override
+	public int updateRole(int user_id) {
+		return userInfoDao.updateRole(user_id);
+	}
+
+	@Override
+	public String selectSaltByUserId(int user_id) {
+		return userInfoDao.selectSaltByUserId(user_id);
+	}
+	
+	public List<UserPolice> selectUserInfoPolice() {
+		return userInfoDao.selectUserInfoPolice();
+	}
+
+	@Override
+	public int updateable(int user_id) {
+		return userInfoDao.updateable(user_id);
+	}
+
+	@Override
+	public int deleteRole(int user_id) {
+		return userInfoDao.deleteRole(user_id);
+		
 	}
 
 }

@@ -1,7 +1,5 @@
 package com.web.curation.model;
 
-import java.util.Date;
-
 public class Post {
 	private int posts_id;
 	private int user_id;
@@ -85,12 +83,19 @@ public class Post {
 		this.hidden = hidden;
 	}
 
+	public int getHidden() {
+		return hidden;
+	}
+
+	public void setHidden(int hidden) {
+		this.hidden = hidden;
+	}
+
 	public Post() {
 	}
 
 	public Post(int posts_id, int user_id, String posts_title, String posts_main, String post_date, int category,
 			String diseasecode, String imgsrc, int hidden) {
-		super();
 		this.posts_id = posts_id;
 		this.user_id = user_id;
 		this.posts_title = posts_title;

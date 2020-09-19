@@ -1,19 +1,22 @@
 <template>
     <div class="comment-module-wrap">
+        <div v-if="isDelete" @click="isDelete = !isDelete" class="black-layer"></div>
         <div v-if="!isModify">
             <div class="comment-module-header">
-                <a class="name">{{comment.userinfo.nickname}}</a>
+                <a class="name" @click="goProfile(comment.userinfo.user_id)">
+                    <strong>{{comment.userinfo.nickname}}</strong>
+                    <img class = "doctor-image" v-if ="comment.userinfo.role == 'doctor'" src='../../assets/images/icon/icon_doctor_mark.png'/> 
+                    </a>
                 <a class="time">{{timeForToday(comment.comment.comment_date)}}</a>
+                <img class="dropmenu" v-if="loginData.user_id == comment.userinfo.user_id" @click="isDelete = !isDelete"  src="../../assets/images/icon/icon_3dots.png" />
+                <div v-show="isDelete" class="dropdown-content">
+                    <a href="#" v-if="loginData.user_id == comment.userinfo.user_id" @click="modifyComment(comment)">수정</a>
+                    <a href="#" v-if="loginData.user_id == comment.userinfo.user_id" @click="deleteCheckComment(comment.comment)">삭제</a>
+                </div>
             </div>
             <div class="comment-module-content">
                 {{comment.comment.comment_main}}
             </div>
-            <span class="comment-module-footer">
-                <img @click="isModify = !isModify" class="comment-module-health" v-if="comment.userinfo.user_id == loginData.user_id" :src="modifyImage">
-                <!-- <img class="comment-module-health" v-if="true" :src="isHealth" @click="clickHealth()">
-                <img class="comment-module-health" v-if="true == false" :src="isNotHealth" @click="clickHealth()">
-                <span class="comment-health-count">12</span> -->
-            </span>
         </div>
         <div v-if="isModify">
             <div class="comment-module-header">
@@ -21,7 +24,7 @@
                 <a class="time">{{timeForToday(comment.comment.comment_date)}}</a>
             </div>
             <div class="comment-module-modify">
-                <input v-model="comment.comment.comment_main" placeholder="수정할 댓글 내용을 적어주세요">
+                <input v-model="comment.comment.comment_main" placeholder="수정할 댓글 내용을 적어주세요" v-on:keyup.enter="modifyComment(comment)">
                 <button @click="modifyComment(comment)">수정</button>
             </div>
         </div>
@@ -40,7 +43,9 @@ export default {
             isModify: false,
             isHealth: require("../../assets/images/icon/icon_like_select.png"),
             isNotHealth: require("../../assets/images/icon/icon_like_unselect.png"),
-            modifyImage: require("../../assets/images/icon/icon_edit_unselect.png")
+            modifyImage: require("../../assets/images/icon/icon_edit_unselect.png"),
+            deleteImage: require("../../assets/images/icon/icon_eraser.png"),
+            isDelete: false,
         }
     },
     props: {
@@ -49,7 +54,8 @@ export default {
         },
     },
     methods: {
-        ...mapActions('postStore', ['updateComment']),
+        ...mapActions('userStore', ["goProfile"]),
+        ...mapActions('postStore', ['updateComment','deleteComment']),
         timeForToday(time) {
             const today = new Date();
             var timeValue = new Date(time);
@@ -70,7 +76,7 @@ export default {
             return `${Math.floor(betweenTimeDay / 365)}년전`;
         },
         modifyComment(comment) {
-            console.log('현재의 코멘트', comment);
+            this.isDelete = false;
             if(comment.comment.comment_main.length == 0) {
                 alert("수정 내용을 입력하세요!");
                 return;
@@ -83,9 +89,26 @@ export default {
                 "posts_id": comment.comment.posts_id,
                 "user_id": comment.comment.user_id
             }
-            console.log('commentData', commentData);
             this.updateComment(commentData)
             this.isModify = !this.isModify;
+        },
+        deleteCheckComment(comment){
+            //확인 부분
+            
+            var result = confirm('댓글을 지우시겠습니까?');
+            if(result) {
+                this.deleteComment(comment);
+                alert('삭제했습니다')
+            } 
+
+            // var modalInfo={
+            //     msg : "댓글을 정말 지우시겠습니까?",
+            //     data : comment
+            // }
+            // this.$emit("check-delete",modalInfo)
+
+
+            //this.deleteComment(comment)
         }
     }
 }
@@ -93,13 +116,15 @@ export default {
 
 <style scoped>
     .comment-module-wrap {
+        /* height: 60px; */
         width: 99%;
-        height: 60px;
         background-color: white;
+
         border-bottom: 1px slategray solid;
     }
 
     .comment-module-header {
+        margin : 7px 0px 7px 0px;
         background-color : white;
         text-align: left;
         padding-left: 5%;
@@ -108,6 +133,7 @@ export default {
 
     .comment-module-header .name {
         margin-right: 10px;
+        font-size : 14px;
     }
 
     .comment-module-header .time {
@@ -118,6 +144,7 @@ export default {
     .comment-module-modify {
         width: 100%;
         margin-top: 5px;
+        margin-bottom: 10px;
     }
 
     .comment-module-modify input {
@@ -148,19 +175,14 @@ export default {
 
     .comment-module-content {
         text-align: left;
-        width: 80%;
+        width: 90%;
         padding-left: 5%;
         padding-right: 5%;
-        font-size: 13px;
+        font-size: 12px;
         margin-bottom: 5px;
     }
 
-    .comment-module-footer {
-        position: relative;
-        top: -30px;
-        right: -40%;
-    }
-
+    
     
     .comment-module-health {
         height: 20px;
@@ -177,4 +199,59 @@ export default {
         border-radius: 70%;
         padding:1px 3px;
     }
+
+    /* ======= dropdown css ======= */
+    .dropdown {
+        position: relative;
+        display: inline-block;
+        padding-top: 8px;
+    }
+
+    .dropmenu {
+        width: 18px;
+        float: right;
+    }
+
+    .black-layer {
+        position: fixed;
+        /* background-color: black;
+        opacity: 0.1; */
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 54;
+    }
+
+    .dropdown-content {
+        position: relative;
+        left: calc(100% - 100px);
+        background-color: rgb(247, 247, 247);
+        outline: none;
+        width: 100px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 55;
+        display: block;
+
+    }
+
+    .dropdown-content a{
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+    
+    }
+
+
+    .dropdown-content a:hover{
+        background-color:rgb(191, 181, 181);
+    }
+
+    
+.doctor-image {
+  width: 15px;
+  height: 15px;
+}
+/* ======= dropdown css ======= */
 </style>

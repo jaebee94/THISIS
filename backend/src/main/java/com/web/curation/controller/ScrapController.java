@@ -62,19 +62,17 @@ public class ScrapController {
 	
 	@ApiOperation(value = "유저에 해당하는 스크랩 불러오기.", response = List.class)
 	@GetMapping("{user_id}")
-	public ResponseEntity<List<PostResponse>> selectuserScrap(@RequestParam int num,HttpServletRequest request) throws Exception {
-		String accessToken = (String) request.getAttribute("accessToken");
-		int user_id = 1;
-		if (accessToken != null) {
-			Auth auth = authService.findAuthByAccessToken(accessToken);
-			user_id = auth.getUser_id();
-		}
-		System.out.println("user_id :" +user_id);
+	public ResponseEntity<List<PostResponse>> selectuserScrap(@PathVariable int user_id,@RequestParam int num) throws Exception {
 		List<Scrap> scrapList = scrapService.selectScrap(user_id);
+		List<PostResponse> response = new ArrayList<>();
+		if( scrapList == null || scrapList.size()==0 ) {
+			return new ResponseEntity<List<PostResponse>>(response, HttpStatus.OK);
+		}
 		//System.out.println(scrapList.toString());
 		List<Post> Allpage = postService.selectScrapInfo(scrapList);
 		List<Post> page = null;
-		List<PostResponse> response = new ArrayList<>();
+		
+		System.out.println("user_id :" +user_id);
 		if (Allpage.size() / 10 > num && num * 10 + 10 <= Allpage.size()) {
 			page = Allpage.subList(num * 10, num * 10 + 10);
 			

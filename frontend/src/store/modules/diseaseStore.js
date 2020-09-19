@@ -1,4 +1,3 @@
-
 import axios from "axios";
 import SERVER from "@/api/RestApi.js";
 const diseaseStore = {
@@ -20,47 +19,30 @@ const diseaseStore = {
 
 
     actions: {
-        getFollowingDisease({ rootGetters, commit }) {
-            axios.get(SERVER.URL + SERVER.ROUTES.disease, rootGetters.config)
-                .then(res => {
-                    console.log(res)
-                    commit('SET_DISEASE', res.data)
+        async getFollowingDisease({ rootGetters, commit }) {
+            await axios.get(SERVER.URL + SERVER.ROUTES.disease, rootGetters.config)
+                .then(async(res) => {
+                    await commit('SET_DISEASE', res.data)
                 })
                 .catch(err => console.log(err))
         },
         async createDisease({rootGetters,dispatch} ,params){ //질병 구독
-            console.log(params)
-            console.log(rootGetters.config)
             await axios.post(SERVER.URL + SERVER.ROUTES.subscribe,params ,rootGetters.config)
-            .then((res) => {
-                console.log(res);
-                dispatch('getFollowingDisease')
+            .then(async () => {
+                await dispatch('getFollowingDisease')
             })
         },
-        // addDisease({ rootGetters }, diseasecode) { //이부분 아직 백엔드에 구현 안되어 있음
-        //     axios.put(SERVER.URL + SERVER.ROUTES.disease,
-        //         {
-        //             diseasecode: diseasecode
-        //         }
-        //         , rootGetters.config)
-        //         .then(res => {
-        //             console.log("result", res);
-        //             this.getFolloingwDisease(rootGetters.config) //다시 업데이트
-        //         }).catch(err => console.log(err))
-
-        // },
-        deleteDisease({ rootGetters, dispatch }, diseasecode) {
-            console.log(rootGetters.config)
-            axios.delete(SERVER.URL + SERVER.ROUTES.subscribe,
+        async deleteDisease({ rootGetters, dispatch }, diseasecode) {
+            
+            await axios.delete(SERVER.URL + SERVER.ROUTES.subscribe,
                 {
                     data:{
                         diseasecode: diseasecode
                     }
                     , headers: rootGetters.config.headers
                 })
-                .then(res => {
-                    console.log("result", res);
-                    dispatch('getFollowingDisease') 
+                .then(async ()=> {
+                    await dispatch('getFollowingDisease') 
                 }).catch(err => console.log(err))
         }
     }

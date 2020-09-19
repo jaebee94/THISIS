@@ -22,7 +22,7 @@
 import axios from 'axios'
 // import SERVER from '@/api/RestApi.js'
 
-const api = 'http://i3a301.p.ssafy.io:8089/THISIS/email'
+const api = 'https://i3a301.p.ssafy.io:8089/THISIS/email'
 
 export default {
   data() {
@@ -35,7 +35,7 @@ export default {
       axios.get(api, { params: {
         email: email
       }})
-        .then(res => {console.log('성공', res)
+        .then(()=> {
          alert("이메일을 전송하였습니다.")
          this.$router.push('/account/login')
          }

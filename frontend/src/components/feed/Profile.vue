@@ -2,11 +2,16 @@
   <div class="profile wrap">
     <div class="intro-wrap">
       <div class="left-content">
-        <div class="profile-image">
+        <div class="profile-image" v-if="this.profileData.userInfo.userimage != null">
           <img :src="profileData.userInfo.userimage" />
+        </div>
+        <div class="profile-image" v-else>
+          <img src="../../assets/user2.png" />
         </div>
         <div class="profile-name">
           <a>{{ profileData.userInfo.nickname }}</a>
+          <!-- 의사 뱃지 보여주는 부분 -->
+          <img v-if ="profileData.userInfo.role == 'doctor'" src='../../assets/images/icon/icon_doctor_mark.png'/> 
         </div>
         <div class="profile-intro">
           <a>{{ profileData.userInfo.introduction }}</a>
@@ -18,29 +23,36 @@
             <td>게시물</td>
             <td>{{ profileData.profileInfo.postnum }}</td>
           </tr>
+          
           <tr>
-            <td>팔로워</td>
-            <td>{{ profileData.profileInfo.followernum }}</td>
+            <td><router-link :to="{ name: 'FollowList', params: { tab: 0 }}" >팔로워</router-link></td>
+            <td><router-link :to="{ name: 'FollowList', params: { tab: 0 }}" >{{ profileData.profileInfo.followernum }}</router-link></td>
           </tr>
+
+         
           <tr>
-            <td>팔로잉</td>
-            <td>{{ profileData.profileInfo.followeenum }}</td>
+            <td> <router-link :to="{ name: 'FollowList', params: { tab: 1 }}">팔로잉 </router-link></td>
+            <td> <router-link :to="{ name: 'FollowList', params: { tab: 1 }}">{{ profileData.profileInfo.followeenum }} </router-link></td>
           </tr>
+         
         </table>
+        <button
+          v-if="loginData.user_id == profileData.userInfo.user_id"
+          id="logout-btn"
+          @click="logout()"
+        >로그아웃</button>
       </div>
     </div>
     <div class="profile-modify">
       <!-- 나의 아이디와 보고 있는 페이지의 유저 아이디가 같을 경우 -->
       <router-link to="/main/change">
-        <button
-          v-show="loginData.user_id == profileData.userInfo.user_id"
-        >프로필 수정</button>
+        <button v-show="loginData.user_id == profileData.userInfo.user_id">프로필 수정</button>
       </router-link>
       <!-- 나의 아이디와 보고 있는 페이지의 유저 아이디가 다른 경우 -->
       <!-- 1. 팔로우 요청도 안 보낸 상태(data의 followSend가 false일 경우 + isFollowing이 false일 경우) -->
       <button
         @click="follow()"
-        v-show="loginData.user_id != profileData.userInfo.user_id && !this.followee_list && !this.followSend"
+        v-show="loginData.user_id != profileData.userInfo.user_id && !this.followSend && !this.followee_list"
       >팔로우 요청</button>
       <!-- 2. 팔로우 요청을 보냈지만 승인을 받지 못한 상태(followSend가 true일 경우 + isFollowing이 false일 경우) -->
       <button
@@ -67,10 +79,10 @@
       </div>
 
       <div>
-      <feed  
-      v-bind:profile_data = 
-      "{user_id : this.profileData.userInfo.user_id,
-       tab : this.currentTab}"></feed>
+        <feed
+          v-bind:profile_data="{user_id : this.profileData.userInfo.user_id,
+       tab : this.currentTab}"
+        ></feed>
       </div>
     </div>
   </div>
@@ -80,6 +92,7 @@
 import { mapActions, mapState } from "vuex";
 import db from "../../firebaseInit";
 import firebase from "firebase";
+import router from "@/router";
 
 const increment = firebase.firestore.FieldValue.increment(1);
 const decrement = firebase.firestore.FieldValue.increment(-1);
@@ -127,55 +140,30 @@ export default {
   },
   mounted() {
     this.user.user_id = this.$route.params.id;
-    console.log('mounted')
   },
   computed: {
-    ...mapState('userStore', [
-      'loginData',
-      'profileData'
-    ]),
-    // ...mapState('profileStore', [
-    //   'profileData'
-    // ]),
-    // ...mapState('profileStore', ['profileData']),
-    ...mapState('followStore', ['followee_list']),
-    ...mapState('postStore', ['comments']),
+    ...mapState("userStore", ["loginData", "profileData"]),
+    ...mapState("followStore", ["followee_list"]),
+    ...mapState("postStore", ["comments"]),
   },
   methods: {
-    // ...mapActions('profileStore', ['goProfile']),
-    ...mapActions('userStore', ['goProfile']),
-    ...mapActions('postStore', [
-      'updatePost',
-      'createComment',
-      'fetchComments',
-      'updateComment',
-      'health',
-      'deleteScrap',
-      'getUserScraps'
+    ...mapActions("userStore", ["goProfile"]),
+    ...mapActions("postStore", [
+      "updatePost",
+      "createComment",
+      "fetchComments",
+      "updateComment",
+      "health",
+      "deleteScrap",
+      "getUserScraps",
     ]),
-    ...mapActions('followStore', [
-      'createFollowing',
-      'deleteFollowing',
-      'getFollowee',
+    ...mapActions("followStore", [
+      "createFollowing",
+      "deleteFollowing",
+      "deleteFollow",
+      "getFollowee",
     ]),
-
-    showModify(postInfo) {
-      this.postInfo = postInfo;
-      this.$parent.$parent.isHidden = true;
-      this.isModifyHidden = true;
-    },
-    modifyPostClick(post_id) {
-      this.posts.forEach(function (element) {
-        if (element.post_id == post_id) {
-          element = this.mPost;
-        }
-      });
-      this.closeModify();
-    },
-    closeModify() {
-      this.$parent.$parent.isHidden = false;
-      this.isModifyHidden = false;
-    },
+    ...mapActions("notificationStore", ["createNotification"]),
     follow() {
       let vueInstance = this;
       this.followSend = true;
@@ -184,18 +172,18 @@ export default {
         request: increment,
       };
       instance[this.loginData.user_id] = false;
-      // 보내는 사람의 notification(알림) 1 증가
-      db.collection("notification")
-        .doc(String(this.loginData.user_id))
-        .update({
-          notification: increment,
-        })
-        .then(function () {
-          vueInstance.$parent.getNoti(vueInstance.loginData.user_id);
-        })
-        .catch(function (error) {
-          console.error("Error setting document: ", error);
-        });
+      // 보내는 사람의 notification(알림) 1 증가 -> 그냥 승낙받았을 때만 1증가
+      // db.collection("notification")
+      //   .doc(String(this.loginData.user_id))
+      //   .update({
+      //     notification: increment,
+      //   })
+      //   .then(function () {
+      //     vueInstance.$parent.getNoti(vueInstance.loginData.user_id);
+      //   })
+      //   .catch(function (error) {
+      //     console.error("Error setting document: ", error);
+      //   });
       // 받는 사람의 request(요청) 1 증가
       db.collection("notification")
         .doc(String(this.profileData.userInfo.user_id))
@@ -212,120 +200,131 @@ export default {
       params["followee_id"] = this.profileData.userInfo.user_id;
       params["approval"] = 0;
 
-      this.$store.dispatch("createFollowing", params);
+      this.$store.dispatch("followStore/createFollowing", params);
     },
     followCancel() {
       let vueInstance = this;
       this.followSend = false;
-      let instance = {
-        request: decrement,
-      };
-      instance[this.loginData.user_id] = firebase.firestore.FieldValue.delete();
+
       // 보내는 사람의 notification(알림) 1 감소
-      db.collection("notification")
-        .doc(String(this.loginData.user_id))
-        .update({
-          notification: decrement,
-        })
-        .then(function () {
-          vueInstance.$parent.getNoti(vueInstance.loginData.user_id);
-        })
-        .catch(function (error) {
-          console.error("Error setting document: ", error);
-        });
+      // db.collection("notification")
+      //   .doc(String(this.loginData.user_id))
+      //   .update({
+      //     notification: decrement,
+      //   })
+      //   .then(function () {
+      //     vueInstance.$parent.getNoti(vueInstance.loginData.user_id);
+      //   })
+      //   .catch(function (error) {
+      //     console.error("Error setting document: ", error);
+      //   });
       // 받는 사람의 request(요청) 1 감소
+
+      // 이미 상대편에서 알림을 다 읽어서 감소할게 없을 때는 지우지 않는다
+      let flag = true;
       db.collection("notification")
         .doc(String(vueInstance.profileData.userInfo.user_id))
-        .update(instance)
-        .then(function () {
-          vueInstance.$parent.getNoti(vueInstance.loginData.user_id);
+        .get()
+        .then(function (doc) {
+          if (doc.exists) {
+            if (doc.data().request == 0) flag = false;
+          } else {
+            console.log("No such document!");
+          }
         })
-        .catch(function (error) {
-          console.error("Error setting document: ", error);
+        .catch(function (err) {
+          console.log("ERROR OCCURED : ", err);
         });
+
+      if (flag) {
+        let instance = {
+          request: decrement,
+        };
+        instance[
+          this.loginData.user_id
+        ] = firebase.firestore.FieldValue.delete();
+        db.collection("notification")
+          .doc(String(vueInstance.profileData.userInfo.user_id))
+          .update(instance)
+          .then(function () {
+            vueInstance.$parent.getNoti(vueInstance.loginData.user_id);
+          })
+          .catch(function (error) {
+            console.error("Error setting document: ", error);
+          });
+      }
       let params = {};
       params["follower_id"] = this.loginData.user_id;
       params["followee_id"] = this.profileData.userInfo.user_id;
       params["approval"] = 1;
-
-      this.$store.dispatch("deleteFollowing", params);
+      this.$store.dispatch("followStore/deleteFollowing", params);
     },
-    followingCancel() {
+    followingCancel() { //팔로우 끊기
+      var res = confirm("팔로우를 끊으시겠어요?");
+      if(!res) {
+        alert("팔로잉 상태를 유지할게요~");
+        return;
+      }
       this.isFollowing = false;
+      this.followee_list = false;
+      let params = {
+        follower: this.loginData.user_id, //본인
+        followee: this.profileData.userInfo.user_id, //상대방
+      };
+      this.$store.dispatch("followStore/deleteFollow", params);
+      params = {
+        follower: this.loginData.user_id, //본인
+        followee: this.profileData.userInfo.user_id, //상대방
+      };
+      this.getFollowee(params);
     },
-    clickHealth(post) {
-      if (post.health == true) {
-        post.health = false;
-        post.health_count -= 1;
+    logout() {
+      var result = confirm("로그아웃하시겠습니까?");
+      if (result) {
+        router.push({ name: "Logout" });
       } else {
-        post.health = true;
-        post.health_count += 1;
+        alert("그래요! 좀만 더 놀다가세요");
       }
-      this.healthData.posts_id = post.posts_id;
-      this.healthData.user_id = this.loginData.user_id;
-      //this.healthData.user_id = this.loginData.user_id; // user_id
-      this.health(this.healthData);
-    },
-    clickScrap(post) {
-      if (post.scrap == true) {
-        post.scrap = false;
-        this.$store.dispatch("deleteScrap", post.posts_id);
-      } else {
-        post.scrap = true;
-        this.$store.dispatch("scrap", post.posts_id);
-      }
-    },
-    showPost(postInfo) {
-      this.postInfo = postInfo;
-      this.$parent.$parent.isHidden = true;
-      this.isPostHidden = true;
-      // this.commentData.posts_id = post.posts_id;
-      // this.fetchHealths(post.posts_id);
-      this.fetchComments(postInfo.posts_id);
-      this.commentData.posts_id = postInfo.posts_id;
-      this.commentData.user_nickname = this.loginData.nickname;
-    },
-    clearCommentData() {
-      setTimeout(() => {
-        this.commentData = {};
-      }, 300);
-    },
-    closePost() {
-      this.$parent.$parent.isHidden = false;
-      this.isPostHidden = false;
-    },
-    updatePostAndClose(postInfo) {
-      this.updatePost(postInfo);
-      this.$parent.$parent.isHidden = false;
-      this.isModifyHidden = false;
     },
   },
   created() {
-    // this.goProfile()
     this.getUserScraps(this.profileData.userInfo.user_id);
     var vueInstance = this;
     let params = {
       followee_id: this.profileData.userInfo.user_id,
-      follower_id: this.loginData.user_id
+      follower_id: this.loginData.user_id,
     };
     this.getFollowee(params);
 
-    const noti = db.collection("notification")
-    .doc(String(vueInstance.profileData.userInfo.user_id));
+    const noti = db
+      .collection("notification")
+      .doc(String(vueInstance.profileData.userInfo.user_id));
     let instance = {};
 
-    noti
-      .get()
-      .then(function (doc) {
-        instance = doc.data();
-        if (instance[vueInstance.loginData.user_id] == false) {
-          vueInstance.followSend = true;
-        }
-      })
-      .catch(function (err) {
-        console.log("ERROR OCCURED : ", err);
-      });
+    noti.onSnapshot(
+      {
+        // Listen for document metadata changes
+        includeMetadataChanges: true,
+      },
+      function () {
+        //이벤트 발생시 카운트 재정립
+        noti
+          .get()
+          .then(function (doc) {
+            instance = doc.data();
+            if (instance[vueInstance.loginData.user_id] == false) {
+              vueInstance.followSend = true;
+            } else vueInstance.followSend = false;
+          })
+          .catch(function (err) {
+            console.log("ERROR OCCURED : ", err);
+          });
+      }
+    );
+
   },
+
+  
 };
 </script>
 <style scoped>
@@ -342,19 +341,38 @@ export default {
   padding: 20px;
   float: left;
   width: 50%;
+  text-align: center;
 }
+
+.profile-image {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .profile-image img {
   border: rgb(0, 171, 132) 3px solid;
   border-radius: 70%;
-  width: 60%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .profile-name a {
   font-size: 20px;
   font-weight: 600;
 }
+.profile-name img {
+  width: 15px;
+  height: 15px;
+  margin-left : 2px
+}
 
 .profile-intro a {
-  font-size: 15px;
+  font-size: 12px;
 }
 .right-content {
   float: right;
@@ -365,17 +383,22 @@ export default {
   margin-top: 20%;
   height: 60%;
 }
-.right-content table tr td:nth-child(1) {
+.right-content table tr td:nth-child(1), td:nth-child(1) a {
   font-size: 15px;
   font-weight: 500;
   width: 60%;
+  color:black;
 }
 
-.right-content table tr td:nth-child(2) {
+.right-content table tr td:nth-child(2), td:nth-child(2) a {
   font-size: 20px;
   font-weight: 600;
   color: rgb(0, 171, 132);
   text-align: left;
+}
+
+td a{
+  text-decoration: none;
 }
 .profile-modify {
   width: 90%;
@@ -387,11 +410,11 @@ export default {
   width: 100%;
   background-color: rgb(200, 200, 200);
   color: white;
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 500;
   height: 30px;
   border-radius: 5px;
-  border:none;
+  border: none;
   transition-duration: 300ms;
 }
 
@@ -411,15 +434,16 @@ export default {
   height: 40px;
   vertical-align: middle;
   background-color: rgb(247, 247, 247);
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  border-bottom: 3px rgb(247, 247, 247) solid;
+  border-radius: 0;
 }
 .tab img {
   margin-top: 10px;
   height: 20px;
 }
 .tab.active {
-  background-color: rgb(0, 171, 132);
+  background-color: rgb(247, 247, 247);
+  border-bottom: 3px rgb(0, 171, 132) solid;
 }
 
 /* 피드 관련 */
@@ -485,10 +509,10 @@ export default {
   padding: 10px 5px;
 }
 
-.profile-image {
+/* .profile-image {
   background-color: white;
   border-radius: 70%;
-}
+} */
 
 .feed-footer {
   width: 100%;
@@ -511,6 +535,22 @@ export default {
   height: 60%;
 }
 
+#logout-btn {
+  width: 100px;
+  height: 30px;
+  border: none;
+  background-color: rgb(220, 0, 27);
+  font-weight: 600;
+  border-radius: 5px;
+  outline: none;
+  color: white;
+  transition-duration: 300ms;
+}
+
+#logout-btn:focus {
+  background-color: rgb(189, 22, 44);
+}
+
 .health-count {
   position: absolute;
   margin-left: -5px;
@@ -520,7 +560,7 @@ export default {
   border: none;
   font-size: 10px;
   border-radius: 70%;
-  padding:1px 3px;
+  padding: 1px 3px;
 }
 
 .post {
@@ -700,4 +740,7 @@ export default {
 .modify-footer img {
   height: 80%;
 }
+
+
+
 </style>
