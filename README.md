@@ -1,6 +1,12 @@
+
+
 <img src="https://ifh.cc/g/0wcaFR.png"></img>
 
+
+
 # 📢프로젝트 소개
+
+
 
 질병을 의미하는 Disease에서 비슷한 발음인 **THISIS**로 프로젝트 이름을 정하였습니다.
 환자들끼리 부족한 정보들을 얻기 위한 목적에 있는 질병 SNS로써 역할을 하기 위해 프로젝트를 진행하게 되었습니다. 
@@ -13,7 +19,11 @@
 <img src ="https://img.shields.io/badge/server-AWS-gold"></img>
 <img src ="https://img.shields.io/badge/language-Java%2C%20JavaScript-purple"></img>
 
+
+
 # 😁 팀원 소개
+
+
 
 <img src="https://ifh.cc/g/kWHKzY.jpg" width="80px"></img>
 팀장 : **강세응** 
@@ -30,32 +40,39 @@ Backend 장: 김재현
 <img src="https://ifh.cc/g/U0AkZo.jpg" width="80px"></img>
 Backend Ace : 채지은
 
+
+
 # ⌛ 프로젝트 개발 일정
 
-<img src="https://ifh.cc/g/KJw2qH.png" height = "350px" width="600px"></img>
+
+
+<img src="https://ifh.cc/g/eEQC6V.png" height = "350px" width="800px"></img>
+
+
 
 # 🤝 Branch Rule
 
+
+
 * Git Branch 전략
    * master -> develop -> feature/(기능 이름)
-        
+     
      * 기능 단위로 feature 생성 후 작업 -> develop으로 병합
      * 완성된 기능에 대한 feature 브랜치는 작업 완료 후 삭제 
    
    * Commit Rule : [브랜치명]커밋 내용 | JIRA이슈 ID
       ex)[develop] : [브랜치명] 커밋 내용 | JIRA이슈 ID
-
-     * JIRA번호 마지막에
-     
+* JIRA번호 마지막에
      * 마침표 X
-     
      * 영어만 사용
-     
      * 브랜치명: 모두 소문자
-     
      * 커밋내용 : 첫 글자만 대문자, 명령문 형식으로 작성
+     
+     
 
 # ✍ Ground Rule
+
+
 
 * 1일 1 commit
 
@@ -64,10 +81,14 @@ Backend Ace : 채지은
 * merge 후 브랜치 지우기
 
 
+
 # 🛠 프로젝트 개발 환경 설정
 
 
+
 ## Frontend 개발환경
+
+
 
 ##### NPM 사용을 위한 Node.js 설치
 
@@ -113,7 +134,10 @@ Backend Ace : 채지은
 - `yarn add vue-router vuex`
 
 
+
 ## Backend 개발환경
+
+
 
 ##### Spring Boot 설치
 
@@ -193,7 +217,12 @@ Backend Ace : 채지은
     spring.datasource.password={비밀번호}
     ```
     
+
+
+
 ## 개발 환경 및 IDE
+
+
 
 <img src="https://subicura.com/assets/article_images/2017-01-19-docker-guide-for-beginners-1/docker-logo.png" width="80px"></img>
 도커를 사용하여 MariaDB 인스턴스 생성
@@ -207,7 +236,11 @@ VS CODE 사용하여 FrontEnd 작업
 <img src="https://a0.awsstatic.com/libra-css/images/logos/aws_logo_smile_1200x630.png" height = "80px" width="80px"></img>
 AWS 활용한 서버 연동
 
+
+
 ## Docker 명령어 정리
+
+
 
 |명령어|내용|
 |------|----|
@@ -215,7 +248,11 @@ AWS 활용한 서버 연동
 |인스턴스 생성|docker run --name {db이름} -p {port}:{port} -e MYSQL_ROOT_PASSWORD={password} -d mariadb|
 |인스턴스 실행|docker exec -it {db이름} mysql -u root -p|
 
+
+
 ## FrontEnd 명령어 정리
+
+
 
 * 명령어는 Node.js와 Vue.js가 설치되어 있다고 가정합니다
 
@@ -224,7 +261,11 @@ AWS 활용한 서버 연동
 |yarn install|Node Modules에 있는 내용들 install|
 |yarn serve --port 3000|port번호 3000에서 로컬 서버 실행|
 
+
+
 ## AWS 서버 명령어 정리 
+
+
 
 |명령어|내용|
 |-----|---|
@@ -236,103 +277,170 @@ AWS 활용한 서버 연동
 
 ## DB sql문 설정
 
+
+
 ##### 회원 테이블
+
 ``` sql
-create table UserInfo(
-  user_id      int primary key auto_increment,   
-  username      varchar(45),      
-  nickname        varchar(45) ,         
-  email         varchar(45) ,         
-  password         varchar(45),      
-  introduction      varchar(200)         
-);
+drop table IF EXISTS `THISIS`.`Userinfo`;
+CREATE TABLE IF NOT EXISTS `THISIS`.`UserInfo` (
+  `user_id` INT NOT NULL AUTO_INCREMENT,
+  `username` VARCHAR(45) NOT NULL,
+  `nickname` VARCHAR(45) NOT NULL,
+  `email` VARCHAR(45) NOT NULL,
+  `password` VARCHAR(150) NOT NULL,
+  `introduction` VARCHAR(300) NULL,
+  `userimage` VARCHAR(300) NULL,
+  `role` VARCHAR(10) DEFAULT "user",
+  `disabled` INT DEFAULT 0,
+  `salt` VARCHAR(100) NULL,
+  PRIMARY KEY (`user_id`),
+  UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE,
+  UNIQUE INDEX `nickname_UNIQUE` (`nickname` ASC) VISIBLE)
+ENGINE = InnoDB;
 
 ```
 
 ##### 인증 테이블
 ```sql
 drop table IF EXISTS `THISIS`.`auth`;
-CREATE TABLE  `THISIS`.`auth` (
+CREATE TABLE IF NOT EXISTS `THISIS`.`auth` (
   `user_id` INT NOT NULL,
-  `refresh_token` VARCHAR(500) NULL,
-  `access_token` VARCHAR(500) NULL,
-  PRIMARY KEY (`user_id`))
+  `refresh_token` VARCHAR(700) NULL,
+  `access_token` VARCHAR(700) NULL,
+  PRIMARY KEY (`user_id`),
+  CONSTRAINT `fk_auth_userinfo`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `THISIS`.`UserInfo` (`user_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
-```    
+```
 
 ##### 알람/요청 테이블
 ``` sql
-create table notification(
-  `id` int primary key auto_increment,
-  `follower_id` int,
-  `followee_id` int,
-  `newtofollower` int,
-  `newtofollowee` int,
-  `approval` int,
-  `time`  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
+drop table IF EXISTS `THISIS`.`notification`;
+CREATE TABLE IF NOT EXISTS `THISIS`.`notification` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `newtofollower` INT NOT NULL,
+  `newtofollowee` INT NOT NULL,
+  `approval` INT NOT NULL,
+  `time` TIMESTAMP NOT NULL,
+  `follower_id` INT NOT NULL,
+  `followee_id` INT NOT NULL,
+  PRIMARY KEY (`id`, `follower_id`, `followee_id`),
+  CONSTRAINT `fk_notification_userinfo1`
+    FOREIGN KEY (`follower_id`)
+    REFERENCES `THISIS`.`UserInfo` (`user_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_notification_userinfo2`
+    FOREIGN KEY (`followee_id`)
+    REFERENCES `THISIS`.`UserInfo` ( `user_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+    )
+ENGINE = InnoDB;
 ```
 ##### 게시글 테이블
 ``` sql
+drop table IF EXISTS `THISIS`.`post`;
 CREATE TABLE IF NOT EXISTS `THISIS`.`posts` (
   `posts_id` INT NOT NULL AUTO_INCREMENT,
   `user_id` INT NOT NULL,
   `posts_title` TEXT NULL,
   `posts_main` TEXT NULL,
-  `health_count` INT NULL,
-  `notification_id` VARCHAR(45) NULL,
   `post_date` DATETIME DEFAULT CURRENT_TIMESTAMP,
-  `nickname` VARCHAR(20) NULL,   
-  PRIMARY KEY (`posts_id`))
+  `category` INT NULL,
+  `diseasecode` VARCHAR(45) NULL,
+  `imgsrc` VARCHAR(300) NULL,
+  `hidden` INT DEFAULT 0,
+  PRIMARY KEY (`posts_id`),
+  CONSTRAINT `fk_posts_userinfo1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `THISIS`.`UserInfo` (`user_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+)
 ENGINE = InnoDB;
 ```
 
 ##### 댓글 테이블
 ``` sql
+drop table IF EXISTS `THISIS`.`comment`;
 CREATE TABLE IF NOT EXISTS `THISIS`.`comment` (
-  `user_id` INT NOT NULL,
   `posts_id` INT NOT NULL,
-  `user_nickname` VARCHAR(45) NULL,
   `comment_main` TEXT NULL,
   `hide` TINYINT(1) NULL,
   `comment_id` INT NOT NULL AUTO_INCREMENT,
   `comment_date` DATETIME DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`comment_id`))
+  `user_id` INT NOT NULL,
+  PRIMARY KEY (`comment_id`),
+  CONSTRAINT `fk_comment_posts`
+    FOREIGN KEY (`posts_id`)
+    REFERENCES `THISIS`.`posts` (`posts_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_comment_userinfo1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `THISIS`.`UserInfo` (`user_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB
 COMMENT = '   ';
 ```
 
 ##### 팔로워/팔로잉 테이블
 ``` sql
-drop table IF EXISTS `THISIS`.`followers_following` ;
+drop table IF EXISTS `THISIS`.`followers_following`;
 CREATE TABLE IF NOT EXISTS `THISIS`.`followers_following` (
   `follower` INT NOT NULL,
   `followee` INT NOT NULL,
-  PRIMARY KEY (`follower`, `followee`))
+  PRIMARY KEY (`follower`, `followee`),
+  CONSTRAINT `fk_follower_followering_userinfo1`
+    FOREIGN KEY (`follower`)
+    REFERENCES `THISIS`.`UserInfo` (`user_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+     CONSTRAINT `fk_follower_followering_userinfo2`
+    FOREIGN KEY (`followee`)
+    REFERENCES `THISIS`.`UserInfo` (`user_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+    )
 ENGINE = InnoDB;
 ```
 
 ##### 건강해요 테이블
 ```sql
-drop table IF EXISTS `THISIS`.`health` ;
+drop table IF EXISTS `THISIS`.`health`;
 CREATE TABLE IF NOT EXISTS `THISIS`.`health` (
   `posts_id` INT NOT NULL,
   `user_id` INT NOT NULL,
-  `nickname` VARCHAR(20) NULL,
-  PRIMARY KEY (`posts_id`, `user_id`))
+  PRIMARY KEY (`posts_id`, `user_id`),
+  CONSTRAINT `fk_health_posts1`
+    FOREIGN KEY (`posts_id`)
+    REFERENCES `THISIS`.`posts` (`posts_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_health_userinfo1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `THISIS`.`UserInfo` (`user_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 ```
 
 #### 스크랩 테이블    
 ``` sql
-drop table IF EXISTS `THISIS`.`scrap` ;
+drop table IF EXISTS `THISIS`.`scrap`;
 CREATE TABLE IF NOT EXISTS `THISIS`.`scrap` (
   `user_id` INT NOT NULL,
   `posts_id` INT NOT NULL,
   PRIMARY KEY (`user_id`, `posts_id`),
   CONSTRAINT `fk_scrap_userinfo1`
     FOREIGN KEY (`user_id`)
-    REFERENCES `THISIS`.`Userinfo` (`user_id`)
+    REFERENCES `THISIS`.`UserInfo` (`user_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_scrap_posts`
@@ -343,45 +451,219 @@ CREATE TABLE IF NOT EXISTS `THISIS`.`scrap` (
 ENGINE = InnoDB;
 ```
 
+####  질병 테이블    
+``` sql
+drop table IF EXISTS `THISIS`.`subscribe`;
+CREATE TABLE IF NOT EXISTS `THISIS`.`subscribe` (
+  `diseasecode` VARCHAR(45) NOT NULL,
+  `user_id` INT NOT NULL,
+  PRIMARY KEY (`user_id`, `diseasecode`),
+  CONSTRAINT `fk_subscribe_userinfo1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `THISIS`.`UserInfo` (`user_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+```
+
+####  구독 테이블    
+``` sql
+drop table IF EXISTS `THISIS`.`subscribe`;
+CREATE TABLE  `THISIS`.`subscribe` (
+  `user_id` INT NOT NULL,
+  `diseasecode` VARCHAR(45) NULL,
+  PRIMARY KEY (`user_id`, `diseasecode`))
+ENGINE = InnoDB;
+```
+
+####  태그 테이블    
+``` sql
+drop table IF EXISTS `THISIS`.`tag`;
+CREATE TABLE IF NOT EXISTS `THISIS`.`tag` (
+  `tagid` INT NOT NULL AUTO_INCREMENT,
+  `tagname` VARCHAR(45) NULL,
+  PRIMARY KEY (`tagid`))
+ENGINE = InnoDB;
+```
+
+####  태그 관계 테이블    
+``` sql
+drop table IF EXISTS `THISIS`.`tag_relation`;
+CREATE TABLE IF NOT EXISTS `THISIS`.`tag_relation` (
+  `tagid` INT NOT NULL,
+  `posts_id` INT NOT NULL,
+  PRIMARY KEY (`tagid`, `posts_id`),
+  CONSTRAINT `fk_tag_has_posts_tag1`
+    FOREIGN KEY (`tagid`)
+    REFERENCES `THISIS`.`tag` (`tagid`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_tag_has_posts_posts1`
+    FOREIGN KEY (`posts_id`)
+    REFERENCES `THISIS`.`posts` (`posts_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+```
+
+####  댓글 건강해요 테이블    
+``` sql
+drop table IF EXISTS `THISIS`.`comment_health`;
+CREATE TABLE IF NOT EXISTS `THISIS`.`comment_health` (
+  `comment_id` INT NOT NULL,
+  `user_id` INT NOT NULL,
+  PRIMARY KEY (`comment_id`, `user_id`),
+  CONSTRAINT `fk_comment_health_comment1`
+    FOREIGN KEY (`comment_id`)
+    REFERENCES `THISIS`.`comment` (`comment_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_comment_health_userinfo1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `THISIS`.`UserInfo` (`user_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+```
+
+#### 신고해요 테이블
+``` sql
+drop table IF EXISTS `THISIS`.`police`;
+CREATE TABLE IF NOT EXISTS `THISIS`.`police` (
+  `posts_id` INT NOT NULL,
+  `user_id` INT NOT NULL,
+  `reason` VARCHAR(100) NULL,
+  `police_id` INT NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`police_id`),
+  CONSTRAINT `fk_police_posts1`
+    FOREIGN KEY (`posts_id`)
+    REFERENCES `THISIS`.`posts` (`posts_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_police_userinfo1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `THISIS`.`UserInfo` (`user_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+```
+
+#### 의사 인증 테이블
+``` sql
+drop table IF EXISTS `THISIS`.`doctor`;
+CREATE TABLE IF NOT EXISTS `THISIS`.`doctor` (
+  `user_id` INT NOT NULL,
+  `doctorimg` VARCHAR(45) NULL,
+  `doctorauth` VARCHAR(45) NULL,
+  `doctor_id` INT NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`doctor_id`),
+  CONSTRAINT `fk_doctor_userinfo1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `THISIS`.`UserInfo` (`user_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+```
+
+
+
 ## Rest API
-|Task|URL|Method|Action|
-|---|------|--|--------|
-|회원상세정보|/account/{user_id}|GET|해당 user_id 회원 정보 조회|
-|회원가입|/account/signup|POST|	회원 가입|
-|로그인|/account/login|POST|로그인|
-|회원정보 변경|/account/{user_id}|PUT|회원정보 변경|
-|회원 탈퇴|/account/{user_id}|DELETE|해당 user_id 회원 정보 삭제|
-|이메일 중복 테스트|/account/email|GET|이메일 중복 여부를 테스트함|
-|닉네임 중복 테스트|/account/nickname|GET|닉네임 중복 여부를 테스트함|
-|회원 검색|/account/search|GET|검색어에 해당하는 회원 정보를 검색함|
-|비밀번호찾기|/email|GET|이메일로 비밀번호를 찾아줌|
-|전체 게시글 목록|/articles/|GET|전체 게시글 조회|
-|게시글 목록|/articles/{user_id}|GET|그 유저에 대한 모든 게시글 목록|
-|게시글 생성|/articles|POST|새로운 게시글 생성|
-|게시글 수정|/articles/{posts_id}|PUT|게시글 내용 수정(게시글 제목, 내용만 수정 가능)|
-|게시글 삭제|/articles/{posts_id}|DELETE|작성자가 자신의 게시글 삭제|
-|댓글 목록|/comment/{post_id}|GET|게시글에 해당하는 댓글들 목록|
-|댓글 생성|/comment|POST|댓글을 생성함|	
-|댓글 수정|/comment/{comment_id}|PUT|해당 댓글을 수정함|	
-|댓글 삭제|/comment/{comment_id}|DELETE|해당 댓글을 삭제함|	
-|댓글 숨김|/comment/hidden/{comment_id}|PUT|게시글 작성자가 요청 시 댓글 숨김|
-|팔로잉 리스트|/follow/followee/{user_id}|GET|유저가 팔로잉하는 리스트를 노출|
-|팔로워 리스트|/follow/follower/{user_id}|GET|유저를 팔로워하는 리스트를 노출|
-|팔로잉 수 집계|/follow/followee/sum/{user_id}|GET|해당 user_id가 팔로우하는 총 팔로잉 수 조회|
-|팔로워 수 집계|/follow/follower/sum/{user_id}|GET|해당 user_id를 팔로우하는 총 팔로워 수 조회|
-|팔로잉/팔로워 저장|/follow|POST|팔로우 팔로워 관계 저장|
-|팔로잉/팔로워 삭제(언팔)|/follow|DELETE|팔로우 팔로워 관계 삭제|
-|유저 총 건강해요 수 조회|health/user/{user_id}|GET|프로필에 나오는 user 총 좋아요 수 집계|
-|건강해요 취소|health/{posts_id}/{user_id}|DELETE|유저가 건강해요를 취소했을때 record 삭제|
-|스크랩 조회|scrap/{user_id}|GET|유저 아이디에 해당하는 스크랩 조회|	
-|스크랩 생성|scrap|	POST|스크랩 생성|	깃 수정 규칙
-|스크랩 삭제|scrap/{posts_id, user_id}|DELETE|해당 스크랩 삭제|	
+
+
+
+|Category|Task|Method|Path|
+|---|--------------|--|--------|
+|게시물|모든 게시글 조회|GET|/articles|
+|게시물|게시글 생성|POST|/articles|
+|게시물|게시글 수정|PUT|/articles/{posts_id}|
+|게시물|게시글 삭제|DELETE|	/articles/{posts_id}|
+|게시물|유저에 해당하는 모든 게시글 반환|GET	|/articles/{user_id}|
+|게시물|user_id 인자에 해당하는 게시판 목록를 반환한다.|GET|	/articles/new|
+|게시물|게시글 생성 : 태그포함|	POST|/articles/new|
+|게시물|파일을 입력한다.|	POST|/articles/upload|
+|이메일|이메일 찾기|GET|/email|
+|팔로우|팔로우 생성|POST|/follow|
+|팔로우|팔로우 삭제|DELETE|	/follow|
+|팔로우|팔로잉 정보 반환|	GET|/follow/followee/{user_id}|
+|팔로우|팔로잉 집계 정보 반환|GET|	/follow/followee/sum/{user_id}|
+|팔로우|팔로워 정보 반환|	GET|/follow/follwer/{user_id}|
+|팔로우|팔로워 집계 정보 반환|GET|/follow/follower/sum/{user_id}|
+|스크랩|해당하는 스크랩 유무|GET|/scrap|
+|스크랩|스크랩 추가|POST|/scrap|
+|스크랩|스크랩 삭제|DELETE|/scrap/{posts_id}/{user_id}|
+|스크랩|스크랩 불러오기|GET|/scrap/{user_id}|
+|건강해요|건강해요 추가|POST|/health/{posts_id}|
+|건강해요|사람에 해당하는 건강해요 반환|	GET|/health/{user_id}|
+|건강해요|게시글에 해당하는 건강해요 수 반환|GET|/health/post/{posts_id}|
+|건강해요|사람에 해당하는 건강해요 수 반환|GET|/health/user/{user_id}|
+|알람/요청|	모든 알람/요청을 반환한다|	GET|/notification|
+|알람/요청|	팔로우를 요청했을 때 레코드를 저장한다|POST|	/notification|
+|알람/요청|	해당 id에 해당하는 알림/요청 정보 수정|PUT|/notification|
+|알람/요청|	팔로우 요청 취소 시 레코드 삭제|	DELETE|	/notification|
+|알람/요청|	해당 user_id가 followee인 레코드 목록 조회|GET|	/notification/followee/{user_id}|
+|알람/요청|	해당 user_id가 follower인 레코드 목록 조회|GET|	/notification/follower/{user_id}|
+|댓글|댓글 생성|POST|/comment|
+|댓글|댓글 수정|PUT|/comment/{comment_id}|
+|댓글|댓글 삭제|DELETE|/comment/{comment_id}|
+|댓글|게시판에 해당하는 댓글들을 반환|GET|/comment/{posts_id}|
+|댓글|숨김 설정|PUT|/comment/hidden/{comment_id}|
+|회원관리|모든 회원 정보를 반환한다|GET|/account|
+|회원관리|유저 ID에 해당하는 회원 정보를 반환한다|GET|/account/{user_id}|
+|회원관리|유저 ID에 해당하는 회원 정보를 수정한다|PUT|/account/{user_id}|
+|회원관리|회원 탈퇴 시 회원 정보를 삭제한다|DELETE|/account/{user_id}|
+|회원관리|이메일 중복 테스트|GET|/account/email|
+|회원관리|회원 email과 password로 로그인 가능 여부| 	GET|	/account/login|
+|회원관리|닉네임 중복 테스트|GET|/account/nickname|
+|회원관리|유저 id에 해당하는 프로필 정보를 반환|GET|	/account/profile/{user_id}|
+|회원관리|accesstoken 재생성 테스트|POST|	/account/refreshAccessToken|
+|회원관리|검색에어 해당하는 회원 정보 반환|GET|/account/search|
+|회원관리|유저 회원가입 시 회원 정보 등록|POST|/account/signup|
+|회원관리|이미지 주소 입력|POST|/account/upload|
+|태그|태그 추가|POST|/tag|
+|태그|태그 불러오기|GET|/tag/{tagid}|
+|태그|태그 삭제|DELETE|/tag/{tagid}|
+|태그 릴레이션|태그 릴레이션 추가|POST|/tag-relation|
+|태그 릴레이션|태그 릴레이션 삭제|DELETE|/tag-relation/{tagid}/{posts_id}|
+|태그 릴레이션|태그 릴레이션 불러오기(게시글)|	GET|/tag-relation/post/{posts_id}|
+|태그 릴레이션|태그 릴레이션 불러오기(태그)|GET|/tag-relation/tag/{tagid}|
+|댓글 건강해요|댓글 건강해요 추가|POST|/comment-health/{comment_id}|
+|댓글 건강해요|사람에 해당하는 댓글 건강해요 반환|GET|/comment-health/{user_id}|
+|댓글 건강해요|게시글에 해당하는 댓글 건강해요 수 반환|GET|/comment-health/comment/{comment_id}|
+|댓글 건강해요|사람에 해당하는 댓글 건강해요 수 반환|	GET|/comment-health/user/{user_id}|
+|질병 태그|	모든 질병 정보를 반환한다|	GET|/disease|
+|질병 태그|	질병 정보를 등록한다|POST|/disease|
+|질병 태그|	질병 정보를 삭제한다|DELETE|	/disease|
+|질병 태그|	질병코드에 해당하는 질병 정보를 반환한다|	GET	|/disease/diseasecode|
+|구독하기|모든 구독 정보를 반환한다|GET|/subscribe|
+|구독하기|유저의 질병 구독 여부를 저장한다|POST|/subscribe|
+|구독하기|유저가 질병 구독을 취소한다| 	DELETE|	/subscribe|
+|구독하기|유저 아이디에 해당하는 구독 정보를 반환한다|	GET|/subscribe/user|
+|신고하기|신고한다 생성|POST|/subscribe/user|
+|관리자 기능|신고 많이 받은 순으로 게시글 반환|POST|/admin/post|
+|관리자 기능|게시글 숨김|	POST|/admin/post/{posts_id}|
+|관리자 기능|게시글 삭제|	DELETE|/admin/post/{posts_id}|
+|관리자 기능|신고 많이 받은 순으로 유저 반환|POST|/admin/user|
+|관리자 기능|계정사용정지|POST|/admin/user/disable|
+|관리자 기능|유저가 신고받은 수를 반환한다.|GET|/admin/police/user/{user_id}|
+|관리자 기능|게시글에 해당하는 신고한다 수를 반환한다|GET|/admin/police/post/{posts_id}|
+|관리자 기능|게시글에 해당하는 모든 신고한다를 반환|GET|	/admin/police/post/{posts_id}|
+|관리자 기능|유저에 해당하는 모든 신고 자료를 반환한다|GET|	/admin/police/users/{user_id}|
+|관리자 기능|모든 의사를 반환한다|GET|/admin/doctor-auth|
+|관리자 기능|체크하지 않은 사람들을 반환한다|GET|/admin/doctor-auth/check|
+|관리자 기능|의사 결정|PUT|/admin/doctor-auth|
+|의사신청|의사 정보를 신청한다|POST|/doctor/register|
+|의사신청|내 신청 결과를 반환한다|GET|/doctor/result|
+
 
 
 ## Browser Support
+
+
+
 |<img src="https://is2-ssl.mzstatic.com/image/thumb/Purple114/v4/bb/72/49/bb72493a-6ede-8369-5513-f1e9f930b642/AppIcon-0-1x_U007emarketing-0-6-0-0-85-220.png/246x0w.png" width="80px"> |<img src = "https://zdnet4.cbsistatic.com/hub/i/2019/01/29/f4eba7da-10cd-4b45-b974-464c08e145be/microsoft-edge.png" width="80px"></img>|<img src = "https://t1.daumcdn.net/cfile/tistory/253EC1495495846E1C" width = "80px"></img>|
 |--|--|--|
 |latest✔|latest✔|latest✔|
+
 
 
 # 👀 서비스 설명 
@@ -389,27 +671,121 @@ ENGINE = InnoDB;
 <img src = "https://ifh.cc/g/7toxt5.png"> </img>
 
 <img src = "https://ifh.cc/g/YgIern.png" width=200></img>
-  로딩 화면 - 로그인으로 넘어가기 전에 처음으로 보여주는 페이지 
+
+
+
+​															로딩 화면 - 로그인으로 넘어가기 전에 처음으로 보여주는 페이지 
 
 <img src = "https://ifh.cc/g/3trgSh.png" width=200></img>
-  로그인 화면 - 저장된 계정을 가지고 이메일과 패스워드를 입력받는 페이지
 
-<img src = "https://ifh.cc/g/wjOPFi.png" width=200></img>
-  검색 화면 - 사용자와 질병을 검색할 수 있는 화면으로 누를 시 상대방 프로필에 들어가짐
 
-<img src = "https://ifh.cc/g/RBar5F.png" width=200></img>
-  메인 피드 - 메인 화면으로 모든 게시글들을 보여주는 화면으로 건강해요, 댓글, 스크랩, (자신의 게시글일 경우) 수정 가능
 
-<img src = "https://ifh.cc/g/30tWNI.png" width=200></img>
-  게시글 작성 - 게시글을 작성할 수 있는 화면으로 자신의 계정으로 작성한다
-  
+​														로그인 화면 - 저장된 계정을 가지고 이메일과 패스워드를 입력받는 페이지
+
+<img src = "https://ifh.cc/g/0Dwy2q.png" width=200></img>
+
+
+
+​														회원가입 화면 - 계정을 회원가입 할 수 있는 탭으로 중복여부도 알려준다 
+
+<img src = "https://ifh.cc/g/krQNkD.png" width=200></img>
+
+
+
+​														비밀번호 찾기 탭 - 임의로 재생성된 비밀번호를 이메일로 보내주고 프로필 변경에서                                                           																									비밀번호 수정이 가능하다 
+
+
+
+<img src = "https://ifh.cc/g/wyYLNK.png" width=200></img>
+
+
+
+​															검색 화면 - 사용자를 검색할 수 있는 화면으로 누를 시 상대방 프로필에 들어가짐
+
+
+
+<img src = "https://ifh.cc/g/N1KFV2.png" width=200></img>
+
+
+
+​														검색 화면 - 질병을 검색할 수 있는 화면으로 질병 팔로우가 가능하다
+
+
+
+<img src = "https://ifh.cc/g/CXjvzh.png" width=200></img>
+
+
+
+​										메인 피드 - 메인 화면으로 팔로우한 사람들의 게시글들을 보여주는 화면으로 건강해요, 댓글, 스크랩,                                        																							(자신의 게시글일 경우) 수정 가능
+
+
+
+<img src = "https://ifh.cc/g/KkAj2q.png" width=200></img>
+
+
+
+​														 Q&A 게시판 -  Q&A 게시판으로 질문하고 답변할 수 있는 게시판
+
+
+
+<img src = "https://ifh.cc/g/jXQjyX.png" width=200></img>
+
+
+
+​																뉴스 검색 -  키워드로 검색을 하면 뉴스를 검색해줌
+
+
+
+<img src = "https://ifh.cc/g/3XiLyR.png" width=200></img>
+
+
+
+​																	게시글 작성 - 게시글을 작성할 수 있는 화면으로 이미지 업로드가 가능하고 태그들을 게시글에                       																								            지정할 수 있다. 
+
+
+
 <img src = "https://ifh.cc/g/5jyv4i.png" width=200></img>
-   알림 요청 - 팔로잉을 했을 경우 & 팔로잉 결과를 알려줄 때 알람에서 팔로잉을 받았을 때는 요청탭으로 요청이 와서 승낙 혹은 거절을 결정할 수 있다
-   
-<img src = "https://ifh.cc/g/ougKek.png" width=200></img>
-   메인 프로필 화면 - 메인 프로필 화면으로 내 정보를 보여주는 화면으로 내가 쓴 게시글, 나의 스크랩 등도 볼 수 있다.
+
+
+
+​														알림 요청 - 팔로잉을 했을 경우 & 팔로잉 결과를 알려줄 때 알람에서 팔로잉을 받았을 때는 요청탭으로                       																								요청이 와서 승낙 혹은 거절을 결정할 수 있다
+
+
+
+<img src = "https://ifh.cc/g/qslUUj.png" width=200></img>
+
+
+
+​    								메인 프로필 화면 - 메인 프로필 화면으로 내 정보를 보여주는 화면으로 내가 쓴 게시글, 나의 스크랩 등도 볼 수 있다.
+
+
+
+<img src = "https://ifh.cc/g/4Aqdco.png" width=200></img>
+
+
+
+​										프로필 변경 - 자신의 프로필을 변경하는 탭으로 오른쪽 키 버튼을 누르면 비밀번호 변경 역시 가능하다 
+
+
+
+<img src = "https://ifh.cc/g/6O3kxc.png" width=200></img>
+
+
+
+​										비밀번호 변경 - 자신의 비밀번호를 변경하는 탭으로 의사인증과 회원 탈퇴가 가능한 탭이다 
+
+
+
+<img src = "https://ifh.cc/g/eS4lLU.png" width=200></img>
+
+
+
+​										의사 인증 - 의사를 인증받을 수 있는 탭으로 사진을 통해 의사 인증 신청이 가능하다. 
+
 
 # 💪기여 방법
+
+
 
 ## 고려 사항
 
@@ -417,6 +793,8 @@ ENGINE = InnoDB;
 * 실행해야하는 스크립트 나 설정해야 할 환경 변수가 있을 수 있습니다. 
 * 이 단계를 명시적으로 작성하십시오.
 * AWS 서버의 작동 유무를 확인하십시오.
+
+
 
 ## Git Rules 
 * git pull origin develop를 통해 develop와 먼저 merge 한 상태로 진행합니다.
@@ -426,13 +804,15 @@ ENGINE = InnoDB;
 * git push origin feature/"개발 기능"를 통해서 기능기리 겹치지 않게 수행합니다.
 * git bash에서 merge request를 신청합니다. 
 
+
+
 # 📜License
 
-본 가이드는 MIT 라이선스 하에 공개합니다 <img src = "https://img.shields.io/badge/license-MIT-pink" width=80></img>
+
+
+본 가이드는 [MIT](https://choosealicense.com/licenses/mit/) 라이선스 하에 공개합니다 <img src = "https://img.shields.io/badge/license-MIT-pink" width=80></img>
 
 * 공유 - 복제, 배포, 포맷 변경, 전송, 전시, 공연, 방송할 수 있습니다.
 * 변경 - 리믹스, 변형, 2차적 저작물 작성 및 영리목적의 이용이 가능합니다. 
-
-
 
 
