@@ -152,7 +152,7 @@ public class AdminController {
 	}
 
 	// user
-	@ApiOperation(value = "신고 많이 받은 순으로 유저 반환", response = List.class)
+	@ApiOperation(value = "신고 많이 받은 순으로 유저 반환  ", response = List.class)
 	@GetMapping("user")
 	public ResponseEntity<List<UserPolice>> selectAllUserpolice(@RequestParam int num, HttpServletRequest request)
 			throws Exception {
