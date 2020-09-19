@@ -21,7 +21,7 @@
 	<select id="selectDiseaseByUserid" resultType="Disease">
 		select *
 		from disease
-		where EXISTS (select * from subscribe where subscribe.user_id = #{user_id})
+		where disease.diseasecode in (select diseasecode from subscribe where subscribe.user_id = #{user_id})
 	</select>
 	
 	<!-- 질병 레코드 추가  -->

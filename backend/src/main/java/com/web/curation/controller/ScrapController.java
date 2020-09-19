@@ -64,11 +64,15 @@ public class ScrapController {
 	@GetMapping("{user_id}")
 	public ResponseEntity<List<PostResponse>> selectuserScrap(@PathVariable int user_id,@RequestParam int num) throws Exception {
 		List<Scrap> scrapList = scrapService.selectScrap(user_id);
+		List<PostResponse> response = new ArrayList<>();
+		if( scrapList == null || scrapList.size()==0 ) {
+			return new ResponseEntity<List<PostResponse>>(response, HttpStatus.OK);
+		}
 		//System.out.println(scrapList.toString());
 		List<Post> Allpage = postService.selectScrapInfo(scrapList);
 		List<Post> page = null;
-		List<PostResponse> response = new ArrayList<>();
 		
+		System.out.println("user_id :" +user_id);
 		if (Allpage.size() / 10 > num && num * 10 + 10 <= Allpage.size()) {
 			page = Allpage.subList(num * 10, num * 10 + 10);
 			
@@ -118,6 +122,7 @@ public class ScrapController {
 	@ApiOperation(value = "해당하는 스크랩 존재유무", response = List.class)
 	@GetMapping
 	public ResponseEntity<Integer> isExistedScrap(@RequestParam int posts_id,@RequestParam int user_id) throws Exception {
+		System.out.println("user_id :" +user_id);
 		int result = scrapService.isExistedScrap(posts_id,user_id);
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
@@ -134,7 +139,7 @@ public class ScrapController {
 			user_id = auth.getUser_id();
 		}
 		scrap.setuser_id(user_id);
-		
+		System.out.println("user_id :" +user_id);
 		if (scrapService.createScrap(scrap) == 1) {
 			return new ResponseEntity<String>("success", HttpStatus.OK);
 		}
@@ -143,8 +148,15 @@ public class ScrapController {
 
 	
 	@ApiOperation(value = "스크랩 삭제", response = String.class)
-	@DeleteMapping("{posts_id}/{user_id}")
-	public ResponseEntity<String> deleteUserInfo(@PathVariable int posts_id,@PathVariable int user_id) {
+	@DeleteMapping("{posts_id}")
+	public ResponseEntity<String> deleteUserInfo(@PathVariable int posts_id,HttpServletRequest request) {
+		String accessToken = (String) request.getAttribute("accessToken");
+		int user_id = 1;
+		if (accessToken != null) {
+			Auth auth = authService.findAuthByAccessToken(accessToken);
+			user_id = auth.getUser_id();
+		}
+		System.out.println("user_id :" +user_id);
 		if (scrapService.deleteScrap(posts_id, user_id) == 1) {
 			return new ResponseEntity<String>("success", HttpStatus.OK);
 		}

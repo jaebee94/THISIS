@@ -6,15 +6,20 @@ const postStore = {
   namespaced: true,
 
   state: {
+    post: {},
     comments: {},
     healths: {},
     checkScrap: 0,
   },
 
   getters: {
-   },
-  
+
+  },
+
   mutations: {
+    SET_POST(state, post) {
+      state.post = post
+    },
     SET_COMMENTS(state, comments) {
       state.comments = comments
     },
@@ -34,36 +39,103 @@ const postStore = {
 
   actions: {
     // Post
-    createPost({ rootGetters }, postData) {
-      axios.post(SERVER.URL + SERVER.ROUTES.posts, postData, rootGetters.config)
-        .then(() => {
-          router.push({ name: 'Feed' })
+    createPost({ rootGetters }, uploadData) {
+      if (uploadData.formData == null) {
+        let headers = rootGetters.config.headers
+        headers['Accept'] = 'application/json'
+        axios.post(SERVER.URL + SERVER.ROUTES.posts, uploadData.postData, rootGetters.config)
+          .then(() => {
+            alert('작성이 완료되었습니다.')
+            router.push({ name: 'Feed' })
+          })
+          .catch(err => console.log('게시글 작성 에러: ', err))
+      } else {
+
+        axios.post(SERVER.URL + SERVER.ROUTES.upload, uploadData.formData, {
+          header: {
+            'Accept': 'application/json',
+            'Content-Type': 'multipart/form-data',
+          },
         })
-        .catch(err => console.log(err))
+          .then(res => {
+            uploadData.postData.post.imgsrc = res.data
+            axios.post(SERVER.URL + SERVER.ROUTES.posts, uploadData.postData,
+              {headers: { accessToken:  cookies.get('access-token') }})
+              .then(() => {
+                alert('작성이 완료되었습니다.')
+                router.push({ name: 'Feed' })
+              })
+              .catch(err => console.log('게시글 작성 에러: ', err))
+          })
+          .catch(err => console.log('사진 업로드 에러: ', err))
+      }
     },
-    updatePost({ rootGetters }, postInfo) {
-      axios.put(SERVER.URL + SERVER.ROUTES.modify + postInfo.user_id, postInfo, rootGetters.config)
-        .then(() => {
-          alert('변경이 완료되었습니다.')
+    setPost({ commit }, postInfo) {
+      commit('SET_POST', postInfo);
+    },
+    updatePost({rootGetters},uploadData) {
+      if (uploadData.formData == null) {
+        axios.put(SERVER.URL + SERVER.ROUTES.post, 
+          uploadData.postData,
+          rootGetters.config
+          )
+          .then(() => {
+            alert('게시글 변경이 완료되었습니다.')
+            router.push({ name: 'Feed' })
+          })
+          .catch(err => console.log(err))
+      } else {
+
+        axios.post(SERVER.URL + SERVER.ROUTES.upload, uploadData.formData, {
+          header: {
+            'Accept': 'application/json',
+            'Content-Type': 'multipart/form-data',
+          },
         })
-        .catch(err => console.log(err))
+          .then(res => {
+            uploadData.postData.post.imgsrc = res.data
+            axios.put(SERVER.URL + SERVER.ROUTES.post, 
+              uploadData.postData,
+              rootGetters.config
+              )
+              .then(() => {
+                alert('게시글 변경이 완료되었습니다.')
+                router.push({ name: 'Feed' })
+              })
+              .catch(err => console.log(err))
+          })
+          .catch(err => console.log('사진 업로드 에러: ', err))
+      }
+     
     },
-    deletePost() {
+    async deletePost({ rootGetters }, posts_id) {
+        var con = confirm("진짜 지우시겠습니까?");
+        if (con) {
+          await axios.delete(SERVER.URL + SERVER.ROUTES.post + `/${posts_id}`, rootGetters.config)
+            .then(() => {
+              alert('게시글이 삭제되었습니다.')
+            })
+            .catch((err) => console.log(err))
+        }     
 
     },
 
     // Comment
     createComment({ commit, rootGetters }, commentData) {
-      console.log(commentData)
-      axios.post(SERVER.URL + SERVER.ROUTES.comment, commentData, rootGetters.config)
+      if(commentData.comment_main == null || commentData.comment_main == "") {
+        alert("댓글을 입력해주세요")
+      }else{
+        axios.post(SERVER.URL + SERVER.ROUTES.comment, commentData, rootGetters.config)
         .then(
           setTimeout(() => {
             axios.get(SERVER.URL + SERVER.ROUTES.comment + '/' + commentData.posts_id)
-            .then(res => {  
-              commit('SET_COMMENTS', res.data)
-            })
+              .then(res => {
+                commit('SET_COMMENTS', res.data)
+              })
           }, 100)
         )
+      }
+      
     },
     fetchComments({ commit }, posts_id) {
       axios.get(SERVER.URL + SERVER.ROUTES.comment + '/' + posts_id)
@@ -72,9 +144,14 @@ const postStore = {
         })
     },
     updateComment({ rootGetters }, commentData) {
-      axios.post(SERVER.URL + SERVER.ROUTES.comment + `/`, commentData, rootGetters.config)
+      axios.put(SERVER.URL + SERVER.ROUTES.comment + '/' + commentData.comment_id, commentData, rootGetters.config)
+        .catch((err) => { console.log(err) })
     },
-    deleteComment() {     // 삭제 로직 개발 필요
+    deleteComment({ rootGetters,dispatch }, commentData) {     // 삭제 로직 개발 필요
+      axios.delete(SERVER.URL + SERVER.ROUTES.comment + `/${commentData.comment_id}`, rootGetters.config)
+      .then(() => {
+        dispatch('fetchComments',commentData.posts_id)
+      }).catch(err => console.log(err))
     },
 
     // Health
@@ -115,17 +192,14 @@ const postStore = {
     },
 
     // Scrap
-    scrap({rootGetters},params) {
+    scrap({ rootGetters }, params) {
       axios.post(SERVER.URL + SERVER.ROUTES.scrap, {
-        posts_id: params.posts_id,
-        user_id: params.user_id
+        posts_id: params.posts_id
       }, rootGetters.config)
     },
-    deleteScrap({ rootGetters }, params){
-      axios.delete(SERVER.URL + SERVER.ROUTES.scrap+`/${params.posts_id}/${params.user_id}`,rootGetters.config)
-      .then(res => {
-        console.log("result", res);
-      }).catch(err => console.log(err))
+    deleteScrap({ rootGetters }, params) {
+      axios.delete(SERVER.URL + SERVER.ROUTES.scrap + `/${params.posts_id}`, rootGetters.config)
+        .catch(err => console.log(err))
     },
     getCheckScrap({ state, rootGetters, commit }, posts_id) {
       axios.get(SERVER.URL + SERVER.ROUTES.scrap,
@@ -133,8 +207,9 @@ const postStore = {
           params: {
             posts_id: posts_id,
             user_id: state.loginData.user_id
-          }
-        }, rootGetters.config)
+          },
+          headers: rootGetters.config.headers
+        })
         .then(res => {
           commit('SET_CHECK_SCRAPS', res.data);
         }).catch(err => console.log(err))
@@ -145,6 +220,33 @@ const postStore = {
           commit('SET_SCRAPS', res.data);
         }).catch(err => console.log(err))
     },
+    deleteFile({ rootGetters }, deletefile) {
+      axios.delete(SERVER.URL + SERVER.ROUTES.upload,
+        {
+          params: { delete_file: deletefile },
+          headers:rootGetters.config.headers
+        })
+        .catch(err => console.log(err))
+    },
+    deleteTagRelation({ rootGetters }, params) {
+
+      axios.delete(SERVER.URL + SERVER.ROUTES.tagrelation, 
+        {
+          data: params,
+          headers:rootGetters.config.headers
+        })
+        .catch(err => console.log(err));
+
+    },
+    //신고하기
+    CreatePolice({rootGetters},policeData){
+      axios.post(SERVER.URL + SERVER.ROUTES.police, policeData, rootGetters.config)
+          .then(() => {
+            alert('신고가 완료되었습니다.')
+          })
+          .catch(err => console.log('신고 에러: ', err))
+    }
+
   }
 }
 

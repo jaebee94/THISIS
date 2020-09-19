@@ -7,18 +7,18 @@
       <input v-model="username" id="username" type="text" placeholder="이름을 입력해주세요" />
     </div>
     <div class="input-with-label">
-      <input v-model="email" id="email" type="text" placeholder="이메일을 입력해주세요" />
+      <input v-model="email" id="email" type="text" placeholder="이메일을 입력해주세요"/>
       <button @click="checkEmail()">중복확인</button>
       <div class="error-text" v-if="error.email">{{error.email}}</div>
-      <div class="confirm-text" v-if="!error.emailConfirm">{{error.emailConfirm}}</div>
+      <!-- <div class="confirm-text" v-if="!error.emailConfirm">{{error.emailConfirm}}</div> -->
     </div>
     <div class="input-with-label">
-      <input v-model="nickname" id="nickname" type="text" placeholder="닉네임을 입력해주세요" />
+      <input v-model="nickname" id="nickname" type="text" placeholder="닉네임을 입력해주세요"/>
       <button @click="checkNickname()">중복확인</button>
-      <div class="confirm-text" v-if="!error.nicknameConfirm">{{error.nicknameConfirm}}</div>
+      <!-- <div class="confirm-text" v-if="!error.nicknameConfirm">{{error.nicknameConfirm}}</div> -->
     </div>
     <div class="input-with-label">
-      <input v-model="password" id="password" type="password" placeholder="비밀번호를 입력해주세요" />
+      <input v-model="password" id="password" type="password" placeholder="비밀번호를 입력해주세요"/>
       <div class="error-text" v-if="error.password">{{error.password}}</div>
     </div>
     <div class="input-with-label">
@@ -39,13 +39,11 @@
 <script>
 import PV from "password-validator";
 import * as EmailValidator from "email-validator";
-// import { mapActions } from "vuex";
+import { mapActions } from "vuex";
 
-import router from '@/router'
 import axios from 'axios'
 import SERVER from '@/api/RestApi.js'
 
-import db from "../../firebaseInit";
 
 export default {
   name: "Signup",
@@ -64,9 +62,9 @@ export default {
       error: {
         username: false,
         email: false,
-        // emailConfirm: true,
+        emailConfirm: true,
         nickname: true,
-        // nicknameConfirm: true,
+        nicknameConfirm: true,
         password: false,
         passwordConfirm: false,
       },
@@ -109,6 +107,7 @@ export default {
   },
 
   methods: {
+    ...mapActions('userStore', ['signup' ]),
     checkForm() {
       if (this.email.length >= 0) {
         if (!EmailValidator.validate(this.email)) {
@@ -144,13 +143,7 @@ export default {
         //alert('8자리를 넘으면 안됩니다')
         this.nickname = this.nickname.substr(0, 8);
       }
-      // this.isSubmit = true
 
-      // this.error.forEach((element) => {
-      //   if (element == true) {
-      //     this.isSubmit = false;
-      //   }
-      // })
       let isSubmit = true;
       Object.values(this.error).map((v) => {
         if (v) isSubmit = false;
@@ -163,63 +156,46 @@ export default {
         this.signupData.password = this.password;
       }
     },
-    checkEmail() {
-      axios.get(SERVER.URL + SERVER.ROUTES.email, {
+    async checkEmail() {
+       await axios.get(SERVER.URL + SERVER.ROUTES.email, {
         params: {
           email: this.email
         }
       })
         .then(() => {
-          this.error.emailConfirm = true;
+          this.error.emailConfirm = false;
           alert("사용가능한 E-mail 입니다.")
         })
         .catch(err => {
           if (err.response.data.data == "wrong email") {
-            this.confirm.email = false;
+            this.confirm.email = true;
             alert("이미 사용중인 E-mail 입니다.")
           }
         })
+
+        this.checkForm();
     },
-    checkNickname() {
-      axios.get(SERVER.URL + SERVER.ROUTES.nickname, {
+    async checkNickname() {
+      await axios.get(SERVER.URL + SERVER.ROUTES.nickname, {
         params: {
           nickname: this.nickname
         }
       })
         .then(() => {
-          this.error.nicknameConfirm = true;
+          this.error.nicknameConfirm = false;
           alert("사용가능한 닉네임 입니다.")
         })
         .catch(err => {
           if (err.response.data.data == "wrong nickname") {
-            this.confirm.nickname = false;
+            this.confirm.nickname = true;
             alert("이미 사용중인 닉네임 입니다.")
           }
         })
-    },
-    // ...mapActions(['signup'])
-    signup(signupData) {
-      const info = {
-        data: signupData,
-        location: SERVER.ROUTES.signup
-      }
-      axios.post(SERVER.URL + info.location, info.data)
-        .then((res) => {
-          var id = res.data.object;
-          let instance = {
-            notification: 0,
-            request: 0
-          }
-          db
-          .collection("notification")
-          .doc(String(id))
-          .set(instance);
 
-          alert('회원가입이 완료되었습니다.')
-          router.push({ name: 'Login'})
-        })
-        .catch(err => console.log(err))
+        this.checkForm();
     },
+
+
   },
 
 };
@@ -231,7 +207,7 @@ export default {
   height: 100%;
 }
 .logo.wrap {
-  width: 100%;
+  width: 90%;
   height: 5%;
   text-align: left;
   margin-bottom: 10%;
@@ -242,12 +218,14 @@ export default {
 }
 
 .input-with-label {
-  padding: 5% 5%;
-  padding-bottom: 0%;
-  width: 100%;
-  height: 20%;
+  padding: 0% 5%;
+  /* padding-top: 0%;
+  padding-bottom: 0%; */
+  width: 90%;
+  /* height: 20%; */
   text-align: left;
-  margin-bottom: 5%;
+  /* margin-bottom: 5%; */
+ 
 }
 
 .input-with-label input {
@@ -259,6 +237,9 @@ export default {
   background-color: rgb(247, 247, 247);
   font-size: 14px;
   outline: none;
+  background-color: rgb(247, 247, 247); 
+  margin-top: 10%;
+  transition-duration: 300ms;
 }
 .input-with-label:nth-child(2) input {
   width: 100%;
@@ -271,8 +252,8 @@ export default {
 }
 
 .input-with-label input:focus {
-  background-color: rgb(0, 171, 132);
-  color: white;
+  background-color: white;
+  color: rgb(0, 171, 132);
   font-weight: 600;
 }
 .input-with-label button {
@@ -285,6 +266,20 @@ export default {
   background-color: rgb(0, 171, 132);
   color: white;
   font-weight: 600;
+}
+
+input#email {
+  width: 65%;
+  background-color: rgb(247, 247, 247);
+  transition-duration: 300ms;
+}
+
+input#email:focus {
+  background-color: white;
+}
+
+input#nickname {
+  width: 65%;
 }
 
 .error-text {
@@ -301,7 +296,7 @@ export default {
 
 .button.wrap {
   margin-top: 30%;
-  width: 100%;
+  width: 90%;
   height: 10%;
   padding: 5%;
 }

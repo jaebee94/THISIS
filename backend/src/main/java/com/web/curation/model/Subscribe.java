@@ -28,4 +28,10 @@ public class Subscribe {
 		this.diseasecode = diseasecode;
 	}
 
+	@Override
+	public String toString() {
+		return "Subscribe [user_id=" + user_id + ", diseasecode=" + diseasecode + "]";
+	}
+	
+	
 }

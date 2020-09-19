@@ -1,7 +1,5 @@
 package com.web.curation.model;
 
-import java.util.Date;
-
 public class Post {
 	private int posts_id;
 	private int user_id;
@@ -11,6 +9,7 @@ public class Post {
 	private int category;
 	private String diseasecode;
 	private String imgsrc;
+	private int hidden;
 
 	public int getPosts_id() {
 		return posts_id;
@@ -75,12 +74,28 @@ public class Post {
 	public void setImgsrc(String imgsrc) {
 		this.imgsrc = imgsrc;
 	}
+	
+	public int getHidden() {
+		return hidden;
+	}
+
+	public void setHidden(int hidden) {
+		this.hidden = hidden;
+	}
+
+	public int getHidden() {
+		return hidden;
+	}
+
+	public void setHidden(int hidden) {
+		this.hidden = hidden;
+	}
 
 	public Post() {
 	}
 
 	public Post(int posts_id, int user_id, String posts_title, String posts_main, String post_date, int category,
-			String diseasecode, String imgsrc) {
+			String diseasecode, String imgsrc, int hidden) {
 		this.posts_id = posts_id;
 		this.user_id = user_id;
 		this.posts_title = posts_title;
@@ -89,6 +104,15 @@ public class Post {
 		this.category = category;
 		this.diseasecode = diseasecode;
 		this.imgsrc = imgsrc;
+		this.hidden = hidden;
 	}
+
+	@Override
+	public String toString() {
+		return "Post [posts_id=" + posts_id + ", user_id=" + user_id + ", posts_title=" + posts_title + ", posts_main="
+				+ posts_main + ", post_date=" + post_date + ", category=" + category + ", diseasecode=" + diseasecode
+				+ ", imgsrc=" + imgsrc + ", hidden=" + hidden + "]";
+	}
+	
 
 }

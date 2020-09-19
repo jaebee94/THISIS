@@ -1,6 +1,7 @@
 package com.web.curation.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -59,7 +60,7 @@ public class SubscribeController {
 	
 	@ApiOperation(value = "유저의 질병 구독 여부를 저장한다", response = String.class)     
  	@PostMapping
-		public ResponseEntity<String> createDisease(@RequestParam String diseasecode, @RequestParam String diseasename, HttpServletRequest request){ 
+		public ResponseEntity<String> createDisease(@RequestBody Disease disease, HttpServletRequest request){ 
 		
 		// subscribe 자신 아이디로 생성하게 수정
 		String accessToken = (String) request.getAttribute("accessToken");
@@ -70,8 +71,16 @@ public class SubscribeController {
 			user_id = auth.getUser_id();
 		}
 		
+		//질병 태그가 DB에 존재하는지 확인 후 없으면 디비에 넣기!!
+
+		if(diseaseService.selectDiseaseByDiseasecode(disease.getDiseasecode()) == null) {
+			Disease disease2 = new Disease(disease.getDiseasecode(), disease.getDiseasename());
+			diseaseService.createDisease(disease2);
+		}
+
+		
 		Subscribe sub = new Subscribe();
-		sub.setDiseasecode(diseasecode);
+		sub.setDiseasecode(disease.getDiseasecode());
 		sub.setUser_id(user_id);
 		
 		if(subscribeService.createSubscribe(sub) == 1) {
@@ -82,7 +91,7 @@ public class SubscribeController {
 	
 	@ApiOperation(value = "유저가 질병 구독을 취소한다", response = String.class)     
  	@DeleteMapping
-		public ResponseEntity<String> deleteDisease(@RequestParam String diseasecode, HttpServletRequest request) { 
+		public ResponseEntity<String> deleteDisease(@RequestBody Map<String,Object> map, HttpServletRequest request) { 
 		
 		// subscribe 자신 아이디로 생성하게 수정
 		String accessToken = (String) request.getAttribute("accessToken");
@@ -94,9 +103,9 @@ public class SubscribeController {
 		}
 		
 		Subscribe sub = new Subscribe();
-		sub.setDiseasecode(diseasecode);
+		sub.setDiseasecode((String)map.get("diseasecode"));
 		sub.setUser_id(user_id);
-		
+		System.out.println(sub.toString());
 		
 		if(subscribeService.deleteSubscribe(sub) == 1) {
 			return new ResponseEntity<String>("success",HttpStatus.OK);

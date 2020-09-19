@@ -5,7 +5,11 @@
     </div>
     <div class="tutorial-main-wrap"> 
         <div class="tutorial-input-wrap">
-            <input list="disease-list" id="keyword" v-model="keyword">
+            <div>
+                <a>관심있는 질병을 검색하여 1개 이상 구독을 눌러주세요!</a>
+            </div>
+            <input list="disease-list" id="keyword" v-model="keyword" v-on:keyup.enter="getDisease(keyword)">
+            <img src="../../assets/images/icon/icon_search_unselect.png" @click="getDisease(keyword)">
         </div>
         <div class="tutorial-select-wrap">
             <a v-show="this.isSearched">추가 버튼을 누르시면 구독됩니다</a>
@@ -16,8 +20,8 @@
             <button v-show="this.isSearched" @click="checkItem(nowItem)">추가</button>
         </div>
         <div class="tutorial-show-wrap">
-            <div v-for="cItem in this.checkedItems" v-bind:key="cItem">
-                <span >{{cItem[1]}}<img @click="deleteItem(cItem)" src="../../assets/images/icon/icon_mini_close.png"></span>
+            <div v-for="cItem in this.checkedItems" v-bind:key="cItem.diseasecode">
+                <span >{{cItem.diseasename}}<img @click="deleteItem(cItem)" src="../../assets/images/icon/icon_mini_close.png"></span>
             </div>
             
         </div>
@@ -29,7 +33,7 @@
 </template>
 <script>
 import axios from 'axios';
-
+import { mapState, mapActions } from "vuex";
 const proxyurl = "https://cors-anywhere.herokuapp.com/";
 export default {
     data() {
@@ -42,22 +46,26 @@ export default {
             checkedItems : [],
         }
     },
+    computed: {
+    ...mapState('userStore', ['loginData']),
+    },
     created() {
         document.body.className = "greenbody";
     },
     watch : {
-        keyword: function () {
-            this.isSearched = false;
-            this.getDisease(this.keyword);
-        },
+        // keyword: function () {
+        //     this.isSearched = false;
+        //     this.getDisease(this.keyword);
+        // },
         checkedItems : function () {
             this.checkForm();
         },
     },
     methods: {
+        ...mapActions("diseaseStore", ["createDisease"]),
         checkForm() {
             // 현재 선택한 구독 질병의 갯수로 다음으로 넘어갈 수 있는지 체크
-            if(this.checkedItems.length >= 3) {
+            if(this.checkedItems.length >= 1) {
                 this.isSelected = true;
             } else {
                 this.isSelected = false;
@@ -74,6 +82,7 @@ export default {
                 searchText : keyword,
                 ServiceKey : 'hhU4fvLXqUtlijp+SQxnotQgI7A4yLrBASX3GMofY45xyks9LOe05UKyCfH5gkyN1U+7YKFfujffwflXy4TzfA=='
             };
+            this.$parent.isLoaded = false;
             axios.request({
                 // 서버에 마운트하면서 바꿔야 할 부분 :
                 // proxyurl 지우고 올려야 함
@@ -90,14 +99,16 @@ export default {
                 this.items = [];
                 var len = res.data.response.body.totalCount;
                 var items = res.data.response.body.items.item;
-                if(len == 0) {this.isSearched = false;return;}
+                if(len == 0) {this.isSearched = false; this.$parent.isLoaded = true;return;}
                 else if(len == 1) this.items.push(items);
                 else this.items = items;
                 this.isSearched = true;
+                this.$parent.isLoaded = true;
             })
             .catch((err) => {
                 this.isSearched = false;
                 console.log(err)
+                this.$parent.isLoaded = true;
             })
         },
         checkItem(now) {
@@ -106,10 +117,10 @@ export default {
             var flag = true;
             for(var i = 0; i < this.checkedItems.length; i++) {
                 var item = this.checkedItems[i];
-                if(item[0] == str[0]) flag = false;
+                if(item.diseasecode == str[0]) flag = false;
             }
             if(flag)
-            this.checkedItems.push(str);
+                this.checkedItems.push({diseasecode : str[0], diseasename : str[1]});
         },
         deleteItem(item) {
             // x표를 눌러 선택한 질병을 삭제하는 내용
@@ -117,140 +128,148 @@ export default {
             if(idx > -1) this.checkedItems.splice(idx, 1);
         },
         onStart() {
-            console.log(this.checkedItems)
-            // 여기서 들어갈 작업 : 
-            // 1. this.checkedItems(선택한 구독 질병들)를 POST로 서버 DB에 보내주기
-            // 2. 메인 페이지의 피드로 가게 하기
-            // this.$router.push("/main/feed")
+            this.checkedItems.forEach(chkItem => {
+                this.createDisease(chkItem); //db에 보내기
+            });
+            this.$router.push("/main/feed")
         }
     }
 }
 </script>
 
 <style>
-    .tutorial.wrap {
-        width: 100%;
-        height: 100%;
-    }
+.tutorial.wrap {
+  width: 100%;
+  height: 100%;
+}
 
-    .tutorial-logo-wrap {
-        width: 100%;
-        height: 60px;
-    }
+.tutorial-logo-wrap {
+  width: 100%;
+  height: 60px;
+}
 
-    .tutorial-logo-wrap img { 
-        height: 48px;
-        margin-top: 6px;
-    }
+.tutorial-logo-wrap img {
+  height: 48px;
+  margin-top: 6px;
+}
 
-    .tutorial-main-wrap{
-        margin-top: 40px;
-        width: 100%;
-        height: 60%;
-    }
+.tutorial-main-wrap {
+  margin-top: 40px;
+  width: 100%;
+  height: 60%;
+}
 
-    .tutorial-input-wrap { 
-        margin-bottom: 10px;
-    }
+.tutorial-input-wrap div a {
+  color: white;
+  font-size: 12px;
+}
 
-    .tutorial-select-wrap {
-        width: 100%;
-        height: 100%;
-        margin-bottom: 10px;
-        text-align:left;
-    }
+.tutorial-select-wrap {
+  width: 100%;
+  height: 100%;
+  text-align: left;
+}
 
-     .tutorial-select-wrap a {
-        font-size: 10px;
-        margin-left: 5%;
-        color: slategray;
-    }
+.tutorial-select-wrap a {
+  font-size: 10px;
+  margin-left: 5%;
+  color: slategray;
+}
 
-    .tutorial-select-wrap select {
-        width: 70%;
-        height: 30px;
-        margin-left: 5%;
-        border:none;
-        background-color: white;
-        border-radius: 5px;
-    }
+.tutorial-select-wrap select {
+  width: 70%;
+  height: 30px;
+  margin-left: 5%;
+  border: none;
+  background-color: white;
+  border-radius: 5px;
+}
 
-    .tutorial-select-wrap select:focus {
-        outline: none;
-    }
+.tutorial-select-wrap select:focus {
+  outline: none;
+}
 
-    .tutorial-select-wrap button {
-        background-color: white;
-        color: rgb(0, 171, 132);
-        font-weight: 600;
-        margin-left: 2%;
-        width: 18%;
-        height: 30px;
-        border: none;
-        border-radius: 5px;
-        outline:none;
-    }
+.tutorial-select-wrap button {
+  background-color: white;
+  color: rgb(0, 171, 132);
+  font-weight: 600;
+  margin-left: 2%;
+  width: 18%;
+  height: 30px;
+  border: none;
+  border-radius: 5px;
+  outline: none;
+}
 
-    .tutorial-show-wrap {
-        width: 100%;
-    }
+.tutorial-show-wrap {
+  width: 100%;
+  margin-top: 7px;
+}
 
-    .tutorial-show-wrap div {
-        margin: 5px auto;
-        height: 30px;
-    }
+.tutorial-show-wrap div {
+  margin: 5px;
+  height: 100%;
+}
 
-    .tutorial-show-wrap div span {
-        background-color: white;
-        padding: 5px 10px;
-        border: none;
-        font-size: 11px;
-        font-weight: 600;
-        height: 15px;
-        border-radius: 5px;
-        color: rgb(0, 171, 132);
-        display: inline-block;
-    }
+.tutorial-show-wrap div span {
+  background-color: white;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  height: 20px;
+  border-radius: 5px;
+  color: black;
+  display: inline-block;
+  text-align: center;
+}
 
-    .tutorial-show-wrap div img {
-        display: inline-block;
-        height: 10px;
-        margin-left: 10px;
-    }
+.tutorial-show-wrap div img {
+  display: inline-block;
+  height: 10px;
+  margin-left: 10px;
+}
 
-    .button.wrap {
-        position: absolute;
-        bottom: 30px;
-        width: 100%;
-    }
+.button.wrap {
+  position: absolute;
+  bottom: 30px;
+  width: 100%;
+}
 
-    .button.wrap button {
-        border: none;
-        border-radius: 5px;
-        width: 80%;
-        height: 40px;
-        color: black;
-        font-size: 25px;
-        font-weight: 600;
-        transition-duration: 300ms;
-    }
-    .button.wrap button:disabled {
-        background-color: rgb(200, 200, 200);
-        color: white;
-    }
+.button.wrap button {
+  border: none;
+  border-radius: 5px;
+  width: 80%;
+  height: 40px;
+  color: black;
+  font-size: 25px;
+  font-weight: 600;
+  transition-duration: 300ms;
+}
+.button.wrap button:disabled {
+  background-color: rgb(200, 200, 200);
+  color: white;
+}
 
-    .button.wrap button:focus {
-        outline: none;
-        background-color: rgb(0, 171, 132);
-        color: white;
-    }
+.button.wrap button:focus {
+  outline: none;
+  background-color: rgb(0, 171, 132);
+  color: white;
+}
 
-    #keyword {
-        width: 87%;
-        border: none;
-        border-radius: 5px;
-        height: 30px;
-        padding-left: 3%;
-        outline:none;
-    }
+#keyword {
+  width: 87%;
+  border: none;
+  border-radius: 5px;
+  height: 30px;
+  padding-left: 3%;
+  outline: none;
+}
+
+.tutorial-input-wrap img {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  right: 25px;
+  margin-top: 5px;
+}
 </style>

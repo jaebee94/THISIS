@@ -4,11 +4,11 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.web.curation.model.Tag_relation;
+import com.web.curation.model.TagRelation;
 @Mapper
 public interface TagRelationDAO {
-	public int createTagRelation(Tag_relation tagrelation);
-	public List<Tag_relation> selectTagRelationpost(int posts_id);
-	public List<Tag_relation> selectTagRelationtag(int tagid);
-	public int deleteTagRelation(int tagid, int posts_id);
+	public int createTagRelation(TagRelation tagrelation);
+	public List<TagRelation> selectTagRelationpost(int posts_id);
+	public List<TagRelation> selectTagRelationtag(int tag_id);
+	public int deleteTagRelation(int tag_id, int posts_id);
 }
