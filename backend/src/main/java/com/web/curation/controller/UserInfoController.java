@@ -167,70 +167,84 @@ public class UserInfoController {
 	@GetMapping("login")
 	public ResponseEntity<String> login(@RequestParam String email, @RequestParam String password) {
 		Optional<UserInfo> userOpt2 = Optional.ofNullable(userInfoService.findUserInfoByEmail(email));
-		ResponseEntity response = null;
+        ResponseEntity response = null;
 
-		if (userOpt2.isPresent()) { // 이메일 존재
-			UserInfo userinfo2 = userOpt2.get();
-			password = SHA256Util.getEncrypt(password, userinfo2.getSalt());
-			System.out.println(password);
-			Optional<UserInfo> userOpt = Optional
-					.ofNullable(userInfoService.findUserByEmailAndPassword(email, password));
-			
-			if (userOpt.isPresent()) { // 비밀번호까지 다 맞음
-				final UserResponse result = new UserResponse();
-				result.status = true;
-				result.data = "success";
-
-				UserInfo userinfo = userOpt.get();
-				// 로그인이 완료됬으니 토큰 만들기
-				TokenSet tokenSet = jwtService.createTokenSet(userinfo);
-
-				if (tokenSet != null) { // 토큰까지 만듬
-					result.accessToken = tokenSet.getAccessToken();
-					result.user_id = userinfo.getUser_id();
-					result.username = userinfo.getUsername();
-					result.introduction = userinfo.getIntroduction();
-					result.email = userinfo.getEmail();
-					result.nickname = userinfo.getNickname();
-
-					result.userimage = userinfo.getUserimage();
-					result.role = userinfo.getRole();
-					result.disabled = userinfo.getDisabled();
-					result.subscribeCount = subscribeService.selectSubscribeByUserid(Integer.toString(userinfo.getUser_id())).size();
-
-					// obj.addProperty("userinfo", obj.toString());
-					// result.object = obj.toString();
-					response = new ResponseEntity<>(result, HttpStatus.OK);
-				} else {
-					response = new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED);
-				}
-			} else { // 비밀번호가 맞지 않음
-				final UserResponse result = new UserResponse();
-				result.status = false;
-				result.data = "wrong password";
-				response = new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
-			}
-		} else { // 이메일 존재 x
-			final UserResponse result = new UserResponse();
-			result.status = false;
-			result.data = "wrong email";
-			response = new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
-		}
-		return response;
+        if (userOpt2.isPresent()) {	//이메일 존재
+        	 Optional<UserInfo> userOpt = Optional.ofNullable(userInfoService.findUserByEmailAndPassword(email, password));
+        	
+        	 if(userOpt.isPresent()) {	//비밀번호까지 다 맞음
+        		 final UserResponse result = new UserResponse();
+                 result.status = true;
+                 result.data = "success";
+                 
+                 UserInfo userinfo = userOpt.get();
+                 //로그인이 완료됬으니 토큰 만들기
+                 TokenSet tokenSet = jwtService.createTokenSet(userinfo);
+                
+                 if(authService.selectAuthByUserid(userinfo.getUser_id()) != null) {
+                	 authService.updateAuth(new Auth(userinfo.getUser_id(), tokenSet.getRefreshToken(), tokenSet.getAccessToken()));      	 
+                 }
+                 else
+                	 authService.insertAuth(new Auth(userinfo.getUser_id(), tokenSet.getRefreshToken(), tokenSet.getAccessToken())); 
+                 
+                 if(tokenSet != null) {	//토큰까지 만듬
+                	result.accessToken = tokenSet.getAccessToken();
+                	result.user_id = userinfo.getUser_id();
+                	result.username = userinfo.getUsername();
+                	result.introduction = userinfo.getIntroduction();
+                	result.email = userinfo.getEmail();
+                	result.nickname = userinfo.getNickname();
+                	//obj.addProperty("userinfo", obj.toString());
+                	 //result.object = obj.toString();
+                	 response = new ResponseEntity<>(result, HttpStatus.OK);
+                 }else {
+                	 response = new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED);
+                 }
+        	 }else {	//비밀번호가 맞지 않음
+        		 final UserResponse result = new UserResponse();
+                 result.status = false;
+                 result.data = "wrong password";
+                 response = new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
+        	 }   
+        } else {	//이메일 존재 x
+        	 final UserResponse result = new UserResponse();
+             result.status = false;
+             result.data = "wrong email";
+             response = new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
+        }
+        return response;
 	}
-
-	@ApiOperation(value = "AccessToken 재생성 테스트", response = String.class)
-	@PostMapping("refreshAccessToken")
-	public ResponseEntity<String> refreshAccessToken(@RequestBody String token) {
-		TokenSet tokenSet = jwtService.refreshAccessToken(token);
+	
+	@ApiOperation(value = "AccessToken 재생성 테스트", response = String.class)     
+	@GetMapping("refreshAccessToken")
+	public ResponseEntity<String> refreshAccessToken(HttpServletRequest request) {
+		String accessToken = request.getHeader("accessToken");
+		System.out.println("accessToken : " + accessToken);
+		UserInfo userinfo;
+		if(accessToken != null) {
+		Auth auth = authService.findAuthByAccessToken(accessToken);
+		userinfo = userInfoService.selectUserInfoByUserid(auth.getUser_id());
+		}
+		else {	//accessToken없을때는 user_id 1인 유저로 들어감
+			userinfo = userInfoService.selectUserInfoByUserid(1);
+		}
+		
+		System.out.println("user_id :" + userinfo.getUser_id());
+		Auth auth = authService.selectAuthByUserid(userinfo.getUser_id());
+		String refreshToken = auth.getRefresh_token();
+		
+		TokenSet tokenSet = jwtService.refreshAccessToken(refreshToken);
+		//auth table update
+		authService.updateAuth(new Auth(userinfo.getUser_id(), auth.getRefresh_token(), tokenSet.getAccessToken()));
+		
 		ResponseEntity response = null;
-		final BasicResponse result = new BasicResponse();
-
-		if (tokenSet != null) {
-			result.object = tokenSet;
-			response = new ResponseEntity<>(result, HttpStatus.OK);
-		} else {
-			response = new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED);
+		final UserResponse result = new UserResponse();
+		System.out.println("뉴 토큰 : " + tokenSet.toString());
+		if(tokenSet != null) {
+			 result.accessToken = tokenSet.getAccessToken();
+        	 response = new ResponseEntity<>(result, HttpStatus.OK);
+		}else {
+			 response = new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED);
 		}
 
 		return response;

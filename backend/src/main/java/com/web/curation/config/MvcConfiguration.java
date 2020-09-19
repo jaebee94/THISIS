@@ -31,7 +31,7 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter{
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(authInterceptor())
 		.addPathPatterns("/**")
-		.excludePathPatterns("/account/login","/account/signup",
+		.excludePathPatterns("/account/login","/account/signup", "/account/refreshAccessToken",
 				"/swagger-ui.html", "/v2/api-docs",  "/swagger-resources/**",  "/webjars/**");
 		//위에 제외할 로그인 api 경로 넣으삼
 	}

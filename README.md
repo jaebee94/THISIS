@@ -275,7 +275,6 @@ AWS 활용한 서버 연동
 | pm2 restart War2 | 서버에 백엔드 빌드 파일 반영 |
 |(frontend 폴더에서) npm run buile | 프론트엔드 뷰 배포 |
 
-
 ## DB sql문 설정
 
 

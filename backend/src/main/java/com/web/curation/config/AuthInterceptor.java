@@ -1,37 +1,34 @@
 package com.web.curation.config;
 
+import java.io.UnsupportedEncodingException;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.web.curation.exception.AuthenticationException;
-import com.web.curation.exception.AuthorizationException;
 import com.web.curation.model.Auth;
 import com.web.curation.model.TokenSet;
-import com.web.curation.model.UserInfo;
 import com.web.curation.service.AuthService;
 import com.web.curation.service.JwtService;
 import com.web.curation.service.UserInfoService;
+
+import io.jsonwebtoken.Jwts;
 
 //인증을 위한 인터셉터
 @Component
 public class AuthInterceptor extends HandlerInterceptorAdapter{
 	
 	@Resource
-	private UserInfoService userInfoService;
-	
-	@Autowired
 	private JwtService jwtService;
 	
-	@Autowired
+	@Resource
 	private AuthService authService;
 	
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -58,19 +55,20 @@ public class AuthInterceptor extends HandlerInterceptorAdapter{
 				response.addHeader("accessToken", accessToken);
 				//response.addHeader("refreshToken", tokenSet.getRefreshToken());
 			}
-			
+
 			//if (hm.hasMethodAnnotation(LoginRequired.class) && (accessToken == null || !jwtService.isValidToken(accessToken, JwtService.AT_SECRET_KEY)))
 			if (accessToken == null /*|| !jwtService.isValidToken(accessToken, JwtService.AT_SECRET_KEY)*/) {
 				//throw new AuthenticationException("로그인되어있지 않습니다.");
 				//System.out.println("액세스 토큰 x");
 				accessToken =null;
 			}
-			/*else if(!jwtService.isValidToken(accessToken, JwtService.AT_SECRET_KEY)){
-				Auth auth = authService.findAuthByAccessToken(accessToken);
-				response.addHeader("refreshToken", auth.getRefresh_token());
-				//throw new AuthenticationException("액세스 토큰이 유효하지 않습니다");
+			else if(!isValidToken(accessToken, JwtService.AT_SECRET_KEY)){
+				//Auth auth = authService.findAuthByAccessToken(accessToken);
+				System.out.println("만료");
+				//return false;
+				throw new AuthenticationException("액세스 토큰이 유효하지 않습니다");
 				//accessToken = null;
-			}*/
+			}
 			else {
 				//accessToken이 확인됨
 				//토큰으로 유저정보 가져오기
@@ -98,6 +96,24 @@ public class AuthInterceptor extends HandlerInterceptorAdapter{
 		super.postHandle(request, response, handler, modelAndView);
 	}
 	
+	public boolean isValidToken(String jwt, String secretKey) {
+		try {
+			Jwts.parser().setSigningKey(this.generateKey(secretKey)).parseClaimsJws(jwt);
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
+	}
 	
+	public byte[] generateKey(String secretKey) {
+		byte[] key = null;
+		try {
+			key = secretKey.getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			logger.error("Making secret Key Error :: ", e);
+		}
+
+		return key;
+	}
 	
 }

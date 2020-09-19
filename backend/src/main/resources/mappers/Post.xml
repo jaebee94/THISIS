@@ -19,7 +19,7 @@
 	</select>
 
 	<select id="selectPost" resultType="Post">
-		select*
+		select *
 		from posts
 		where
 		user_id=#{user_id}
